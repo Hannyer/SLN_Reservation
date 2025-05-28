@@ -1,0 +1,983 @@
+﻿@model List<EntityLayer.ReservationE>
+
+@{
+    ViewBag.Title = "Index";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+
+}
+
+
+<h2 style="text-align-last: center;">Reservación de hospedaje</h2>
+
+
+<div class="mt-4 p-3 bg-light" style="border-top: 1px solid #ddd; text-align: center;">
+    <div class="row">
+        <div class="col-lg-4 col-md-12 col-sm-12 col-xs-12 pt-4 p-0">
+            <div class="col-lg-12 col-md-12 col-sm-12 col-xs-12 ">
+                <h5 class="text-dark">Venta</h5>
+                <p class="mb-0">Precio: <span class="text-dark">₡ @ViewBag.SaleValue</span></p>
+                <p class="mb-0">Fecha: <span class="text-dark">@ViewBag.SaleDate</span></p>
+            </div>
+        </div>  <div class="col-lg-4 col-md-12 col-sm-12 col-xs-12 pt-4 p-0">
+            <div class="col-lg-12 col-md-12 col-sm-12 col-xs-12 ">
+                <h5 class="text-dark">Precio del dolar</h5>
+
+            </div>
+        </div>
+        <div class="col-lg-4 col-md-12 col-sm-12 col-xs-12 pt-4 p-0">
+            <div class="col-lg-12 col-md-12 col-sm-12 col-xs-12 ">
+                <h5 class="text-dark">Compra</h5>
+                <p class="mb-0">Precio: <span class="text-dark">₡ @ViewBag.BuyValue</span></p>
+                <p class="mb-0">Fecha: <span class="text-dark">@ViewBag.BuyDate</span></p>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+<div class="col-md-4 pb-1">
+    <label style="padding-bottom:1rem;"> Estado</label>
+    <select id="ddlReservationStatus" class="form-control">
+        <option value="0">Todos</option>
+        <option value="4" selected>Reservado y facturado</option>
+        <option value="1">Reservado</option>
+        <option value="2">Facturado</option>
+        <option value="3">Finalizado</option>
+    </select>
+</div>
+<div class="row" style="padding-bottom: 1rem; padding-top: 2rem; justify-content: right; ">
+    <div class="col-md-8">
+        <div class="row">
+            <div class="col-md-5">
+                <div class="form-group">
+                    <label for="txtCheckInReservation">Fecha Inicio:</label>
+                    <input type="date" class="form-control" id="txtCheckInReservation" name="txtCheckInReservation">
+                </div>
+            </div>
+            <div class="col-md-5">
+                <div class="form-group">
+                    <label for="txtCheckOutReservation">Fecha Final:</label>
+                    <input type="date" class="form-control" id="txtCheckOutReservation" name="txtCheckOutReservation">
+                </div>
+            </div>
+            <div class="col-md-2" style="padding-top: 1%">
+                <button type="button" style="width:100%" onclick="FilterReservacion();" class="btn green-button" id="btnBuscar">Buscar</button>
+            </div>
+        </div>
+        <br />
+    </div>
+    <div class="col-md-4">
+        <div class="col-xs" style="text-align: right;">
+            @{
+
+                <button type="button" id="btnModalAddRole" onclick="OpenModal('mdlAddReservation');" class="btn green-button">
+                    Agregar reservación <i class="fas fa-plus"></i>
+                </button>
+
+            }
+        </div>
+    </div>
+</div>
+
+<div id="contenedorVistaParcial" style="padding-bottom: 2rem;">
+    @Html.Partial("PartialViewReservation", Model)
+    <br />
+</div>
+
+
+
+@*Modal to add Reservation*@
+<div class="modal fade" id="mdlAddReservation">
+    <div class="modal-dialog modal-lg dialogPDF">
+        <div class="modal-content contentPDF">
+            <div class="modal-header" style="background-color: #2E7D32; color:white; justify-content: center; ">
+                <h5 class="modal-title">Agregar Reservaciones</h5>
+            </div>
+            <div class="modal-body">
+                <div class="row" style=" padding-left: 3rem;">
+                    <div class="col-lg-6 col-md-12 col-sm-12 col-xs-12 pt-4 p-0">
+                        <div class="col-lg-12 col-md-12 col-sm-12 col-xs-12 ">
+                            <div class="form-group">
+                                <label for="ddlAddReservationModal">Selecciona el cliente</label>
+                                <input type="text" id="ddlAddReservationModal" list="AddReservationList" class="form-control" placeholder="Buscar cliente..." autocomplete="off">
+                                <datalist id="AddReservationList">
+
+                                    @{
+                                        if ((IEnumerable<SelectListItem>)ViewBag.ClientList != null)
+                                        {
+                                            foreach (var item in (IEnumerable<SelectListItem>)ViewBag.ClientList)
+                                            {
+                                                <option value="@item.Value">@item.Text</option>
+                                            }
+
+                                        } }
+                                </datalist>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-lg-6 col-md-12 col-sm-12 col-xs-12 pt-4 p-0">
+                        <div class="col-lg-12 col-md-12 col-sm-12 col-xs-12 ">
+                            <div class="form-group">
+                                <label for="ddlAddTarifaModal">Selecciona la tarifa</label>
+                                <input type="text" id="ddlAddTarifaModal" list="AddTarifaList" class="form-control" placeholder="Buscar tarifa..." autocomplete="off">
+                                <datalist id="AddTarifaList">
+
+                                    @{
+                                        if ((IEnumerable<SelectListItem>)ViewBag.RateClientList != null)
+                                        {
+                                            foreach (var item in (IEnumerable<SelectListItem>)ViewBag.RateClientList)
+                                            {
+                                                <option value="@item.Value">@item.Text</option>
+                                            }
+                                        }
+
+                                    }
+                                </datalist>
+                            </div>
+
+                        </div>
+                    </div>
+                    <div class="col-lg-6 col-md-12 col-sm-12 col-xs-12 pt-4 p-0">
+                        <div class="col-lg-12 col-md-12 col-sm-12 col-xs-12 ">
+
+                            <div class="mb-3">
+                                <label for="lblDescription" class="form-label">Descripción:</label>
+                                <textarea class="form-control" id="txtDescription" disabled="disabled" cols="60" rows="8"></textarea>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-lg-6 col-md-12 col-sm-12 col-xs-12 pt-4 p-0">
+                        <div class="col-lg-12 col-md-12 col-sm-12 col-xs-12 ">
+
+                            <div class="mb-3">
+                                <label for="txtExpenseDetails" class="form-label">Desglose:</label>
+                                <textarea class="form-control" id="txtExpenseDetails" disabled="disabled" cols="60" rows="8"></textarea>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-lg-6 col-md-12 col-sm-12 col-xs-12 pt-4 p-0">
+                        <div class="col-lg-12 col-md-12 col-sm-12 col-xs-12 ">
+                            <div class="mb-3">
+                                <label for="lblCheckIn" class="form-label">Entrada:</label>
+                                <input type="date" class="form-control" id="txtCheckIn" required>
+                            </div>
+
+                        </div>
+                    </div>
+                    <div class="col-lg-6 col-md-12 col-sm-12 col-xs-12 pt-4 p-0">
+                        <div class="col-lg-12 col-md-12 col-sm-12 col-xs-12 ">
+                            <div class="mb-3">
+                                <label for="lblCheckOut" class="form-label">Salida:</label>
+                                <input type="date" class="form-control" id="txtCheckOut" required>
+                            </div>
+
+                        </div>
+                    </div>
+                    <div class="col-lg-6 col-md-12 col-sm-12 col-xs-12 pt-4 p-0">
+                        <div class="col-lg-12 col-md-12 col-sm-12 col-xs-12 ">
+                            <div class="form-group">
+                                <label for="ddlAddRoomModal">Selecciona una habitación</label>
+                                <input type="text" id="ddlAddRoomModal" list="AddRoomList" class="form-control" placeholder="Buscar habitación..." autocomplete="off">
+                                <datalist id="AddRoomList">
+                                </datalist>
+                            </div>
+
+                        </div>
+                    </div>
+                </div>
+
+            </div>
+            <br />
+            <div class="modal-footer">
+                <button type="button" id="btnAddReservation" class="btn green-button" onclick="NewReservation()">Aceptar</button>
+                <button type="button" id="btnCloseModalAddReservation" class="btn red-button" data-dismiss="modal">Cerrar</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+@*Modal to Modify Reservation*@
+<div class="modal fade" id="mdlModifyReservation">
+    <div class="modal-dialog modal-lg">
+        <div class="modal-content">
+            <div class="modal-header" style="background-color: #2E7D32; color:white; justify-content: center; ">
+                <h5 class="modal-title">Modificar Reservaciones</h5>
+            </div>
+            <div class="modal-body">
+                <div class="row" style=" padding-left: 3rem;">
+                    <div class="col-lg-6 col-md-12 col-sm-12 col-xs-12 pt-4 p-0">
+                        <div class="col-lg-12 col-md-12 col-sm-12 col-xs-12 ">
+                            <div class="form-group">
+                                <label for="ddlModifyReservationModal">Selecciona el cliente</label>
+                                <input type="text" id="ddlModifyReservationModal" disabled list="ModifyReservationList" class="form-control" placeholder="Buscar cliente...">
+                                <datalist id="ModifyReservationList">
+
+                                    @{
+                                        if ((IEnumerable<SelectListItem>)ViewBag.ClientList != null)
+                                        {
+                                            foreach (var item in (IEnumerable<SelectListItem>)ViewBag.ClientList)
+                                            {
+                                                <option value="@item.Value">@item.Text</option>
+                                            }
+
+                                        } }
+                                </datalist>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-lg-6 col-md-12 col-sm-12 col-xs-12 pt-4 p-0">
+                        <div class="col-lg-12 col-md-12 col-sm-12 col-xs-12 ">
+                            <div class="form-group">
+                                <label for="ddlModifyTarifaModal">Selecciona la tarifa</label>
+                                <input type="text" id="ddlModifyTarifaModal" list="ModifyTarifaList" class="form-control" placeholder="Buscar tarifa...">
+                                <datalist id="ModifyTarifaList">
+                                </datalist>
+                            </div>
+
+                        </div>
+                    </div>
+                    <div class="col-lg-6 col-md-12 col-sm-12 col-xs-12 pt-4 p-0">
+                        <div class="col-lg-12 col-md-12 col-sm-12 col-xs-12 ">
+                            <div class="mb-3">
+                                <label for="lblModifyCheckIn" class="form-label">Entrada:</label>
+                                <input type="date" class="form-control" id="txtModifyCheckIn" required>
+                            </div>
+
+                        </div>
+                    </div>
+                    <div class="col-lg-6 col-md-12 col-sm-12 col-xs-12 pt-4 p-0">
+                        <div class="col-lg-12 col-md-12 col-sm-12 col-xs-12 ">
+                            <div class="mb-3">
+                                <label for="lblModifyCheckOut" class="form-label">Salida:</label>
+                                <input type="date" class="form-control" id="txtModifyCheckOut" required>
+                            </div>
+
+                        </div>
+                    </div>
+                    <div class="col-lg-6 col-md-12 col-sm-12 col-xs-12 pt-4 p-0">
+                        <div class="col-lg-12 col-md-12 col-sm-12 col-xs-12 ">
+
+                            <div class="mb-3">
+                                <label for="lblMDescription" class="form-label">Descripción:</label>
+                                <textarea class="form-control" id="txtModifyDescription" disabled="disabled" cols="60" rows="8"></textarea>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-lg-6 col-md-12 col-sm-12 col-xs-12 pt-4 p-0">
+                        <div class="col-lg-12 col-md-12 col-sm-12 col-xs-12 ">
+                            <div class="mb-3">
+                                <label for="txtModifyDesglose" class="form-label">Desglose:</label>
+                                <textarea class="form-control" id="txtModifyDesglose" disabled="disabled" cols="60" rows="8"></textarea>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-lg-6 col-md-12 col-sm-12 col-xs-12 pt-4 p-0">
+                        <div class="col-lg-12 col-md-12 col-sm-12 col-xs-12 ">
+                            <div class="mb-3">
+                                <input type="hidden" id="hdfIdReservationModify" />
+                            </div>
+
+                        </div>
+                    </div>
+                </div>
+
+            </div>
+            <br />
+            <div class="modal-footer">
+                <input type="text" class="form-control" style="display:none" id="txtTmpIDModal" readonly>
+                <button type="button" id="btnModifyReservation" class="btn green-button" onclick="ModifyReservation()">Aceptar</button>
+                <button type="button" id="btnCloseModalModifyReservation" class="btn red-button" data-dismiss="modal">Cerrar</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+@*Modal Deposito*@
+<div class="modal fade" id="mdlDeposit">
+    <div class="modal-dialog modal-lg">
+        <div class="modal-content">
+            <div class="modal-header" style="background-color: #2E7D32; color:white; justify-content: center; ">
+                <h5 class="modal-title">Agregar Depósito</h5>
+            </div>
+            <div class="modal-body">
+                <div class="row" style=" padding-left: 3rem;">
+
+                    <div class="col-lg-6 col-md-12 col-sm-12 col-xs-12 pt-4 p-0">
+                        <div class="col-lg-12 col-md-12 col-sm-12 col-xs-12 ">
+
+                            <div class="mb-3">
+                                <label for="txtDepositAmmount" class="form-label">Deposito:</label>
+                                <input type="number" class="form-control" id="txtDepositAmmount" cols="60" rows="8"></input>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+            </div>
+            <br />
+            <div class="modal-footer">
+                <input type="text" class="form-control" style="display:none" id="txtTmpIDModal" readonly>
+                <button type="button" id="btnModifyReservation" class="btn green-button" onclick="SendDeposit()">Aceptar</button>
+                <button type="button" class="btn red-button" id="btncloseDeposit" onclick="CloseModalDeposit()">Cerrar</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+    var reservationList = @Html.Raw(Json.Encode(Model));
+    $(document).ready(function () {
+
+        OpenModalAddReservation();
+        CloseModalAddReservation();
+        CloseModalModifyReservation();
+
+
+        var fechaActual = new Date();
+        var fechaFormateada = fechaActual.toISOString().split('T')[0];
+        $('#txtCheckIn').val(fechaFormateada);
+        $('#txtCheckOut').val(fechaFormateada);
+        $('#txtCheckInReservation').val(fechaFormateada);
+        $('#txtCheckOutReservation').val(fechaFormateada);
+
+
+        $('#tblReservation').DataTable({
+                "scrollX": true,
+                "paging": true,
+                "lengthChange": true,
+                "searching": true,
+                "ordering": true,
+                "responsive": true,
+                "buttons": [
+                    'copy', 'excel', 'pdf', 'print'
+                ],
+                "lengthMenu": [[5, 10, 25, 50, 100], [5, 10, 25, 50, "Todo"]],
+                "language": {
+                    "lengthMenu": "Mostrar _MENU_ registros por página",
+                    "zeroRecords": "No se encontraron registros",
+                    "info": "Mostrando _START_ a _END_ de _TOTAL_ registros",
+                    "infoEmpty": "No hay registros disponibles",
+                    "infoFiltered": "(filtrados de _MAX_ registros en total)",
+                    "search": "Buscar:",
+                    "paginate": {
+                        "first": "Primero",
+                        "last": "Último",
+                        "next": "Siguiente",
+                        "previous": "Anterior"
+                    }
+                }
+            });
+
+
+
+              $('#ddlReservationStatus').change(function() {
+                 var selectedValue = $(this).val();
+                  var checkInVal = $('#txtCheckInReservation').val();
+                  var checkOutVal = $('#txtCheckOutReservation').val();
+
+                  if (!(checkInVal instanceof Date)) checkInVal = new Date(checkInVal);
+                  if (!(checkOutVal instanceof Date)) checkOutVal = new Date(checkOutVal);
+
+
+                  var formattedStartDate = checkInVal.toISOString().slice(0, 19).replace('T', ' ');
+                  var formattedEndDate = checkOutVal.toISOString().slice(0, 19).replace('T', ' ');
+
+                  mostrarSpinner();
+             $.ajax({
+                url: '@Url.Action("SeachReservationByStatus", "Reservation")',
+                type: 'GET',
+                 data: {
+                     reservationStatus: selectedValue,
+                     StartDate: formattedStartDate,
+                     EndDate: formattedEndDate
+                 },
+                success: function(partialView) {
+                    $('#contenedorVistaParcial').html(partialView);
+
+                    $('#tblReservation').DataTable({
+                        "scrollX": true,
+                        "paging": true,
+                        "lengthChange": true,
+                        "searching": true,
+                        "ordering": true,
+                        "responsive": true,
+                        "buttons": [
+                            'copy', 'excel', 'pdf', 'print'
+                        ],
+                        "lengthMenu": [[5, 10, 25, 50, 100], [5, 10, 25, 50, "Todo"]],
+                        "language": {
+                            "lengthMenu": "Mostrar _MENU_ registros por página",
+                            "zeroRecords": "No se encontraron registros",
+                            "info": "Mostrando _START_ a _END_ de _TOTAL_ registros",
+                            "infoEmpty": "No hay registros disponibles",
+                            "infoFiltered": "(filtrados de _MAX_ registros en total)",
+                            "search": "Buscar:",
+                            "paginate": {
+                                "first": "Primero",
+                                "last": "Último",
+                                "next": "Siguiente",
+                                "previous": "Anterior"
+                            }
+                        }
+                    });
+                },
+                    error: function() {
+                    alert('Ha ocurrido un error al obtener los datos.');
+                                }
+                    });
+                  ocultarSpinner();
+              });
+
+
+
+
+        $('#txtCheckIn').on('change', function () {
+            var originalCheckIn = $(this).data('lastValue');
+            var newCheckIn = $(this).val();
+            var checkOutVal = $('#txtCheckOut').val();
+
+            if (new Date(newCheckIn) >= new Date(checkOutVal)) {
+                if (originalCheckIn) {
+                    $(this).val(originalCheckIn);
+                }
+            } else {
+                $(this).data('lastValue', newCheckIn);
+                var Days = tmpDays(newCheckIn, checkOutVal);
+                var Id_rate = GetDropDownValueSelected('ddlAddTarifaModal', 'AddTarifaList');
+
+                if (Id_rate != null) {
+                    Expense_Details(Id_rate, Days, 'txtExpenseDetails');
+                    updateDatalistHotelRoomFromServer(Id_rate, 'AddRoomList', newCheckIn, checkOutVal);
+                }
+            }
+        }).data('lastValue', $('#txtCheckIn').val());
+
+        $('#txtCheckOut').on('change', function () {
+            var originalCheckOut = $(this).data('lastValue');
+            var newCheckOut = $(this).val();
+            var checkInVal = $('#txtCheckIn').val();
+
+            if (new Date(newCheckOut) <= new Date(checkInVal)) {
+                if (originalCheckOut) {
+                    $(this).val(originalCheckOut);
+                }
+            } else {
+                $(this).data('lastValue', newCheckOut);
+                var Days = tmpDays(checkInVal, newCheckOut);
+                var Id_rate = GetDropDownValueSelected('ddlAddTarifaModal', 'AddTarifaList');
+
+                if (Id_rate != null) {
+                    Expense_Details(Id_rate, Days, 'txtExpenseDetails');
+                    updateDatalistHotelRoomFromServer(Id_rate, 'AddRoomList', checkInVal, newCheckOut);
+                }
+            }
+        }).data('lastValue', $('#txtCheckOut').val());
+
+
+
+
+
+            var fechaActual = new Date().toISOString().split('T')[0];
+
+
+            $('#txtCheckIn, #txtCheckOut').attr('min', fechaActual);
+            $('#txtModifyCheckIn, #txtModifyCheckOut').attr('min', fechaActual);
+
+
+
+        InitializerEventDropDownList2('ddlAddReservationModal', 'AddReservationList', 'AddTarifaList','AddRoomList');
+        InitializerEventDropDownListClient('ddlAddTarifaModal', 'AddTarifaList', 'Buscar tarifa...', 'txtDescription', 'txtExpenseDetails', 'AddRoomList');
+        InitializerEventDropDownListClassic('ddlAddRoomModal', 'AddRoomList');
+
+            InitializerEventDropDownList2('ddlModifyReservationModal', 'ModifyReservationList', 'ModifyTarifaList','');
+        InitializerEventDropDownListClient('ddlModifyTarifaModal', 'ModifyTarifaList', 'Buscar tarifa...', 'txtModifyDescription', 'txtExpenseDetails','AddRoomList');
+
+
+
+
+
+        });
+
+
+
+
+        function OpenModalAddReservation() {
+            $("#btnModalAddReservation").click(function () {
+                $("#mdlAddReservation").modal("show"); // Abre el modal con el id "myModal"
+            });
+        }
+        function CloseModalAddReservation() {
+            $("#btnCloseModalAddReservation").click(function () {
+                $("#mdlAddReservation").modal("hide"); // Abre el modal con el id "myModal"
+            });
+        }
+        function CloseModalModifyReservation() {
+            $("#btnCloseModalModifyReservation").click(function () {
+                $("#mdlModifyReservation").modal("hide"); // Abre el modal con el id "myModal"
+            });
+        }
+    function CloseModalDeposit() {
+        $("#btncloseDeposit").click(function () {
+            $("#mdlDeposit").modal("hide"); // Abre el modal con el id "myModal"
+        });
+    }
+        function OpenModalModifyReservation(button, modal) {
+
+            //var dataList = document.getElementById('ModifyTarifaList');
+            //while (dataList.options.length > 0) {
+            //    dataList.removeChild(dataList.options[0]);
+            //}
+
+            var ReservationJson = button.getAttribute("data-reservation");
+            var reservation = JSON.parse(ReservationJson);
+
+            //var text = reservation.Currency.toUpperCase() === "USD"
+            //    ? "$ " + reservation.Price.toLocaleString('en-US', { maximumFractionDigits: 0 }) + " - " + reservation.DisplayName_Rate
+            //    : "₡ " + reservation.Price.toLocaleString('es-CR', { maximumFractionDigits: 0 }) + " - " + reservation.DisplayName_Rate;
+
+            //text = text.replace(/,/g, ' ');
+            document.getElementById('ddlModifyReservationModal').value = reservation.Full_Name;
+            document.getElementById('ddlModifyTarifaModal').value = reservation.ID_Rate;
+            updateDatalistFromServer(reservation.IdCard_Client, 'ModifyTarifaList');
+            ActivateInputEvent('ddlModifyTarifaModal');
+
+            document.getElementById('txtModifyDescription').value = reservation.Reservation_Description;
+
+            document.getElementById('txtModifyCheckIn').value = reservation.CheckIn.substring(0, 10)
+            document.getElementById('txtModifyCheckOut').value = reservation.CheckOut.substring(0, 10)
+            $('#hdfIdReservationModify').val(reservation.Id);
+
+            OpenModal(modal);
+        }
+
+
+    function InitializerEventDropDownListClient(DropDownInput, dataList, Placeholder, txtDescription_ID, txtExpenseDetail,dataListHotelRoom) {
+            var typingTimer;
+            var doneTypingInterval = 1000;
+
+            document.getElementById(DropDownInput).addEventListener("input", function () {
+                clearTimeout(typingTimer);
+                $("#ddlAddRoomModal").val('');
+                typingTimer = setTimeout(function () {
+                    var inputValue = document.getElementById(DropDownInput).value.toLowerCase();
+                    var inputObject = document.getElementById(DropDownInput);
+                    var options = document.getElementById(dataList).options;
+
+                    for (var i = 0; i < options.length; i++) {
+                        var option = options[i];
+                        var text = option.textContent.toLowerCase();
+
+                        if (text.indexOf(removeAccents(inputValue)) !== -1) {
+                            option.style.display = "block";
+                        } else {
+                            option.style.display = "none";
+                        }
+                    }
+                    var selectedOption = null;
+                    for (var i = 0; i < options.length; i++) {
+                        if (options[i].value === inputObject.value) {
+                            selectedOption = options[i];
+                            break;
+                        }
+                    }
+                    if (selectedOption) {
+                        inputObject.value = selectedOption.textContent;
+                        var CheckIn = $("#txtCheckIn").val();
+                        var CheckOut = $("#txtCheckOut").val();
+
+                        var Days = tmpDays(CheckIn, CheckOut);
+
+                        GetRateTypeById(selectedOption.value, selectedOption.textContent, txtDescription_ID, Days, txtExpenseDetail);
+
+                        if (tmpDays(CheckIn, CheckOut) > 0) {
+                             updateDatalistHotelRoomFromServer(selectedOption.value, dataListHotelRoom,CheckIn,CheckOut);
+                        }
+
+
+
+                    }
+                    if (GetDropDownValueSelected(DropDownInput, dataList) === null) {
+                        inputObject.value = '';
+                        inputObject.placeholder = "No se encontró el registro digitado";
+                        $("#txtDescription").val('');
+                        $("#txtModifyDescription").val('');
+
+                        $("#txtExpenseDetails").val('');
+                        var pdataListHotelRoom = document.getElementById(dataListHotelRoom);
+                        while (pdataListHotelRoom.options.length > 0) {
+                            pdataListHotelRoom.removeChild(pdataListHotelRoom.options[0]);
+                        }
+
+                        typingTimer = setTimeout(function () {
+                            inputObject.placeholder = Placeholder;
+                        }, 1000)
+                    }
+                    else {
+
+                        document.getElementById(DropDownInput).value = GetDropDownTextContentSelected(DropDownInput, dataList);
+                        options[0].selected = true;
+                    }
+                }, doneTypingInterval);
+
+
+            });
+        }
+        function InitializerEventDropDownList2(DropDownInput, dataList, dataListRate,dataListHotelRoom) {
+            var typingTimer;
+            var doneTypingInterval = 1000;
+
+            document.getElementById(DropDownInput).addEventListener("input", function () {
+
+                $("#ddlAddTarifaModal").val('');
+                $("#ddlAddRoomModal").val('');
+                $("#txtDescription").val('');
+                $("#txtExpenseDetails").val('');
+
+                clearTimeout(typingTimer);
+
+                typingTimer = setTimeout(function () {
+                    var inputValue = document.getElementById(DropDownInput).value.toLowerCase();
+                    var inputObject = document.getElementById(DropDownInput);
+                    var options = document.getElementById(dataList).options;
+
+                    for (var i = 0; i < options.length; i++) {
+                        var option = options[i];
+                        var text = option.textContent.toLowerCase();
+
+                        if (text.indexOf(removeAccents(inputValue)) !== -1) {
+                            option.style.display = "block";
+                        } else {
+                            option.style.display = "none";
+                        }
+                    }
+                    var selectedOption = null;
+                    for (var i = 0; i < options.length; i++) {
+                        if (options[i].value === inputObject.value) {
+                            selectedOption = options[i];
+                            break;
+                        }
+                    }
+                    if (selectedOption) {
+
+                        inputObject.value = selectedOption.textContent;
+
+                        updateDatalistFromServer(selectedOption.value, dataListRate);
+                    }
+                    if (GetDropDownValueSelected(DropDownInput, dataList) === null) {
+                        inputObject.value = '';
+                        inputObject.placeholder = "No se encontró el registro digitado";
+                        typingTimer = setTimeout(function () {
+                            inputObject.placeholder = "Buscar cliente...";
+                            var dataList = document.getElementById(dataListRate);
+                            while (dataList.options.length > 0) {
+                                dataList.removeChild(dataList.options[0]);
+                            }
+
+                            var pdataListHotelRoom = document.getElementById(dataListHotelRoom);
+                            while (pdataListHotelRoom.options.length > 0) {
+                                pdataListHotelRoom.removeChild(pdataListHotelRoom.options[0]);
+                            }
+                            $("#txtDescription").val('');
+                            $("#txtModifyDescription").val('');
+
+                            $("#txtExpenseDetails").val('');
+
+                        }, 1000)
+                    }
+                    else {
+
+                        document.getElementById(DropDownInput).value = GetDropDownTextContentSelected(DropDownInput, dataList);
+                        options[0].selected = true;
+                    }
+                }, doneTypingInterval);
+
+
+            });
+        }
+    function InitializerEventDropDownListClassic(DropDownInput, dataList) {
+        var typingTimer;
+        var doneTypingInterval = 1000;
+
+        document.getElementById(DropDownInput).addEventListener("input", function () {
+            clearTimeout(typingTimer);
+
+            typingTimer = setTimeout(function () {
+                var inputValue = document.getElementById(DropDownInput).value.toLowerCase();
+                var inputObject = document.getElementById(DropDownInput);
+                var options = document.getElementById(dataList).options;
+
+                for (var i = 0; i < options.length; i++) {
+                    var option = options[i];
+                    var text = option.textContent.toLowerCase();
+
+                    if (text.indexOf(removeAccents(inputValue)) !== -1) {
+                        option.style.display = "block";
+                    } else {
+                        option.style.display = "none";
+                    }
+                }
+                var selectedOption = null;
+                for (var i = 0; i < options.length; i++) {
+                    if (options[i].value === inputObject.value) {
+                        selectedOption = options[i];
+                        break;
+                    }
+                }
+                if (selectedOption) {
+                    inputObject.value = selectedOption.textContent;
+                }
+                if (GetDropDownValueSelected(DropDownInput, dataList) === null) {
+                    inputObject.value = '';
+                    inputObject.placeholder = "No se encontró el registro digitado";
+                    typingTimer = setTimeout(function () {
+                        inputObject.placeholder = "Seleccione una opción...";
+                    }, 700)
+                }
+                else {
+
+                    document.getElementById(DropDownInput).value = GetDropDownTextContentSelected(DropDownInput, dataList);
+                    options[0].selected = true;
+                }
+            }, doneTypingInterval);
+
+
+        });
+
+
+    }
+
+        function updateDatalistFromServer(Id_ClientSelected, dataListParameter) {
+
+            $.ajax({
+                type: "GET",
+                url: "/Reservation/GetRateListByClientRateType?Id_ClientSelected=" + Id_ClientSelected.toString(),
+                success: function (data) {
+
+                    var dataList = document.getElementById(dataListParameter);
+                    while (dataList.options.length > 0) {
+                        dataList.removeChild(dataList.options[0]);
+                    }
+
+                    for (var i = 0; i < data.length; i++) {
+                        var option = document.createElement("option");
+                        option.value = data[i].Value;
+                        option.text = data[i].Text;
+                        dataList.appendChild(option);
+                    }
+                },
+                error: function (error) {
+                    console.error("Error al obtener los datos del servidor: " + error);
+                }
+            });
+        }
+    function updateDatalistHotelRoomFromServer(Id_RateSelected, dataListParameter, startDate, endDate) {
+
+        if (!(startDate instanceof Date)) startDate = new Date(startDate);
+        if (!(endDate instanceof Date)) endDate = new Date(endDate);
+
+
+        var formattedStartDate = startDate.toISOString().slice(0, 19).replace('T', ' ');
+        var formattedEndDate = endDate.toISOString().slice(0, 19).replace('T', ' ');
+
+
+        $.ajax({
+            type: "GET",
+            url: "/Reservation/GetHotelRoomListByCapacity",
+            data: {
+                Id_RateSelected: Id_RateSelected.toString(),
+                StartDate: formattedStartDate,
+                EndDate: formattedEndDate
+            },
+            success: function (data) {
+
+                var dataList = document.getElementById(dataListParameter);
+                console.log(dataListParameter);
+                while (dataList.options.length > 0) {
+                    dataList.removeChild(dataList.options[0]);
+                }
+                console.log(data.length);
+                if (data.length > 0) {
+                    for (var i = 0; i < data.length; i++) {
+
+                        var option = document.createElement("option");
+                        option.value = data[i].Value;
+                        option.text = data[i].Text;
+                        dataList.appendChild(option);
+                    }
+                }
+                else {
+                    Swal.fire('', 'No hay habitaciónes disponibles en las fechas solicitadas.', 'error');
+                }
+
+            },
+            error: function (error) {
+                console.error("Error al obtener los datos del servidor: " + error);
+            }
+        });
+    }
+    function GetRateTypeById(Id_Rate, RateDrescription, txtDescription, numberOfNights, txtExpenseDetail) {
+
+            $.ajax({
+                type: "GET",
+                url: "/Reservation/GetRateTypebyId?Id_Rate=" + Id_Rate.toString() + "&numberOfNights=" + numberOfNights,
+                success: function (data) {
+
+                    var split = RateDrescription.split('-');
+                    $("#" + txtDescription).val('Tipo de tarifa aplicada al cliente: ' + data.Description_RateType + '\n Precio: ' + split[0].toString().trim() + ' / IVA incluido' + '\n-' + split[1].toString().trim());
+                    Expense_Details(Id_Rate, numberOfNights, txtExpenseDetail)
+                },
+                error: function (error) {
+                    console.error("Error al obtener los datos del servidor: " + error);
+                }
+            });
+    }
+
+    function Expense_Details(Id_Rate, numberOfNights,txtExpenseDetail) {
+
+        $.ajax({
+            type: "GET",
+            url: "/Reservation/Expense_Details?Id_Rate=" + Id_Rate + "&numberOfNights=" + numberOfNights,
+            success: function (data) {
+
+                console.log(data);
+                $("#" + txtExpenseDetail).val(data);
+
+            },
+            error: function (error) {
+                console.error("Error al obtener los datos del servidor: " + error);
+            }
+        });
+    }
+
+    function FilterReservacion() {
+        var selectedValue = $('#ddlReservationStatus').val();
+     var checkInVal = $('#txtCheckInReservation').val();
+     var checkOutVal = $('#txtCheckOutReservation').val();
+
+     if (!(checkInVal instanceof Date)) checkInVal = new Date(checkInVal);
+     if (!(checkOutVal instanceof Date)) checkOutVal = new Date(checkOutVal);
+
+
+     var formattedStartDate = checkInVal.toISOString().slice(0, 19).replace('T', ' ');
+     var formattedEndDate = checkOutVal.toISOString().slice(0, 19).replace('T', ' ');
+
+     mostrarSpinner();
+            $.ajax({
+               url: '@Url.Action("SeachReservationByStatus", "Reservation")',
+               type: 'GET',
+                data: {
+                    reservationStatus: selectedValue,
+                    StartDate: formattedStartDate,
+                    EndDate: formattedEndDate
+                },
+               success: function(partialView) {
+                   $('#contenedorVistaParcial').html(partialView);
+
+                   $('#tblReservation').DataTable({
+                        
+                       "paging": true,
+                       "lengthChange": true,
+                       "searching": true,
+                       "ordering": true,
+                       "responsive": true,
+                       "buttons": [
+                           'copy', 'excel', 'pdf', 'print'
+                       ],
+                       "lengthMenu": [[5, 10, 25, 50, 100], [5, 10, 25, 50, "Todo"]],
+                       "language": {
+                           "lengthMenu": "Mostrar _MENU_ registros por página",
+                           "zeroRecords": "No se encontraron registros",
+                           "info": "Mostrando _START_ a _END_ de _TOTAL_ registros",
+                           "infoEmpty": "No hay registros disponibles",
+                           "infoFiltered": "(filtrados de _MAX_ registros en total)",
+                           "search": "Buscar:",
+                           "paginate": {
+                   "first": "Primero",
+                   "last": "Último",
+                   "next": "Siguiente",
+                   "previous": "Anterior"
+               }
+           }
+       });
+   },
+       error: function() {
+       alert('Ha ocurrido un error al obtener los datos.');
+                   }
+       });
+     ocultarSpinner();
+
+    }
+
+
+    //$('.contentPDF').resizable({
+    //    //alsoResize: ".modal-dialog",
+    //    //minHeight: 150
+    //});
+    //$('.dialogPDF').draggable();
+
+    //$('#modalPDF').on('show.bs.modal', function () {
+    //    $(this).find('.modalbodypdf').css({
+
+    //        'max-height': '100%'
+    //    });
+    //    $(this).find('.divPDF').css({
+    //        'max-height': '100%'
+    //    });
+    //});
+
+    //var EstadoModalMaximizado = false;
+    //const WidthInicial = 798;
+    //const HeigthInicial = 628;
+
+    //function MaximizarModalPDf() {
+
+    //    var heightWindows = $(window).height();
+    //    var widthWindows = $(window).width();
+
+    //    var width = $('.contentPDF').width();
+    //    var height = $('.contentPDF').height();
+
+    //    if (!EstadoModalMaximizado) {
+
+    //        $('.contentPDF').css("height", heightWindows);
+    //        $('.contentPDF').css("width", widthWindows - 10);
+    //        EstadoModalMaximizado = true;
+
+    //    }
+    //    else {
+
+    //        $('.contentPDF').width(WidthInicial);
+    //        $('.contentPDF').height(HeigthInicial);
+    //        EstadoModalMaximizado = false;
+    //    }
+    //}
+
+    //$('.modal-header').dblclick(() => {
+
+    //    var heightWindows = $(window).height();
+    //    var widthWindows = $(window).width();  
+
+    //    var width = $('.contentPDF').width();
+    //    var height = $('.contentPDF').height();
+
+
+    //    if (!EstadoModalMaximizado) {
+
+    //        $('.contentPDF').css("height", heightWindows);
+    //        $('.contentPDF').css("width", widthWindows - 10);
+    //        $('.contentPDF').css("left", 0);
+    //        EstadoModalMaximizado = true;
+
+    //    }
+    //    else {
+
+    //        $('.contentPDF').width(WidthInicial);
+    //        $('.contentPDF').height(HeigthInicial);
+    //        EstadoModalMaximizado = false;
+    //    }
+    //});
+
+</script>
+
+<script src="~/Content/JS/Reservation/jsReservation.js"></script>

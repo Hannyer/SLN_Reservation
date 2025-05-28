@@ -1,0 +1,450 @@
+﻿@using EntityLayer
+<!DOCTYPE html>
+<html>
+<head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>@ViewBag.Title - Mi aplicación ASP.NET</title>
+    @Styles.Render("~/Content/css")
+    @Scripts.Render("~/bundles/modernizr")
+    <link href="~/Content/fontawesome-free-6.4.2-web/css/all.min.css" rel="stylesheet" />
+    <link href="~/Content/bootstrap.min.css" rel="stylesheet" />
+    <link href="~/Library/fontawesome-free-5.15.4-web/css/svg-with-js.min.css" rel="stylesheet" />
+    <link href="~/Library/fontawesome-free-5.15.4-web/css/fontawesome.min.css" rel="stylesheet" />
+    <script src="~/Scripts/jquery-3.4.1.min.js"></script>
+    <script src="~/Scripts/bootstrap.min.js"></script>
+    <script src="~/Library/fontawesome-free-5.15.4-web/js/all.min.js"></script>
+    <script src="~/Library/fontawesome-free-5.15.4-web/js/fontawesome.min.js"></script>
+    <script src="~/Library/SweetAlert/SweetAlert.js"></script>
+    <link href="~/Library/DataTable/dataTables.bootstrap5.min.css" rel="stylesheet" />
+    <link href="~/Library/DataTable/jquery.dataTables.min.css" rel="stylesheet" />
+    <script src="~/Library/DataTable/jquery.dataTables.min.js"></script>
+    <script src="~/Library/DataTable/dataTables.bootstrap5.min.js"></script>
+    <link href="~/Content/css/Css/select2.min.css" rel="stylesheet" />
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/intl-tel-input/17.0.8/css/intlTelInput.css" />
+
+
+
+
+    <style>
+        .dropdown-menu .nav-link i {
+            margin-right: 10px;
+        }
+
+        .sidebar {
+            background-color: #333;
+            color: white;
+            width: 260px;
+            position: fixed;
+            top: 2rem;
+            left: 0;
+            height: calc(100% - 2rem);
+            transition: left 0.3s ease-in-out;
+        }
+
+            .sidebar .nav-link {
+                color: white;
+            }
+
+        .dropdown-menu {
+            width: 100%;
+            max-height: 420px;
+            overflow-y: auto;
+            font-size: 16px;
+            padding: 10px;
+        }
+
+
+        .btn i.fas.fa-sign-out-alt {
+            float: left;
+            margin-right: 5px;
+        }
+
+        .Shadow {
+            -webkit-box-shadow: 28px 32px 15px -3px rgba(0,0,0,0.63);
+            -moz-box-shadow: 28px 32px 15px -3px rgba(0,0,0,0.63);
+            box-shadow: 28px 32px 15px -3px rgba(0,0,0,0.63);
+            border-left: solid 2px;
+            border-top: solid 2px;
+            border-bottom: solid 2px;
+        }
+
+        .overlay {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0, 0, 0, 0.5);
+            z-index: 9998;
+        }
+
+        .spinner {
+            display: none;
+            position: fixed;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            z-index: 9999;
+            background-color: rgba(255, 255, 255, 0.8);
+            padding: 20px;
+            border-radius: 5px;
+            text-align: center;
+        }
+
+            .spinner i.fa-spinner {
+                color: #3498db;
+                font-size: 24px;
+            }
+
+
+      
+        #content-container {
+           
+        }
+
+      
+        .card {
+            background-color: #ffffff;
+            border: 1px solid #e7e7e7;
+            box-shadow: 0 4px 8px rgba(0,0,0,0.1); 
+            border-radius: 4px; 
+        }
+
+     
+        .text-primary {
+            color: #333333;
+        }
+
+      
+        .btn-primary {
+            background-color: #2E7D32; 
+            color: white;
+        }
+
+            .btn-primary:hover {
+                background-color: #276729; 
+            }
+
+        .btn-secondary {
+            background-color: #F5F5DC; 
+            color: #333333;
+        }
+
+            .btn-secondary:hover {
+                background-color: #e2e2d3;
+            }
+        .btn-cobrizo {
+            background-color: #cb6d51;
+            border-color: #cb6d51;
+            color: white;
+            border: none;
+            color: white;
+            padding: 10px 15px;
+            text-align: center;
+            text-decoration: none;
+            display: inline-block;
+            font-size: 16px;
+            margin: 4px 2px;
+            cursor: pointer;
+        }
+
+
+            .btn-cobrizo:hover {
+                background-color: white;
+                color: #cb6d51;
+                border: 1px solid #cb6d51;
+            }
+
+     
+
+        .green-button {
+            background-color: #4CAF50;
+            border: none;
+            color: white;
+            padding: 10px 15px;
+            text-align: center;
+            text-decoration: none;
+            display: inline-block;
+            font-size: 16px;
+            margin: 1px 1px;
+            cursor: pointer;
+        }
+
+            .green-button:hover {
+                background-color: white;
+                color: #4CAF50;
+                border: 1px solid #4CAF50;
+            }
+
+
+        .red-button {
+            background-color: #f44336;
+            border: none;
+            color: white;
+            padding: 10px 15px;
+            text-align: center;
+            text-decoration: none;
+            display: inline-block;
+            font-size: 16px;
+            margin: 1px 1px;
+            cursor: pointer;
+        }
+
+            .red-button:hover {
+                background-color: white;
+                color: #f44336;
+                border: 2px solid #f44336;
+            }
+
+    </style>
+
+</head>
+<body>
+    <div class="container-fluid">
+        <div class="row">
+            <div class="fixed-top" style=" background-color: #2E7D32 !important; padding: 10px; text-align: right;">
+                <button id="toggleSidebarButton" class="btn btn-light" style="float: left;">
+                    <i class="fas fa-bars"></i>
+                </button>
+                <a href="@Url.Action("Index", "Login")" class="btn btn-light">
+                    <i class="fas fa-sign-out-alt" style="margin-right: 5px;"></i> Cerrar Sesión
+                </a>
+            </div>
+            <div class="container-fluid">
+                <div class="row">
+                    <div class="row">
+                        <nav class="col-md-3 col-lg-2 d-md-block bg-dark sidebar " style="padding-top: 3rem; background-color: #2E7D32 !important; ">
+                            <h4 class="pb-3" style="text-align: center; color: #F5F5DC;">Hotel Malibu</h4>
+                            <div class="position-sticky">
+                                <ul class="nav flex-column">
+                                    @{
+                                        List<MenuE> List = Session["List_Menu"] as List<MenuE>;
+                                        string PK_PARENT_CODE = "0";
+                                        List<MenuE> Parent_List_Menu = new List<MenuE>();
+                                        List<MenuE> Child_List_Menu = new List<MenuE>();
+                                        Parent_List_Menu = List.Where(x => x.PARENT_CODE == PK_PARENT_CODE).OrderBy(x => x.Order).ToList();
+                                        foreach (MenuE iMenu_Parent in Parent_List_Menu)
+                                        {
+                                            Child_List_Menu = List.ToList().Where(x => x.PARENT_CODE == iMenu_Parent.ID.ToString()).ToList();
+                                            if (Child_List_Menu.Count <= 0)
+                                            {
+                                                <li class="nav-item input-group">
+                                                    <i class="@(iMenu_Parent.ICON)" style=" margin-top: 0.8rem; margin-left: 1rem;"></i> @Html.ActionLink(iMenu_Parent.DESCRIPTION, iMenu_Parent.ACTION, iMenu_Parent.CONTROLLER, new { area = "" }, new { @class = "nav-link", style = "padding-left: 0.5rem;width: 10rem;float: right; color: #F5F5DC; " })
+                                                </li>
+                                            }
+                                            else
+                                            {
+                                                <li class="nav-item dropdown">
+                                                    <a href="#" class="nav-link dropdown-toggle dropdown-toggle-link" style="color: #F5F5DC;">
+                                                        <i class="@(iMenu_Parent.ICON)"></i> @iMenu_Parent.DESCRIPTION
+                                                    </a>
+                                                    <ul class="dropdown-menu bg-light">
+                                                        @foreach (var item in Child_List_Menu)
+                                                        {
+                                                            if (List.Any(x => x.PARENT_CODE == item.ID.ToString()))
+                                                            {
+                                                                <li class="nav-item">
+                                                                    <a href="#" class="nav-link dropdown-toggle text-dark dropdown-toggle-link">
+                                                                        <i class="@(item.ICON)"></i>
+                                                                        @item.DESCRIPTION
+                                                                    </a>
+                                                                    <ul class="dropdown-menu bg-light" aria-labelledby="submenu-@item.ID">
+                                                                        @foreach (var subitem in List.Where(x => x.PARENT_CODE == item.ID.ToString()))
+                                                                        {
+                                                                            <li class="nav-item" style="display: inline-flex; ">
+                                                                                <i class="@(subitem.ICON)  col-2"></i>  @Html.ActionLink(subitem.DESCRIPTION, subitem.ACTION, subitem.CONTROLLER, new { area = "" }, new { @class = "nav-link text-dark col-6  float-right" })
+                                                                            </li>
+                                                                        }
+                                                                    </ul>
+                                                                </li>
+                                                            }
+                                                            else
+                                                            {
+                                                                <li class="nav-item">
+                                                                    <div style="float: left; padding-top: 0.6rem; " class="col-2"><i class="@(item.ICON) col-2"></i></div>  @Html.ActionLink(item.DESCRIPTION, item.ACTION, item.CONTROLLER, new { area = "" }, new { @class = "nav-link text-dark col-8  float-right" })
+                                                                </li>
+                                                            }
+                                                        }
+                                                    </ul>
+                                                </li>
+                                            }
+                                        }
+                                    }
+                                </ul>
+                            </div>
+
+                        </nav>
+                    </div>
+                    <div class="col">
+                        <!-- Contenido principal -->
+                        <main class="col-md-9 ms-sm-auto col-lg-10 px-md-4">
+                            <div id="content-container">
+
+                                <div class="p-3 pt-5 Shadow" style="padding-bottom: 4rem;">
+                                    <div class="pt-3">
+                                        @RenderBody()
+                                    </div>
+                                </div>
+
+                            </div>
+
+                        </main>
+                    </div>
+                </div>
+            </div>
+
+        </div>
+    </div>
+    @*//Spinner*@
+    <div id="overlay" class="overlay"></div>
+
+    <div id="spinner" class="spinner">
+        <i class="fa fa-spinner fa-spin fa-3x fa-fw"></i>
+        <span class="sr-only">Loading...</span>
+    </div>
+
+
+
+
+    @Scripts.Render("~/bundles/bootstrap")
+    @RenderSection("scripts", required: false)
+    <script src="~/Library/DataTable/jquery.dataTables.min.js"></script>
+    <script src="~/Content/JS/Client/select2.min.js"></script>
+
+    @*Phone Input*@
+    <script src="~/Content/JS/PhoneInput/JS/intlTelInput.min.js"></script>
+    <script src="~/Content/JS/PhoneInput/JS/utils.js"></script>
+
+    <script>
+        $(document).ready(function () {
+            $(".dropdown-toggle-link").on("click", function (e) {
+                e.preventDefault();
+                var dropdownMenu = $(this).next('.dropdown-menu');
+                if (dropdownMenu.is(":visible")) {
+                    dropdownMenu.hide();
+                } else {
+                    dropdownMenu.show();
+                }
+            });
+
+            var sidebar = $(".sidebar");
+            var contentContainer = $("#content-container");
+
+            $("#toggleSidebarButton").on("click", function () {
+                sidebar.toggleClass("sidebar-opened");
+
+                if (sidebar.hasClass("sidebar-opened")) {
+
+                    sidebar.animate({ marginLeft: "-260px" }, 300);
+                    contentContainer.animate({ marginLeft: "-150px" }, 300);
+                } else {
+                    sidebar.animate({ marginLeft: "0" }, 300);
+                    contentContainer.animate({ marginLeft: "0px" }, 300);
+
+                }
+            });
+
+
+
+
+
+        });
+        function mostrarSpinner() {
+            $("#overlay").show();
+            $("#spinner").show();
+        }
+       
+        function ocultarSpinner() {
+            $("#overlay").hide();
+            $("#spinner").hide();
+        }
+        function OpenModal(modal) {
+
+            $("#" + modal).modal("show");
+
+        }
+        function CloseModal(modal) {
+
+            $('#' + modal).modal('hide');
+
+        }
+        function ValidateEmail(email) {
+            var regularExpression = /^[a-zA-Z0-9._%+-]+@@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/;
+
+            return regularExpression.test(email);
+        }
+        //function para textbox Numeros de teléfono formato
+        function allowNumbersSpacesPlusAndBackspace(e) {
+            var key = e.key;
+
+            if (
+                key === " " ||
+                key === "+" ||
+                (key >= "0" && key <= "9") ||
+                key === "Backspace" ||
+                e.ctrlKey || e.shiftKey
+            ) {
+                return true;
+            } else {
+                e.preventDefault();
+                return false;
+            }
+        }
+
+        function GetDropDownValueSelected(inputId, dataListP) {
+            var inputElement = document.getElementById(inputId);
+            var selectedText = inputElement.value;
+
+            var dataList = document.getElementById(dataListP);
+            var selectedValue = null;
+
+            for (var i = 0; i < dataList.options.length; i++) {
+                if (dataList.options[i].textContent.toLowerCase() === selectedText.toLowerCase()) {
+                    selectedValue = dataList.options[i].value;
+                    return selectedValue;
+                }
+            }
+            return selectedValue;
+        }
+
+        function GetDropDownTextContentSelected(inputId, dataListP) {
+            var inputElement = document.getElementById(inputId);
+            var selectedText = inputElement.value;
+
+            var dataList = document.getElementById(dataListP);
+            var selectedValue = null;
+
+            for (var i = 0; i < dataList.options.length; i++) {
+                if (dataList.options[i].textContent.toLowerCase() === selectedText.toLowerCase()) {
+                    selectedValue = dataList.options[i].textContent;
+                    return selectedValue;
+                }
+            }
+            return selectedValue;
+        }
+
+
+        function removeAccents(text) {
+            return text.normalize("NFD").replace(/[\u0300-\u036f]/g, "");
+        }
+        function ActivateInputEvent(txtId) {
+            var eventoInput = new Event('input', {
+                bubbles: true,
+                cancelable: true,
+            });
+
+
+            document.getElementById(txtId).dispatchEvent(eventoInput);
+        }
+
+
+
+
+
+
+    </script>
+</body>
+</html>

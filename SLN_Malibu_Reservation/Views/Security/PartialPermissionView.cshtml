@@ -1,0 +1,53 @@
+﻿@model IEnumerable<EntityLayer.MenuE>
+
+
+<style>
+    input[type="checkbox"] {
+        width: 20px; 
+        height: 20px; 
+        background-color: #eee; 
+        border-radius: 5px; 
+        cursor: pointer; 
+    }
+
+        input[type="checkbox"]:checked {
+            background-color: #3498db; 
+        }
+
+</style>
+
+
+<table class="table tblPermissons" id="tblPermissons">
+    <thead>
+        <tr>
+            <th>
+                @Html.DisplayNameFor(model => model.DESCRIPTION)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.STATUS_Menu)
+            </th>
+
+            <th></th>
+        </tr>
+    </thead>
+    <tbody>
+        @foreach (var item in Model)
+        {
+            <tr>
+                <td>
+                    @Html.DisplayFor(modelItem => item.DESCRIPTION)
+                </td>
+                <td>
+                   @Html.CheckBoxFor(modelItem => item.STATUS_Menu)
+                 
+
+                </td>
+                <td>
+                    @Html.HiddenFor(modelItem => item.ID)
+                </td>
+            </tr>
+        }
+    </tbody>
+</table>
+
+

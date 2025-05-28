@@ -1,0 +1,125 @@
+﻿@model EntityLayer.UserE
+@{
+    ViewBag.Title = "Index";
+    Layout = null;
+}
+<link href="~/Content/css/bootstrap.min.css" rel="stylesheet" />
+
+
+
+
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Hotel Malibú</title>
+
+    <style>
+        body {
+            background: url('../../content/img/DALL_E2.png') no-repeat center center fixed;
+            -webkit-background-size: cover;
+            -moz-background-size: cover;
+            -o-background-size: cover;
+            background-size: cover;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="row">
+            @*<div class="col-md-6 order-2 order-md-1 custom-form-container carrusel" style="padding-right:0;">
+                <div id="carouselExampleControls" class="carousel slide" data-bs-ride="carousel" data-bs-interval="3000">
+                    <div class="carousel-inner">
+                        <div class="carousel-item active">
+                            <img src="~/Content/Img/Imagen Hotel.jpg" class="d-block w-100" alt="Imagen 1">
+                        </div>
+                        <div class="carousel-item">
+                            <img src="~/Content/Img/Malibu-3.jpg" class="d-block w-100" alt="Imagen 2">
+                        </div>
+                    </div>
+                    <button class="carousel-control-prev" type="button" data-bs-target="#carouselExampleControls" data-bs-slide="prev">
+                        <span class="carousel-control-prev-icon" aria-hidden="true"></span>
+                        <span class="visually-hidden">Anterior</span>
+                    </button>
+                    <button class="carousel-control-next" type="button" data-bs-target="#carouselExampleControls" data-bs-slide="next">
+                        <span class="carousel-control-next-icon" aria-hidden="true"></span>
+                        <span class="visually-hidden">Siguiente</span>
+                    </button>
+                </div>
+            </div>*@
+
+            <div class="col-md-6 form-container order-1 order-md-2 custom-form-container" style=" background-color: rgba(255, 255, 255, 0.6);">
+                <h2 class="mb-4">Sistema de Reservación Malibu</h2>
+                <h2 class="mb-4">Iniciar Sesión</h2>
+
+                @using (Html.BeginForm("Login", "Login", FormMethod.Post, new { @class = "mb-4" }))
+                {
+                    @Html.AntiForgeryToken()
+
+                    <div class="form-group pb-5">
+                        @Html.LabelFor(model => model.User)
+                        @Html.TextBoxFor(model => model.User, new { @class = "form-control" })
+                        @Html.ValidationMessageFor(model => model.User, "", new { @class = "text-danger" })
+                    </div>
+
+                    <div class="form-group pb-5">
+                        @Html.LabelFor(model => model.Password)
+                        @Html.PasswordFor(model => model.Password, new { @class = "form-control" })
+                        @Html.ValidationMessageFor(model => model.Password, "", new { @class = "text-danger" })
+                    </div>
+
+                    <div class="form-group pb-3">
+                        <input type="submit" value="Iniciar Sesión" class="btn btn-primary btn-block" />
+                    </div>
+
+                    @Html.ValidationSummary(true, "", new { @class = "text-danger" })
+                }
+            </div>
+        </div>
+    </div>
+
+    <style>
+        body {
+            background-color: #3498db;
+        }
+
+        .container {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+        }
+
+        .custom-form-container {
+            width: 500px;
+            height: 500px;
+        }
+
+        .form-container {
+            background-color: #fff;
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0px 0px 10px rgba(0, 0, 0, 0.2);
+            text-align: center;
+        }
+
+        /* Establece un tamaño fijo para las imágenes */
+        .carousel-inner img {
+            width: 400px;
+            height: 500px;
+            object-fit: cover; /* Mantiene la proporción de aspecto */
+        }
+    </style>
+
+</body>
+</html>
+
+
+
+<script src="~/Scripts/jquery-3.4.1.min.js"></script>
+<script src="~/Scripts/js/bootstrap.min.js"></script>
+
+<link href="~/Content/css/Css/Login.css" rel="stylesheet" />
+
+

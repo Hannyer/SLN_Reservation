@@ -1,0 +1,82 @@
+﻿@model IEnumerable<EntityLayer.ReservationE>
+
+@{
+    ViewBag.Title = "ReportAvailability";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+<div class="col-md-12">
+    <div class="row">
+        <div class="col-md-5">
+            <div class="form-group">
+                <label for="txtCheckInAvailabilityL">Fecha Inicio:</label>
+                <input type="date" class="form-control" id="txtCheckInAvailability" name="txtCheckIn">
+            </div>
+        </div>
+        <div class="col-md-5">
+            <div class="form-group">
+                <label for="txtCheckOutAvailabilityL">Fecha Final:</label>
+                <input type="date" class="form-control" id="txtCheckOutAvailability" name="txtCheckOut">
+            </div>
+        </div>
+        <div class="col-md-2" style="padding-top: 1%">
+            <button type="submit" style="width:100%" class="btn green-button" id="btnExportDataAvailabilityReport">Extaer Información</button>
+        </div>
+    </div>
+    <div class="row" id="divBtnDownload" style="display:none">
+        <div class="col-md-10"></div>
+        <div class="col-md-2">
+            <a href="@Url.Action("ExportReservationAvailabilityReportEToExcel", "ReservationReport")" class="btn btn-cobrizo">Exportar a Excel</a>
+        </div>
+    </div>
+    <br />
+</div>
+
+
+<div id="contenedorVistaAvailabilityReport" style="padding-bottom: 2rem;">
+    @Html.Partial("ViewAvailabilityReport", Model)
+    <br />
+</div>
+
+
+<script>
+    $(document).ready(function () {
+        var fechaActual = new Date();
+        var fechaFormateada = fechaActual.toISOString().split('T')[0];
+        $('#txtCheckInAvailability').val(fechaFormateada);
+        $('#txtCheckOutAvailability').val(fechaFormateada);
+
+        ExportDataAvailabilityReport();
+
+
+        $('#tblAvailabilityReport').DataTable({
+            "paging": true,
+            "lengthChange": true,
+            "searching": true,
+            "ordering": true,
+            "responsive": true,
+            "buttons": [
+                'copy', 'excel', 'pdf', 'print'
+            ],
+            "lengthMenu": [[5, 10, 25, 50, 100], [5, 10, 25, 50, "Todo"]],
+            "language": {
+                "lengthMenu": "Mostrar _MENU_ registros por página",
+                "zeroRecords": "No se encontraron registros",
+                "info": "Mostrando _START_ a _END_ de _TOTAL_ registros",
+                "infoEmpty": "No hay registros disponibles",
+                "infoFiltered": "(filtrados de _MAX_ registros en total)",
+                "search": "Buscar:",
+                "paginate": {
+                    "first": "Primero",
+                    "last": "Último",
+                    "next": "Siguiente",
+                    "previous": "Anterior"
+                }
+            }
+        });
+
+
+    });
+</script>
+<script src="~/Content/JS/Reservation/jsReservationReport.js"></script>
+

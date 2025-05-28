@@ -1,0 +1,94 @@
+﻿@using EntityLayer
+@{
+    ViewBag.Title = "Home Page";
+}
+<link href="~/Content/css/Css/Card_StyleHome.css" rel="stylesheet" />
+
+
+<main>
+    <h1>Bienvenido al Sistema de Reservación Malibu</h1>
+
+    <div class="row">
+        <div class="container">
+            @{
+                List<MenuE> List = Session["List_Menu"] as List<MenuE>;
+                string PK_PARENT_CODE = "0";
+                MenuE Parent_Process_Menu = new MenuE();
+                List<MenuE> Child_List_Menu = new List<MenuE>();
+                Parent_Process_Menu = List.Where(x => x.PARENT_CODE == PK_PARENT_CODE && x.CONTROLLER == "Process").OrderBy(x => x.Order).FirstOrDefault();
+                if (Parent_Process_Menu != null)
+                {
+                    Child_List_Menu = List.Where(x => x.PARENT_CODE == Parent_Process_Menu.ID.ToString()).ToList();
+                    foreach (MenuE iMenu_Parent in Child_List_Menu)
+                    {
+                        <div class="card" id="cardAsignacion" runat="server">
+                            <div class="content">
+                                @if (iMenu_Parent.CONTROLLER.Equals("DailyJobs")) { 
+                                
+                                          <div class="p-2">
+
+                                             <a id="btn" Text="@ViewBag.DailyJobCount" class="contenedorPrincipal float-right" OnClick="" >
+                                                 <div data-toggle="tooltip"
+                                                     data-placement="top" class="contenedorSecundario"
+                                                     title="Aprobaciones pendientes" style="width: 45px; height: 45px; margin-left: 173px; margin-top: -35% !important; color: #2c3e50;">
+                                                     <span class="bi bi-bell iconsize"><mark id="MarcadorAprobaciones">@ViewBag.DailyJobCount</mark></span>
+                                                 </div>
+                                             </a>
+                                         </div>
+
+                                
+                                }
+                                <div class="imgBx">
+
+                                    <img src="~/Content/Img/@iMenu_Parent.Image" />
+                                </div>
+
+                            </div>
+                            <ul class="sci">
+                                <li>
+                                    <a>
+                                        @Html.ActionLink(iMenu_Parent.DESCRIPTION,
+                                   iMenu_Parent.ACTION,
+                                   iMenu_Parent.CONTROLLER,
+                                   new { area = "" },
+                                   new
+                                            {
+                                                @class = "nav-link text-dark col-6 float-right",
+                                         style = "width: 100%; padding-right: 2rem;"
+                                            })
+                                </a>
+
+                            </li>
+
+                        </ul>
+                    </div>
+
+                }
+
+            }
+
+
+            }
+
+
+
+            @*<div class="card" id="cardAsignacion" runat="server">
+            <div class="content">
+                <div class="imgBx">
+
+                    <img src="~/Content/Img/jobTask.jpg" />
+                </div>
+
+            </div>
+            <ul class="sci">
+                <li>
+                    <a style="padding-right: 2rem;" href="ProcesoAsignacion.aspx">Labores</a>
+                </li>
+
+            </ul>
+        </div>*@
+
+        </div>
+
+    </div>
+</main>

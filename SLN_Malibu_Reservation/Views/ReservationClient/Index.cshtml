@@ -1,0 +1,127 @@
+﻿@model EntityLayer.ReservationE
+
+@{
+    ViewBag.Title = "Index";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+<div class="row" style=" padding-left: 3rem;">
+
+    <div class="col-lg-6 col-md-12 col-sm-12 col-xs-12 pt-4 p-0">
+        <div class="col-lg-12 col-md-12 col-sm-12 col-xs-12 ">
+            <div class="form-group">
+                <label for="ddlClient">Selecciona un tipo de Identificación:</label>
+                <input type="text" id="ddlClient" list="clientList" class="form-control" placeholder="Seleccione una opción...">
+                <datalist id="clientList">
+
+                    @{
+                        foreach (var item in (IEnumerable<SelectListItem>)ViewBag.IdentificationList)
+                        {
+                            <option value="@item.Value">@item.Text</option>
+                        }
+                    }
+                </datalist>
+            </div>
+        </div>
+    </div>
+
+    <div class="col-lg-6 col-md-12 col-sm-12 col-xs-12 pt-4 p-0">
+        <div class="col-lg-12 col-md-12 col-sm-12 col-xs-12 ">
+            <div class="form-group">
+                <label for="lblName" class="form-label">Nombre:</label>
+                <input type="text" class="form-control" id="txtName" required>
+            </div>
+        </div>
+    </div>
+
+
+    <div class="col-lg-6 col-md-12 col-sm-12 col-xs-12 pt-4 p-0">
+        <div class="col-lg-12 col-md-12 col-sm-12 col-xs-12 ">
+            <div class="form-group">
+                <label for="ddlAddReservationModal">Selecciona el cliente</label>
+                <input type="text" id="ddlAddReservationModal" list="AddReservationList" class="form-control" placeholder="Buscar cliente..." autocomplete="off">
+                <datalist id="AddReservationList">
+
+                    @{
+                        if ((IEnumerable<SelectListItem>)ViewBag.ClientList != null)
+                        {
+                            foreach (var item in (IEnumerable<SelectListItem>)ViewBag.ClientList)
+                            {
+                                <option value="@item.Value">@item.Text</option>
+                            }
+
+                        } }
+                </datalist>
+            </div>
+        </div>
+    </div>
+    <div class="col-lg-6 col-md-12 col-sm-12 col-xs-12 pt-4 p-0">
+        <div class="col-lg-12 col-md-12 col-sm-12 col-xs-12 ">
+            <div class="form-group">
+                <label for="ddlAddTarifaModal">Selecciona la tarifa</label>
+                <input type="text" id="ddlAddTarifaModal" list="AddTarifaList" class="form-control" placeholder="Buscar tarifa..." autocomplete="off">
+                <datalist id="AddTarifaList">
+
+                    @{
+                        if ((IEnumerable<SelectListItem>)ViewBag.RateClientList != null)
+                        {
+                            foreach (var item in (IEnumerable<SelectListItem>)ViewBag.RateClientList)
+                            {
+                                <option value="@item.Value">@item.Text</option>
+                            }
+                        }
+
+                    }
+                </datalist>
+            </div>
+
+        </div>
+    </div>
+    <div class="col-lg-6 col-md-12 col-sm-12 col-xs-12 pt-4 p-0">
+        <div class="col-lg-12 col-md-12 col-sm-12 col-xs-12 ">
+
+            <div class="mb-3">
+                <label for="lblDescription" class="form-label">Descripción:</label>
+                <textarea class="form-control" id="txtDescription" disabled="disabled" cols="60" rows="8"></textarea>
+            </div>
+        </div>
+    </div>
+    <div class="col-lg-6 col-md-12 col-sm-12 col-xs-12 pt-4 p-0">
+        <div class="col-lg-12 col-md-12 col-sm-12 col-xs-12 ">
+
+            <div class="mb-3">
+                <label for="txtExpenseDetails" class="form-label">Desglose:</label>
+                <textarea class="form-control" id="txtExpenseDetails" disabled="disabled" cols="60" rows="8"></textarea>
+            </div>
+        </div>
+    </div>
+    <div class="col-lg-6 col-md-12 col-sm-12 col-xs-12 pt-4 p-0">
+        <div class="col-lg-12 col-md-12 col-sm-12 col-xs-12 ">
+            <div class="mb-3">
+                <label for="lblCheckIn" class="form-label">Entrada:</label>
+                <input type="date" class="form-control" id="txtCheckIn" required>
+            </div>
+
+        </div>
+    </div>
+    <div class="col-lg-6 col-md-12 col-sm-12 col-xs-12 pt-4 p-0">
+        <div class="col-lg-12 col-md-12 col-sm-12 col-xs-12 ">
+            <div class="mb-3">
+                <label for="lblCheckOut" class="form-label">Salida:</label>
+                <input type="date" class="form-control" id="txtCheckOut" required>
+            </div>
+
+        </div>
+    </div>
+    <div class="col-lg-6 col-md-12 col-sm-12 col-xs-12 pt-4 p-0">
+        <div class="col-lg-12 col-md-12 col-sm-12 col-xs-12 ">
+            <div class="form-group">
+                <label for="ddlAddRoomModal">Selecciona una habitación</label>
+                <input type="text" id="ddlAddRoomModal" list="AddRoomList" class="form-control" placeholder="Buscar habitación..." autocomplete="off">
+                <datalist id="AddRoomList">
+                </datalist>
+            </div>
+
+        </div>
+    </div>
+</div>

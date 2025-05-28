@@ -1,0 +1,75 @@
+﻿@model IEnumerable<EntityLayer.ReservationE>
+@using System.Globalization
+<table class="table" id="tblAvailabilityReport">
+    <thead>
+        <tr>
+
+            <th>
+                Identificación
+            </th>
+            <th>
+                Nombre
+            </th>
+            <th>
+                Correo
+            </th>
+            <th>
+                Desripción
+            </th>
+            <th>
+                Entrada
+            </th>
+            <th>
+                Salida
+            </th>
+            <th>
+                Estado
+            </th>
+            <th>
+                Días
+            </th>
+            <th>
+                Habitación
+            </th>
+
+
+
+
+
+        </tr>
+    </thead>
+
+    @foreach (var item in Model)
+    {
+        <tr>
+            <td>
+                @Html.DisplayFor(modelItem => item.IdCard_Client)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.Full_Name)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.Client_Mail)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.Rate_Description)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.FormattedCheckIn)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.FormattedCheckOut)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.Status)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.Days)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.DESCRIPTION_HOTELROOM)
+            </td>
+        </tr>
+    }
+</table>
+

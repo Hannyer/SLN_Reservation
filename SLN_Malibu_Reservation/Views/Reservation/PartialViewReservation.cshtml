@@ -1,0 +1,113 @@
+﻿@model IEnumerable<EntityLayer.ReservationE>
+@using Newtonsoft.Json
+@using System.Globalization
+<style>
+</style>
+
+<div class="row">
+
+    <table id="tblReservation" class="table table-hover">
+        <thead>
+            <tr>
+                <th>Cliente</th>
+                @*<th>Tarifa</th>*@
+                <th>Descripción</th>
+                <th>Entrada</th>
+                <th>Salida</th>
+                <th>Días</th>
+                <th>Habitación</th>
+                <th>Estado</th>
+                <th>Depósito</th>
+                <th>Saldo pendiente</th>
+                <th>Monto total</th>
+                <th>Acciones</th>
+            </tr>
+        </thead>
+        @if (Model.Count() > 0)
+        {
+
+            foreach (var reservation in Model)
+            {
+                <tr>
+                    <td>@Html.DisplayFor(model => reservation.Full_Name)</td>
+                    @*<td>@Html.DisplayFor(model => reservation.DisplayName_Rate)</td>*@
+                    <td>@Html.DisplayFor(model => reservation.Reservation_Description)</td>
+
+
+
+                    <td>@reservation.CheckIn.ToString("dd/MM/yyyy").Replace("01/01/1900", "Sin Fecha")</td>
+                    <td>@reservation.CheckOut.ToString("dd/MM/yyyy").Replace("01/01/1900", "Sin Fecha")</td>
+                    <td>@Html.DisplayFor(model => reservation.Days)</td>
+                    <td>@Html.DisplayFor(model => reservation.DESCRIPTION_HOTELROOM)</td>
+                    <td>@Html.DisplayFor(model => reservation.Status)</td>
+                    @if (reservation.Deposit == 0)
+                    {
+                        <td>No presenta depósito</td>
+                        <td>₡ @reservation.TotalAmount</td>
+                    }
+                    else
+                    {
+
+                        <td>₡ @Html.DisplayFor(model => reservation.Deposit)</td>
+                        <td>₡ @(Math.Round(Convert.ToDecimal(reservation.TotalAmount) - reservation.Deposit,2))</td>
+                    }
+
+                    <td>₡ @(Math.Round(Convert.ToDecimal(reservation.TotalAmount),2))</td>
+
+                    <td>
+
+                        @if (reservation.Status == "Reservado")
+                        {
+
+                            <button type="button" class="btn green-button " onclick="GenerateInvoceReservation(this)" data-reservation='@JsonConvert.SerializeObject(reservation)' title="Facturar">
+                                <i class="fa-solid fa-cash-register"></i>
+                            </button>
+
+                            if (reservation.Currency.ToUpper().Equals("CRC"))
+                            {
+                                <button type="button" id="btnModalAddRole" onclick="AddDeposit(this);" data-reservation='@JsonConvert.SerializeObject(reservation)' class="btn green-button" title="Depósito">
+                                    ₡
+                                </button>
+
+                            }
+                            else
+                            {
+                                <button type="button" id="btnModalAddRole" onclick="AddDeposit(this);" data-reservation='@JsonConvert.SerializeObject(reservation)' class="btn green-button" title="Depósito">
+                                    $
+                                </button>
+                            }
+
+                            @*<button type="button" class="btn btn-primary" onclick="OpenModalModifyReservation(this,'mdlModifyReservation')" data-reservation='@JsonConvert.SerializeObject(reservation)'>
+                    <i class="fas fa-edit"></i>
+                </button>*@
+                            <button type="button" id="btnDeleteClient" class="btn red-button" onclick="DeleteReservation(@reservation.Id)" title="Eliminar Reservación">
+
+                                <i class="fas fa-trash-alt"></i>
+                            </button>
+                        }
+                        else
+                        {
+                            if (reservation.Status == "Facturado")
+                            {
+
+                                <button type="button" class="btn btn-cobrizo" onclick="EndProcess(this)" data-reservation='@JsonConvert.SerializeObject(reservation)' title="Finalizar reservación">
+                                    <i class="fa-solid fa-user-check"></i>
+                                </button>
+
+                            }
+
+                        }
+
+
+                    </td>
+                </tr>
+            }
+        }
+        else
+        {
+            <h2>No se encontraron datos</h2>
+        }
+
+
+    </table>
+</div>

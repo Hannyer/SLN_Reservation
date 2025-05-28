@@ -1,0 +1,199 @@
+﻿@model IEnumerable<EntityLayer.RoleE>
+
+@{
+    ViewBag.Title = "RoleIndex";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+
+<h2 style="text-align-last: center;">Mantenimiento de rol</h2>
+
+
+<div class="row" style="padding-bottom: 2rem; padding-top: 2rem; justify-content: right; ">
+    <div class="col-md-4">
+        <div class="col-xs" style="text-align: right;">
+            @{ 
+
+            <button type="button" id="btnModalAddRole" onclick="OpenModal('mdlAddRole')" class="btn green-button">
+                Nuevo  <i class="fas fa-plus"></i>
+            </button>
+
+            }
+        </div>
+    </div>
+</div>
+<table id="tblRole" class="table table-hover">
+    <thead>
+        <tr>
+
+            <th>
+                @Html.DisplayNameFor(model => model.ID_Role)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.Description)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.Status)
+            </th>
+            <th>
+                Acciones
+            </th>
+
+        </tr>
+    </thead>
+    @foreach (var item in Model)
+    {
+        <tr>
+
+            <td>
+                @Html.DisplayFor(modelItem => item.ID_Role)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.Description)
+            </td>
+            <td>
+
+                <input type="checkbox" class="form-check-input readonly-checkbox" readonly="readonly" disabled="disabled" @(item.Status ? "checked" : "")>
+
+            </td>
+            <td>
+                <button type="button" class="btn green-button" onclick="OpenModalModifyRole(this,'mdlModifyRole')" data-idrole="@item.ID_Role" data-description="@item.Description" data-status="@item.Status">
+                    <i class="fas fa-edit"></i>
+                </button>
+                @*<button type="button" id="btnDeleteClient" class="btn btn-danger" onclick="DeleteRole(this)" data-idrole="@item.ID_Role">
+                    <i class="fas fa-trash-alt"></i>
+                </button>*@
+
+            </td>
+
+        </tr>
+    }
+
+</table>
+
+
+<br />
+
+<br />
+
+
+<div class="modal fade" id="mdlAddRole">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header" style="background-color: #2E7D32; color:white; justify-content: center; ">
+                <h5 class="modal-title">Agregar Rol</h5>
+            </div>
+            <div class="modal-body">
+                <div class="row">
+                    <div class="col-12">
+                        <label for="lblRol" class="form-label">Descripción:</label>
+                        <input type="text" class="form-control" id="txtDescription" required>
+                    </div>
+                </div>
+                
+               
+            </div>
+            <br />
+            <div class="modal-footer">
+                <button type="button" id="btnAddClient" class="btn green-button" onclick="NewRole()">Aceptar</button>
+                <button type="button" id="btnCloseModalAddRole" class="btn red-button" onclick="CloseModal('mdlAddRole')">Cerrar</button>
+
+            </div>
+        </div>
+    </div>
+</div>
+
+
+
+
+
+<div class="modal fade" id="mdlModifyRole">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header"  style="background-color: #2E7D32; color:white; justify-content: center; ">
+                <h5 class="modal-title">Modificar Rol</h5>
+            </div>
+            <div class="modal-body">
+                <div class="row">
+                    <div class="mb-12">
+                        <label for="lblModifyName" class="form-label">Descripción:</label>
+                        <input type="text" class="form-control" id="txtModifyDescription" required>
+                    </div>
+                </div>
+                <div class="row pt-4">
+                    <div class="mb-12">
+                        <label for="lblIdModifyCard" class="form-label">Estado:</label>
+                        <input type="checkbox" class="form-check-input" id="chkModifyRole">
+
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="mb-12">
+
+                        <input type="hidden" class="form-check" id="hdfID_Role">
+
+                    </div>
+                </div>
+
+            </div>
+            <br />
+            <div class="modal-footer">
+                <button type="button" id="btnModifyClient" class="btn green-button" onclick="ModifyRole()">Aceptar</button>
+                <button type="button" id="btncloseModal" class="btn red-button" onclick="CloseModal('mdlModifyRole')">Cerrar</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script type="text/javascript">
+
+    $(document).ready(function () {
+
+
+        InitializeTable();
+      
+      
+    });
+
+    function OpenModalModifyRole(button, modal) {
+      
+        var ID_Role = $(button).data('idrole');
+        var description = $(button).data('description');
+        var status = $(button).data('status');
+        document.getElementById('txtModifyDescription').value = description;
+
+        $("#chkModifyRole").prop("checked", JSON.parse(status.toLowerCase()))
+        document.getElementById('hdfID_Role').value = ID_Role;
+        OpenModal(modal);
+    }
+
+
+    function InitializeTable() {
+        $('#tblRole').DataTable({
+            "paging": true,
+            "lengthChange": true,
+            "searching": true,
+            "ordering": true,
+            "responsive": true,
+            "buttons": [
+                'copy', 'excel', 'pdf', 'print'
+            ],
+
+            "language": {
+                "lengthMenu": "Mostrar _MENU_ registros por página",
+                "zeroRecords": "No se encontraron registros",
+                "info": "Mostrando _START_ a _END_ de _TOTAL_ registros",
+                "infoEmpty": "No hay registros disponibles",
+                "infoFiltered": "(filtrados de _MAX_ registros en total)",
+                "search": "Buscar:",
+                "paginate": {
+                    "first": "Primero",
+                    "last": "Último",
+                    "next": "Siguiente",
+                    "previous": "Anterior"
+                }
+            }
+        });
+    }
+</script>
+<script src="~/Content/JS/Role/jsRole.js"></script>

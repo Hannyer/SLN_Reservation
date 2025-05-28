@@ -1,0 +1,480 @@
+﻿@model List<EntityLayer.DailyJobsE>
+@using Newtonsoft.Json
+@{
+    ViewBag.Title = "Index";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+
+}
+
+
+<h2 style="text-align-last: center;">Mantenimiento de labor</h2>
+
+<div class="row" style="padding-bottom: 2rem; padding-top: 2rem; justify-content: right; ">
+    <div class="col-md-4">
+        <div class="col-xs" style="text-align: right;">
+            @{
+
+                <button type="button" id="btnModalAddRole" onclick="OpenModal('mdlAddJobs');" class="btn green-button">
+                    Nueva tarea  <i class="fas fa-plus"></i>
+                </button>
+
+            }
+        </div>
+    </div>
+</div>
+<div class="row">
+    <table id="tblDailyJobs" class="table table-hover">
+        <thead>
+            <tr>
+                <th>Descripción</th>
+                <th>Fecha</th>
+                <th>Responsable</th>
+                <th>Frecuencia</th>
+                <th>Acciones</th>
+            </tr>
+        </thead>
+        
+            @foreach (var DailyJobs in Model)
+            {
+                <tr>
+
+                    <td>@Html.DisplayFor(model => DailyJobs.Description)</td>
+                    <td>@DailyJobs.Date.ToString("dd/MM/yyyy").Replace("01/01/1900", "Sin Fecha")</td>
+
+                    <td>@Html.DisplayFor(model => DailyJobs.Name)</td>
+                    @if (DailyJobs.Frequency.Equals("") || DailyJobs.Frequency.Equals("0"))
+                    {
+                        <td>Diaria</td>
+
+                    }
+                    else
+                    {
+                        <td>@Html.DisplayFor(model => DailyJobs.Frequency)</td>
+
+                    }
+
+                    <td>
+                        <button type="button" class="btn green-button" onclick="OpenModalModifyDailyJob(this, 'mdlModifyJobs'); HiddenFrecuencyTextBoxt()" data-dailyJob='@JsonConvert.SerializeObject(DailyJobs)'>
+                            <i class="fas fa-edit"></i>
+                        </button>
+                        <button type="button" id="btnDeleteClient" class="btn red-button" onclick="DeleteJobs(@DailyJobs.Id)">
+
+                            <i class="fas fa-trash-alt"></i>
+                        </button>
+                    </td>
+                </tr>
+            }
+       
+    </table>
+
+</div>
+<br />
+@*Modal to add Jobs*@
+<div class="modal fade" id="mdlAddJobs">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header" style="background-color: #2E7D32; color:white; justify-content: center; ">
+                <h5 class="modal-title">Agregar Tareas</h5>
+            </div>
+            <div class="modal-body">
+                <div class="col-lg-6 col-md-12 col-sm-12 col-xs-12 pt-4 p-0">
+                    <div class="col-lg-12 col-md-12 col-sm-12 col-xs-12 ">
+                        <div class="form-group">
+                            <label for="ddlAddTaskTypeModal">Selecciona un tipo de tarea</label>
+                            <input type="text" id="ddlAddTaskTypeModal" list="AddTaskTypeList" onchange="CloseDivFrecuencyModify();" class="form-control" placeholder="Buscar ...">
+                            <datalist id="AddTaskTypeList">
+                                <option value="1">Diaria</option>
+                                <option value="2">Especial</option>
+                            </datalist>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-lg-6 col-md-12 col-sm-12 col-xs-12 pt-4 p-0">
+                    <div class="col-lg-12 col-md-12 col-sm-12 col-xs-12 ">
+                        <div class="form-group">
+                            <label for="ddlAddCollaboratorModal">Selecciona el Colaborador</label>
+                            <input type="text" id="ddlAddCollaboratorModal" list="AddCollaboratorList" class="form-control" placeholder="Buscar colaborador...">
+                            <datalist id="AddCollaboratorList">
+
+                                @{
+                                    if ((IEnumerable<SelectListItem>)ViewBag.userList != null)
+                                    {
+                                        foreach (var item in (IEnumerable<SelectListItem>)ViewBag.userList)
+                                        {
+                                            <option value="@item.Value">@item.Text</option>
+                                        }
+
+                                    } }
+                            </datalist>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-lg-6 col-md-12 col-sm-12 col-xs-12 pt-4 p-0">
+                    <div class="col-lg-12 col-md-12 col-sm-12 col-xs-12 ">
+                        <div class="row">
+                            <div class="mb-3">
+                                <label for="lblDate" class="form-label">Fecha:</label>
+                                <input type="date" class="form-control" id="dtDate">
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-lg-6 col-md-12 col-sm-12 col-xs-12 pt-4 p-0">
+                    <div class="col-lg-12 col-md-12 col-sm-12 col-xs-12 ">
+                        <div class="row">
+                            <div class="col-12" id="closeFrequency">
+                                <label for="lblFrequency" class="form-label">Frecuencia:</label>
+                                <input type="number" class="form-control" id="txtFrequency">
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="col-12">
+                        <label for="lblDescription" class="form-label">Descripción:</label>
+                        <textarea class="form-control" id="txtDescription" rows="3"></textarea>
+                    </div>
+                </div>
+            </div>
+            <br />
+            <div class="modal-footer">
+                <button type="button" id="btnAddJobs" class="btn green-button" onclick="NewJobs()">Aceptar</button>
+                <button type="button" id="btnCloseModalAddJobs" class="btn red-button" onclick="CloseModal('mdlAddJobs');">Cerrar</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+
+
+@*Modal to modify Jobs*@
+<div class="modal fade" id="mdlModifyJobs">
+    <div class="modal-dialog ">
+        <div class="modal-content">
+            <div class="modal-header" style="background-color: #2E7D32; color:white; justify-content: center; ">
+                <h5 class="modal-title">Modificar Tareas</h5>
+            </div>
+            <div class="modal-body">
+                <div class="col-lg-6 col-md-12 col-sm-12 col-xs-12 pt-4 p-0">
+                    <div class="col-lg-12 col-md-12 col-sm-12 col-xs-12 ">
+                        <div class="form-group">
+                            <label for="ddlModifyTaskTypeModal">Selecciona un tipo de tarea</label>
+                            <input type="text" id="ddlModifyTaskTypeModal" list="ModifyTaskTypeList" onchange="CloseDivFrecuencyModify();" class="form-control" placeholder="Buscar ...">
+                            <datalist id="ModifyTaskTypeList">
+                                <option value="1">Diaria</option>
+                                <option value="2">Especial</option>
+                            </datalist>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-lg-6 col-md-12 col-sm-12 col-xs-12 pt-4 p-0">
+                    <div class="col-lg-12 col-md-12 col-sm-12 col-xs-12 ">
+                        <div class="form-group">
+                            <label for="ddlModifyCollaboratorModal">Selecciona el Colaborador</label>
+                            <input type="text" id="ddlModifyCollaboratorModal" list="ModifyCollaboratorList" class="form-control" placeholder="Buscar colaborador...">
+                            <datalist id="ModifyCollaboratorList">
+
+                                @{
+                                    if ((IEnumerable<SelectListItem>)ViewBag.userList != null)
+                                    {
+                                        foreach (var item in (IEnumerable<SelectListItem>)ViewBag.userList)
+                                        {
+                                            <option value="@item.Value">@item.Text</option>
+                                        }
+
+                                    } }
+                            </datalist>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="col-lg-6 col-md-12 col-sm-12 col-xs-12 pt-4 p-0">
+                    <div class="col-lg-12 col-md-12 col-sm-12 col-xs-12 ">
+                        <div class="mb-3">
+                            <label for="lblDateModify" class="form-label">Fecha:</label>
+                            <input type="date" class="form-control" id="dtDateModify">
+                        </div>
+                    </div>
+                </div>
+
+                <div class="col-lg-6 col-md-12 col-sm-12 col-xs-12 pt-4 p-0">
+                    <div class="col-lg-12 col-md-12 col-sm-12 col-xs-12 ">
+                        <div class="col-12">
+                            <label for="lblDescriptionModify" class="form-label">Descripción:</label>
+                            <textarea class="form-control" id="txtDescriptionModify" rows="3" required></textarea>
+                            <input type="hidden" value="" id="hdfIdModifyDailyJob" />
+                        </div>
+                    </div>
+                </div>
+                <div class="col-lg-6 col-md-12 col-sm-12 col-xs-12 pt-4 p-0">
+                    <div class="col-lg-12 col-md-12 col-sm-12 col-xs-12 ">
+                        <div class="col-12" id="closeFrequencyModify">
+                            <label for="lblFrequencyModify" class="form-label">Frecuencia:</label>
+                            <input type="number" class="form-control" id="txtFrequencyModify">
+                        </div>
+                    </div>
+                </div>
+
+
+
+            </div>
+            <br />
+            <div class="modal-footer">
+                <input type="text" class="form-control" style="display:none" id="txtTmpIDModal" readonly>
+                <button type="button" id="btnAddJobs" class="btn green-button" onclick="ModifyJobs()">Aceptar</button>
+                <button type="button" id="btnCloseModalModifyJobs" class="btn red-button" onclick="CloseModal('mdlModifyJobs');">Cerrar</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+<script>
+    $(document).ready(function () {
+
+
+
+        var ChagendDate = new Date(); //SubtractDays(CurrentDate, 1);
+        $('#dtDate').attr('min', ChagendDate.toISOString().split('T')[0]);
+        $('#dtDate').val(ChagendDate.toISOString().split('T')[0].substring(0, 10));
+
+        $('#dtDateModify').attr('min', ChagendDate.toISOString().split('T')[0]);
+        $('#dtDateModify').val(ChagendDate.toISOString().split('T')[0].substring(0, 10));
+
+
+
+        CloseModalAddJobs();
+        $("#closeFrequency").hide();
+        $("#closeFrequencyModify").hide();
+        //CloseDivFrecuencyModify();
+        //CloseModalModifyJobs();
+
+        $('#tblDailyJobs').DataTable({
+           
+            "paging": true,
+            "lengthChange": true,
+            "searching": true,
+            "ordering": true,
+            "responsive": true,
+            "buttons": [
+                'copy', 'excel', 'pdf', 'print'
+            ],
+            "lengthMenu": [[5, 10, 25, 50, 100], [5, 10, 25, 50, "Todo"]],
+            "language": {
+                "lengthMenu": "Mostrar _MENU_ registros por página",
+                "zeroRecords": "No se encontraron registros",
+                "info": "Mostrando _START_ a _END_ de _TOTAL_ registros",
+                "infoEmpty": "No hay registros disponibles",
+                "infoFiltered": "(filtrados de _MAX_ registros en total)",
+                "search": "Buscar:",
+                "paginate": {
+                    "first": "Primero",
+                    "last": "Último",
+                    "next": "Siguiente",
+                    "previous": "Anterior"
+                }
+            }
+        });
+
+        InitializerEventDropDownList('ddlModifyTaskTypeModal', 'ModifyTaskTypeList', true);
+        InitializerEventDropDownList('ddlAddTaskTypeModal', 'AddTaskTypeList', true);
+        InitializerEventDropDownList('ddlAddCollaboratorModal', 'AddCollaboratorList', false);
+        InitializerEventDropDownList('ddlModifyCollaboratorModal', 'ModifyCollaboratorList', false);
+
+    });
+    function OpenModalAddJobs() {
+        $("#btnModalAddJobs").click(function () {
+            $("#mdlAddJobs").modal("show"); // Abre el modal con el id "myModal"
+        });
+    }
+    function CloseModalAddJobs() {
+        $("#btnCloseModalAddJobs").click(function () {
+            $("#mdlAddJobs").modal("hide"); // Abre el modal con el id "myModal"
+        });
+    }
+    function HiddenFrecuencyTextBoxt() {
+        $("#closeFrequencyModify").hide();
+        $("#closeFrequency").hide();
+    }
+
+    function CloseModalModifyJobs() {
+        $("#btnCloseModalModifyJobs").click(function () {
+            $("#mdlModifyJobs").modal("hide"); // Abre el modal con el id "myModal"
+        });
+    }
+    function OpenModalModifyJobs() {
+        $("#btnModalModifyJobs").click(function () {
+            var txtTmpID = $("#txtTmpID").val();
+            if (txtTmpID.length > 0) {
+                $("#mdlModifyJobs").modal("show"); // Abre el modal con el id "myModal"
+            } else {
+                Swal.fire('', "Debe Seleccionar Una Tarea para Modificar", 'warning');
+            }
+        });
+    }
+
+    function OpenModalModifyDailyJob(button, modal) {
+        var dailyJobJson = button.getAttribute("data-DailyJob");
+        var dailyJob = JSON.parse(dailyJobJson);
+
+        console.log(dailyJob);
+
+        $("#hdfIdModifyDailyJob").val(dailyJob.Id);
+        $("#ddlModifyTaskTypeModal").val(dailyJob.Type);
+        ActivateInputEvent('ddlModifyTaskTypeModal');
+        $("#ddlModifyCollaboratorModal").val(dailyJob.Collaborator);
+        ActivateInputEvent('ddlModifyCollaboratorModal');
+        $("#dtDateModify").val(dailyJob.Date.substring(0, 10));
+        $("#txtFrequencyModify").val(dailyJob.Frequency);
+        $("#txtDescriptionModify").val(dailyJob.Description);
+
+
+        OpenModal(modal);
+    }
+
+    function InitializerEventDropDownList(DropDownInput, dataList, isTaskItems) {
+        var typingTimer;
+        var doneTypingInterval = 1000;
+
+        document.getElementById(DropDownInput).addEventListener("input", function () {
+            clearTimeout(typingTimer);
+
+            typingTimer = setTimeout(function () {
+                var inputValue = document.getElementById(DropDownInput).value.toLowerCase();
+                var inputObject = document.getElementById(DropDownInput);
+                var options = document.getElementById(dataList).options;
+
+                for (var i = 0; i < options.length; i++) {
+                    var option = options[i];
+                    var text = option.textContent.toLowerCase();
+
+                    if (text.indexOf(removeAccents(inputValue)) !== -1) {
+                        option.style.display = "block";
+                    } else {
+                        option.style.display = "none";
+                    }
+                }
+                var selectedOption = null;
+                for (var i = 0; i < options.length; i++) {
+                    if (options[i].value.toLowerCase() === inputObject.value.toLowerCase()) {
+                        selectedOption = options[i];
+
+                        break;
+                    }
+                }
+                if (selectedOption) {
+                    inputObject.value = selectedOption.textContent;
+                    if (isTaskItems) {
+                        if (selectedOption.textContent.toLowerCase() === 'diaria') {
+                            $("#closeFrequency").hide();
+                            $("#closeFrequencyModify").hide();
+                        }
+                        else {
+                            $("#closeFrequency").show();
+                            $("#closeFrequencyModify").show();
+                        }
+                    }
+
+                }
+                if (GetDropDownValueSelected(DropDownInput, dataList) === null) {
+                    inputObject.value = '';
+                    inputObject.placeholder = "No se encontró el registro digitado";
+                    if (isTaskItems) {
+                        $("#closeFrequency").hide();
+                        $("#closeFrequencyModify").hide();
+
+                    }
+
+                    typingTimer = setTimeout(function () {
+                        inputObject.placeholder = "Seleccione una opción...";
+                    }, 700)
+                }
+                else {
+
+
+                    document.getElementById(DropDownInput).value = GetDropDownTextContentSelected(DropDownInput, dataList);
+                    options[0].selected = true;
+                }
+            }, doneTypingInterval);
+
+
+        });
+    }
+
+    function CloseDivFrecuency() {
+        var valorSeleccionado = $("#slType").val();
+
+        // Obtener el elemento div por su ID
+        var div = document.getElementById('closeFrequency');
+
+        if (valorSeleccionado === "Especial") {
+
+            // Esconder el div estableciendo su estilo a "none"
+            div.style.display = '';
+        } else {
+            div.style.display = 'none';
+        }
+
+    }
+
+    function CloseDivFrecuencyModify() {
+
+        var valorSeleccionado = GetDropDownValueSelected('ddlAddClientRateType', 'AddRateTypeList');
+        // Obtener el elemento div por su ID
+        var div = document.getElementById('closeFrequencyModify');
+
+        if (valorSeleccionado === "Especial") {
+
+            // Esconder el div estableciendo su estilo a "none"
+            div.style.display = '';
+        } else {
+            div.style.display = 'none';
+        }
+
+    }
+    function SubtractDays(fecha, dias) {
+        var resultado = new Date(fecha);
+        resultado.setDate(resultado.getDate() - dias);
+        return resultado;
+    }
+
+
+
+    function GetDataForTableToTxt() {
+        // Manejar clic en una fila de la tabla
+        document.getElementById('tblDailyJobs').addEventListener('click', function (e) {
+            // Verificar si se hizo clic en una celda (td)
+            if (e.target.tagName === 'TD') {
+                // Obtener la fila (tr) asociada a la celda clicada
+                var fila = e.target.closest('tr');
+
+                // Obtener los datos de la fila
+                var Type = fila.cells[0].innerText;
+                var Description = fila.cells[1].innerText;
+                var Date = fila.cells[2].innerText;
+                var Status = fila.cells[3].innerText;
+                var Collaborator = fila.cells[4].innerText;
+                var Frequency = fila.cells[5].innerText;
+                var ID = fila.cells[6].innerText;
+
+                // Actualizar el valor del textbox con los datos de la fila
+                document.getElementById('txtTmpType').value = Type;
+                document.getElementById('txtTmpDescription').value = Description;
+                document.getElementById('txTmpDate').value = Date;
+                document.getElementById('txtTmpID').value = ID;
+
+
+
+                document.getElementById('txtCollaboratorModify').value = Collaborator;
+                document.getElementById('dtDateModify').value = Date;
+                document.getElementById('txtFrequencyModify').value = Frequency;
+                document.getElementById('txtDescriptionModify').value = Description;
+                document.getElementById('slTypeModify').value = Type;
+                document.getElementById('txtTmpIDModal').value = ID;
+            }
+        });
+    }
+
+</script>
+<script src="~/Content/JS/jsDailyJobsE.js"></script>

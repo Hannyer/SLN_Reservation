@@ -1,0 +1,169 @@
+﻿@model IEnumerable<EntityLayer.MenuE>
+
+@{
+    ViewBag.Title = "Permissons";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+
+
+<h2 style="text-align-last: center;">Mantenimiento de acceso a la aplicación</h2>
+
+@using (Html.BeginForm("SendData", "Security", FormMethod.Post, new { @style = "padding: 1rem;" }))
+{
+
+    <div class="form-group" style="padding-bottom:2rem;">
+        <label for="ddlRoles">Seleccione un rol:</label>
+        @Html.DropDownList("SelectedRoleId", (IEnumerable<SelectListItem>)ViewBag.RoleList, "Selecciona un rol", new { @id = "ddlRoles", @class = "form-control" })
+
+    </div>
+
+    @Html.Partial("PartialPermissionView", Model);
+    <input type="hidden" id="selectedData" name="selectedData" />
+
+    <button type="button" id="captureButton" class="btn green-button align-content-center">Guardar</button>
+
+}
+
+
+<script>
+    $(document).ready(function () {
+
+        $('#tblPermissons').DataTable({
+            "paging": true,
+            "lengthChange": true,
+            "searching": true,
+            "ordering": true,
+            "responsive": true,
+            "buttons": [
+                'copy', 'excel', 'pdf', 'print'
+            ],
+            "lengthMenu": [[ 25, 50, 100], [  25, 50, "Todo"]],
+            "language": {
+                "lengthMenu": "Mostrar _MENU_ registros por página",
+                "zeroRecords": "No se encontraron registros",
+                "info": "Mostrando _START_ a _END_ de _TOTAL_ registros",
+                "infoEmpty": "No hay registros disponibles",
+                "infoFiltered": "(filtrados de _MAX_ registros en total)",
+                "search": "Buscar:",
+                "paginate": {
+                    "first": "Primero",
+                    "last": "Último",
+                    "next": "Siguiente",
+                    "previous": "Anterior"
+                }
+            }
+        });
+
+        $("#ddlRoles").change(function () {
+            mostrarSpinner();
+            var selectedRoleId = $(this).val();
+            if (selectedRoleId === '') {
+                selectedRoleId = '0';
+            }
+            console.log(selectedRoleId);
+
+            $.ajax({
+                url: '@Url.Action("PartialPermissionView", "Security")',
+                type: 'GET',
+                data: { roleId: selectedRoleId },
+                success: function (data) {
+
+                    $("#tblPermissons").html(data);
+                    ocultarSpinner();
+                }
+
+            });
+        });
+
+
+
+        $("#captureButton").click(function () {
+
+
+            var selectedIndex = $("#ddlRoles").prop("selectedIndex");
+            if (selectedIndex > 0) {
+                mostrarSpinner();
+                var selectedData = [];
+                var selectedRoleId = $("#ddlRoles").val();
+                $("#tblPermissons tbody tr").each(function () {
+                    var row = $(this);
+                    var isSelected = row.find("input[type='checkbox']").prop("checked");
+
+                    if (isSelected) {
+                        var id = row.find("input[name*='ID']").val();
+                        var description = row.find("td:eq(0)").text();
+                        var selectedRowData = {
+                            ID: id,
+                            DESCRIPTION: description,
+                            STATUS_Menu: row.find("input[name*='STATUS_Menu']").prop("checked"),
+                            Creeate_Menu: row.find("input[name*='Creeate_Menu']").prop("checked"),
+                            Edit_Menu: row.find("input[name*='Edit_Menu']").prop("checked"),
+                            View_Menu: row.find("input[name*='View_Menu']").prop("checked"),
+                            Send_Menu: row.find("input[name*='Send_Menu']").prop("checked")
+                        };
+
+                        selectedData.push(selectedRowData);
+                    }
+                });
+                var postData = {
+                    selectedData: JSON.stringify(selectedData),
+                    IdRoleselected: selectedRoleId
+                };
+
+                $.ajax({
+                    url: '@Url.Action("SendData", "Security")',
+                    type: 'POST',
+                    data: postData,
+                    success: function (data) {
+                        if (data.success) {
+
+                            Swal.fire({
+                                title: 'Éxito',
+                                text: 'Permisos para el rol ' + $("#ddlRoles option:selected").text() + ' guardados correctamente.',
+                                icon: 'success'
+                            });
+                            $("#tblPermissons input[type='checkbox']").prop('checked', false);
+                            $("#ddlRoles").prop("selectedIndex", 0);
+                            ocultarSpinner();
+                        } else {
+                            Swal.fire({
+                                title: 'Error',
+                                text: 'Ha ocurrido un error, favor comunicarse con soporte técnico.',
+                                icon: 'error'
+                            });
+                            ocultarSpinner();
+                        }
+                    },
+                    error: function () {
+                        ocultarSpinner();
+                    }
+                });
+
+
+            }
+            else {
+                Swal.fire({
+                    title: 'Error',
+                    text: 'Debe seleccionar un rol.',
+                    icon: 'error'
+                });
+
+            }
+
+
+        });
+
+
+        $('#tblPermissons tr').click(function () {
+            $(this).toggleClass('selected-row');
+        });
+
+    });
+
+   
+
+
+</script>
+
+

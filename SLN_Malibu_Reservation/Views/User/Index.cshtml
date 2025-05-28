@@ -1,0 +1,266 @@
+﻿@model List<EntityLayer.UserE>
+@using Newtonsoft.Json
+@{
+    ViewBag.Title = "Index";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+
+}
+
+
+<h2 style="text-align-last: center;">Mantenimiento de usuario</h2>
+
+<div class="row" style="padding-bottom: 2rem; padding-top: 2rem; justify-content: right; ">
+    <div class="col-md-4">
+        <div class="col-xs" style="text-align: right;">
+            @{
+
+                <button type="button" id="btnModalAddRole" onclick="OpenModal('mdlAddUser'); Empty();" class="btn green-button">
+                    Nuevo  <i class="fas fa-plus"></i>
+                </button>
+
+            }
+        </div>
+    </div>
+</div>
+<div class="row">
+    <table id="tblUser" class="table table-hover">
+        <thead>
+            <tr>
+                <th>Nombre</th>
+                <th>Usuario</th>
+                <th>Rol</th>
+                <th>Estado</th>
+                <th>Acciones</th>
+                <th></th>
+            </tr>
+        </thead>
+
+        @foreach (var user in Model)
+        {
+            <tr>
+                <td>@Html.DisplayFor(model => user.Name)</td>
+                <td>@Html.DisplayFor(model => user.User)</td>
+
+                <td>@Html.DisplayFor(model => user.Description)</td>
+                <td>
+
+                    <input type="checkbox" class="form-check-input readonly-checkbox" readonly="readonly" disabled="disabled" @(user.Status ? "checked" : "")>
+
+                </td>
+                <td>
+                    <button type="button" class="btn green-button" onclick="OpenModalModifyRole(this,'mdlModifyUser')" data-user='@JsonConvert.SerializeObject(user)'>
+                        <i class="fas fa-edit"></i>
+                    </button>
+                    @*<button type="button" id="btnDeleteClient" class="btn btn-danger"  onclick="DeleteUser('@JsonConvert.SerializeObject(user)')" >
+
+                        <i class="fas fa-trash-alt"></i>
+                    </button>*@
+
+                </td>
+                <td>@Html.HiddenFor(model => user.Password)</td>
+            </tr>
+        }
+
+    </table>
+</div>
+
+
+
+<br />
+<br />
+<br />
+
+
+
+
+
+
+
+
+@*Modal to add *@
+<div class="modal fade" id="mdlAddUser">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header"  style="background-color: #2E7D32; color:white; justify-content: center; ">
+                <h5 class="modal-title">Crear Usuarios</h5>
+            </div>
+            <div class="modal-body">
+                <div class="row">
+                    <div class="col-12">
+                        <label for="txtNameAdd" class="form-label">Nombre:</label>
+                        <input type="text" class="form-control" id="txtNameAdd">
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="col-12">
+                        <label for="lblIdUserAdd" class="form-label">Usuario:</label>
+                        <input type="text" class="form-control" id="txtUserAdd" required>
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="mb-3">
+                        <label for="txtPassAdd" class="form-label">Contraseña:</label>
+                        <input type="password" class="form-control" id="txtPassAdd" required>
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="mb-3">
+                        <label for="lblConfirmPassAdd" class="form-label">Confirmar Contraseña:</label>
+                        <input type="password" class="form-control" id="lblConfirmPassAdd" required>
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="form-group" style="padding-bottom:2rem;">
+                        <label for="ddlRolesAdd">Seleccione un rol:</label>
+                        @Html.DropDownList("SelectedRoleId", (IEnumerable<SelectListItem>)ViewBag.RoleList, "Selecciona un rol", new { @id = "ddlAddUserRoles", @class = "form-control" })
+
+
+                    </div>
+                </div>
+                <div class="row ">
+                    <div class="mb-12">
+                        <label for="lblIdModifyUser" class="form-label">Estado:</label>
+                        <input type="checkbox" class="form-check-input" id="chkAddUser">
+
+                    </div>
+                </div>
+
+            </div>
+            <br />
+            <div class="modal-footer">
+
+                <button type="button" id="btnModifyUser" class="btn green-button" onclick="AddUser()">Aceptar</button>
+                <button type="button" id="btncloseModal" class="btn red-button" onclick="CloseModal('mdlAddUser')">Cerrar</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+@*Modal to add Modify*@
+<div class="modal fade" id="mdlModifyUser">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header"  style="background-color: #2E7D32; color:white; justify-content: center; ">
+                <h5 class="modal-title">Modificar Usuarios</h5>
+            </div>
+            <div class="modal-body">
+                <div class="row">
+                    <div class="col-12">
+                        <label for="txtNameModify" class="form-label">Nombre:</label>
+                        <input type="text" class="form-control" id="txtNameModify">
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="col-12">
+                        <label for="lblIdUserModify" class="form-label">Usuario:</label>
+                        <input type="text" class="form-control" id="txtUserModify" required readonly>
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="mb-3">
+                        <label for="lblPassModify" class="form-label">Contraseña:</label>
+                        <input type="password" class="form-control" id="txtPassModify" required>
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="mb-3">
+                        <label for="lblConfirPassModify" class="form-label">Confirmar Contraseña:</label>
+                        <input type="password" class="form-control" id="txtConfirmPassModify" required>
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="form-group" style="padding-bottom:2rem;">
+                        <label for="ddlRoles">Seleccione un rol:</label>
+                        @Html.DropDownList("SelectedRoleId", (IEnumerable<SelectListItem>)ViewBag.RoleList, "Selecciona un rol", new { @id = "ddlModifyRoles", @class = "form-control" })
+
+
+                    </div>
+                </div>
+                <div class="row ">
+                    <div class="mb-12">
+                        <label for="lblIdModifyUser" class="form-label">Estado:</label>
+                        <input type="checkbox" class="form-check-input" id="chkModifyUser">
+
+                    </div>
+                </div>
+
+            </div>
+            <br />
+            <div class="modal-footer">
+
+                <button type="button" id="btnModifyUser" class="btn green-button" onclick="ModifyUser()">Aceptar</button>
+                <button type="button" id="btncloseModal" class="btn red-button" onclick="CloseModal('mdlModifyUser')">Cerrar</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+
+<script>
+ var userList = @Html.Raw(Json.Encode(Model));
+    $(document).ready(function () {
+     
+    
+        $('#tblUser').DataTable({
+            "paging": true,
+            "lengthChange": true,
+            "searching": true,
+            "ordering": true,
+            "responsive": true,
+            "buttons": [
+                'copy', 'excel', 'pdf', 'print'
+            ],
+            "columnDefs": [
+                { "targets": [5], "visible": false }
+            ],
+            "language": {
+                "lengthMenu": "Mostrar _MENU_ registros por página",
+                "zeroRecords": "No se encontraron registros",
+                "info": "Mostrando _START_ a _END_ de _TOTAL_ registros",
+                "infoEmpty": "No hay registros disponibles",
+                "infoFiltered": "(filtrados de _MAX_ registros en total)",
+                "search": "Buscar:",
+                "paginate": {
+                    "first": "Primero",
+                    "last": "Último",
+                    "next": "Siguiente",
+                    "previous": "Anterior"
+                },
+                "drawCallback": function (settings) {
+                  
+                    $('#tblUser input[type="text"]').attr('autocomplete', 'off');
+                }
+            }
+        });
+      
+    });
+
+
+    function OpenModalModifyRole(button, modal) {
+        var userJson = button.getAttribute("data-user");
+        var user = JSON.parse(userJson);
+
+        document.getElementById('txtNameModify').value = user.Name;
+
+        document.getElementById('txtUserModify').value = user.User;
+        document.getElementById('txtPassModify').value = user.Password;
+        document.getElementById('txtConfirmPassModify').value = user.Password;
+        $("#ddlModifyRoles").val(user.Id_Role);
+        ;
+        $("#chkModifyUser").prop("checked", JSON.parse(user.Status))
+
+        OpenModal(modal);
+    }
+
+    function Empty() {
+        $("#txtUserAdd").val('');
+        $("#txtPassAdd").val('');
+
+        $("#chkAddUser").prop("checked", false);
+    }
+
+</script>
+<script src="~/Content/JS/User/jsUser.js"></script>
+

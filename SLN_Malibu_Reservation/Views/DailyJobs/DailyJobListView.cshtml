@@ -1,0 +1,106 @@
+﻿@model IEnumerable<EntityLayer.DailyJobsE>
+
+@using Newtonsoft.Json
+@{
+    if (Session["User"] == null || Session["List_Menu"] == null)
+    {
+        var redirectUrl = Url.Action("Index", "Login");
+        <script type="text/javascript">
+            window.location.href = '@Html.Raw(redirectUrl)';
+
+        </script>
+    }
+
+}
+<div class="row">
+
+    <table id="tblDailyJobs" class="table table-hover">
+        <thead>
+            <tr>
+                <th>Tipo</th>
+                <th>Descripción</th>
+                <th>Fecha ejecución</th>
+                <th>Estado</th>
+                <th>Responsable</th>
+                <th>Frecuencia</th>
+                <th>Días sin realizar</th>
+                <th>Acciones</th>
+            </tr>
+        </thead>
+        @if (Model != null)
+        {
+            if (Model.Count() > 0)
+            {
+
+                foreach (var dailyJobs in Model)
+                {
+
+
+                    <tr>
+                        @if (dailyJobs.Type.Equals("1"))
+                        {
+                            <td>Diaria</td>
+                        }
+                        else
+                        {
+
+                            <td>Especial</td>
+                        }
+                        <td>@Html.DisplayFor(model => dailyJobs.Description)</td>
+                        <td>@dailyJobs.Date.ToString("dd/MM/yyyy").Replace("01/01/1900", "Sin Fecha")</td>
+                        @if (dailyJobs.Status.Equals("False"))
+                        {
+                            <td>Pendiente</td>
+                        }
+                        else
+                        {
+                            <td>Realizado</td>
+                        }
+                        <td>@Html.DisplayFor(model => dailyJobs.Name)</td>
+
+                        @if (dailyJobs.Type.Equals("2"))
+                        {
+                            <td>@Html.DisplayFor(model => dailyJobs.Frequency)</td>
+                        }
+                        else
+                        {
+                            <td>Diaria</td>
+                        }
+
+
+
+                        <td>@Html.DisplayFor(model => dailyJobs.Dias_Sin_Realizar)</td>
+                        <td>
+
+                            @if (dailyJobs.Status.Equals("False"))
+                            {
+                                <button type="button" class="btn green-button" onclick="JobDone(this);" data-dailyJob='@JsonConvert.SerializeObject(dailyJobs)'>
+                                    <i class="fa-solid fa-check"></i>
+                                </button>
+                            }
+                            else
+                            {
+                                <button type="button" id="btnDeleteClient" class="btn btn-danger" onclick="DeleteReservation(@dailyJobs.Id)">
+
+                                    <i class="fa-solid fa-xmark"></i>
+                                </button>
+                            }
+                        </td>
+                    </tr>
+                }
+            }
+            else
+            {
+                <h2>No se encontraron datos</h2>
+            }
+
+
+        }
+        else
+        {
+            <h2>No se encontraron datos</h2>
+        }
+
+
+    </table>
+</div>

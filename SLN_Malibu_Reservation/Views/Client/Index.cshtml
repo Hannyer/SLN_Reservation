@@ -1,0 +1,444 @@
+﻿@model List<EntityLayer.ClientE>
+@using Newtonsoft.Json
+@{
+    ViewBag.Title = "Index";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+
+}
+
+<h2 style="text-align-last: center;">Mantenimiento de cliente</h2>
+
+<div class="row" style="padding-bottom: 2rem; padding-top: 2rem; justify-content: right; ">
+    <div class="col-md-4">
+        <div class="col-xs" style="text-align: right;">
+            @{
+
+                <button type="button" id="btnModalAddRole" onclick="OpenModal('mdlAddClient'); Empty();" class="btn green-button ">
+                    Nuevo  <i class="fas fa-plus"></i>
+                </button>
+
+            }
+        </div>
+    </div>
+</div>
+
+<div class="row">
+    <table id="tblClient" class="table table-hover">
+        <thead>
+            <tr>
+                <th>Nombre</th>
+                <th>Tipo Identificación</th>
+                <th>Identificación</th>
+                @*<th>Correo</th>*@
+                <th>Teléfono 1</th>
+                @*<th>Teléfono 2</th>*@
+                @*<th>Detalle</th>*@
+                <th>Tipo de tarifa</th>
+                <th>Acciones</th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (var persona in Model)
+            {
+                <tr>
+                    <td>@Html.DisplayFor(model => persona.Full_Name)</td>
+                    <td>@Html.DisplayFor(model => persona.IdentificationType_Description)</td>
+                    <td>@Html.DisplayFor(model => persona.IdCard)</td>
+                    @*<td>@Html.DisplayFor(model => persona.Mail)</td>*@
+                    <td>@Html.DisplayFor(model => persona.Phone_number1)</td>
+                    @*<td>@Html.DisplayFor(model => persona.Phone_number2)</td>*@
+                    @*<td>@Html.DisplayFor(model => persona.Detail)</td>*@
+                    <td>@Html.DisplayFor(model => persona.RateType_Description)</td>
+                    <td>
+                        <button type="button" class="btn green-button" onclick="OpenModalModifyClient(this,'mdlModifyClient')" data-client='@JsonConvert.SerializeObject(persona)'>
+                            <i class="fas fa-edit"></i>
+                        </button>
+                        <button type="button" id="btnDeleteClient" class="btn red-button" onclick="DeleteClient('@JsonConvert.SerializeObject(persona)')">
+
+                            <i class="fas fa-trash-alt"></i>
+                        </button>
+                    </td>
+                </tr>
+            }
+            </tbody>
+    </table>
+</div>
+
+<br />
+
+
+
+
+<br />
+
+
+
+@*Modal to add client*@
+<div class="modal fade" id="mdlAddClient">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header" style="background-color: #2E7D32; color:white; justify-content: center; ">
+                <h5 class="modal-title">Nuevo Cliente</h5>
+            </div>
+            <div class="modal-body">
+                <div class="row">
+                    <div class="form-group">
+                        <label for="ddlAddClientRateType">Selecciona el tipo de tarifa para el cliente:</label>
+                        <input type="text" id="ddlAddClientRateType" list="AddRateTypeList" class="form-control" placeholder="Seleccione una opción...">
+                        <datalist id="AddRateTypeList">
+
+                            @{
+                                foreach (var item in (IEnumerable<SelectListItem>)ViewBag.RateTypeList)
+                                {
+                                    <option value="@item.Value">@item.Text</option>
+                                }
+                            }
+                        </datalist>
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="col-12">
+                        <label for="lblName" class="form-label">Nombre:</label>
+                        <input type="text" class="form-control" id="txtName" required>
+                    </div>
+                </div>
+
+                <div class="row">
+                    <div class="form-group">
+                        <label for="ddlClient">Selecciona un tipo de Identificación:</label>
+                        <input type="text" id="ddlClient" list="clientList" class="form-control" placeholder="Seleccione una opción...">
+                        <datalist id="clientList">
+
+                            @{
+                                foreach (var item in (IEnumerable<SelectListItem>)ViewBag.IdentificationList)
+                                {
+                                    <option value="@item.Value">@item.Text</option>
+                                }
+                            }
+                        </datalist>
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="mb-12">
+                        <label for="lblIdCard" class="form-label">Cédula/Pasaporte:</label>
+                        <input type="text" class="form-control" id="txtIdCard" required>
+                        <small class="form-text text-danger">No ingresar guiones.</small>
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="mb-3">
+                        <label for="lblMail" class="form-label">Correo:</label>
+                        <input type="email" class="form-control" id="txtMail" placeholder="Correo@Cliente.com" required>
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="col-6">
+
+                        <label for="txtPhone_number1" class="control-label col-md-2">Teléfono 1</label>
+                        <div class="col-md-10">
+                            <input type="tel" id="txtPhone_number1" name="txtPhone_number1" class="form-control" required />
+                        </div>
+
+                    </div>
+                    <div class="col-6">
+
+                        <label for="txtPhone_number2" class="control-label col-md-2">Teléfono 2</label>
+                        <div class="col-md-10">
+                            <input type="tel" id="txtPhone_number2" name="txtPhone_number2" class="form-control" />
+                        </div>
+
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="mb-3">
+                        <label for="lblDetail" class="form-label">Detalle:</label>
+                        <textarea class="form-control" id="txtDetail" rows="3"></textarea>
+                    </div>
+                </div>
+            </div>
+            <br />
+            <div class="modal-footer">
+                <button type="button" id="btnAddClient" class="btn green-button" onclick="NewClient()">Aceptar</button>
+                <button type="button" id="btnCloseModalAddClient" class="btn red-button" data-dismiss="modal">Cerrar</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+
+@*Modal to Modify client*@
+<div class="modal fade" id="mdlModifyClient">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header" style="background-color: #2E7D32; color:white; justify-content: center; ">
+                <h5 class="modal-title">Modificar Cliente</h5>
+            </div>
+            <div class="modal-body">
+                <div class="row">
+                    <div class="form-group">
+                        <label for="ddlModifyClientRateType">Selecciona el tipo de tarifa para el cliente:</label>
+                        <input type="text" id="ddlModifyClientRateType" list="ModifyRateTypeList" class="form-control" placeholder="Seleccione una opción...">
+                        <datalist id="ModifyRateTypeList">
+
+                            @{
+                                foreach (var item in (IEnumerable<SelectListItem>)ViewBag.RateTypeList)
+                                {
+                                    <option value="@item.Value">@item.Text</option>
+                                }
+                            }
+                        </datalist>
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="mb-12">
+                        <label for="lblModifyName" class="form-label">Nombre:</label>
+                        <input type="text" class="form-control" id="txtModifyName" required>
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="form-group">
+                        <label for="ddlModifyClient">Selecciona un tipo de Identificación:</label>
+                        <input type="text" id="ddlModifyClient" list="ModifyclientList" class="form-control" placeholder="Seleccione una opción...">
+                        <datalist id="ModifyclientList">
+
+                            @{
+                                foreach (var item in (IEnumerable<SelectListItem>)ViewBag.IdentificationList)
+                                {
+                                    <option value="@item.Value">@item.Text</option>
+                                }
+                            }
+                        </datalist>
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="mb-12">
+                        <label for="lblIdModifyCard" class="form-label">Cédula:</label>
+                        <input type="text" class="form-control" id="txtModifyIdCard" required readonly>
+                        <small class="form-text text-danger">No ingresar guiones.</small>
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="mb-3">
+                        <label for="lblModifyMail" class="form-label">Correo:</label>
+                        <input type="email" class="form-control" id="txModifytMail" placeholder="Correo@Cliente.com" required>
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="col-6">
+
+                        <label for="txtModifyPhone_number1" class="control-label col-md-2">Teléfono 1</label>
+                        <div class="col-md-10">
+                            <input type="tel" id="txtModifyPhone_number1" name="txtModifyPhone_number1" class="form-control" required />
+                        </div>
+
+                    </div>
+                    <div class="col-6">
+
+                        <label for="txtModifyPhone_number2" class="control-label col-md-2">Teléfono 2</label>
+                        <div class="col-md-10">
+                            <input type="tel" id="txtModifyPhone_number2" name="txtModifyPhone_number2" class="form-control" />
+                        </div>
+
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="mb-3">
+                        <label for="lblModifyDetail" class="form-label">Detalle:</label>
+                        <textarea class="form-control" id="txtModifyDetail" rows="3"></textarea>
+                    </div>
+                </div>
+            </div>
+            <br />
+            <div class="modal-footer">
+                <button type="button" id="btnModifyClient" class="btn green-button" onclick="ModifyClient()">Aceptar</button>
+                <button type="button" id="btnCloseModalModifyClient" class="btn red-button" data-dismiss="modal">Cerrar</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+
+<script>
+
+        var clientList = @Html.Raw(Json.Encode(Model));
+         var iti1;
+         var iti2;
+         var Modifyiti1;
+         var Modifyiti2;   
+        $(document).ready(function () {
+
+            CloseModalAddClient();
+
+            CloseModalModifyClient();
+
+            $('#tblClient').DataTable({
+               
+                "paging": true,
+                "lengthChange": true,
+                "searching": true,
+                "ordering": true,
+                "responsive": true,
+                "buttons": [
+                    'copy', 'excel', 'pdf', 'print'
+                ],
+                "lengthMenu": [[5,10,25, 50, 100], [5,10,25, 50, "Todo"]],
+                "language": {
+                    "lengthMenu": "Mostrar _MENU_ registros por página",
+                    "zeroRecords": "No se encontraron registros",
+                    "info": "Mostrando _START_ a _END_ de _TOTAL_ registros",
+                    "infoEmpty": "No hay registros disponibles",
+                    "infoFiltered": "(filtrados de _MAX_ registros en total)",
+                    "search": "Buscar:",
+                    "paginate": {
+                        "first": "Primero",
+                        "last": "Último",
+                        "next": "Siguiente",
+                        "previous": "Anterior"
+                    }
+                }
+            });
+
+            var txtPhone_number1 = document.getElementById("txtPhone_number1");
+            txtPhone_number1.addEventListener("keydown", allowNumbersSpacesPlusAndBackspace);
+            var txtPhone_number2 = document.getElementById("txtPhone_number2");
+            txtPhone_number2.addEventListener("keydown", allowNumbersSpacesPlusAndBackspace);
+
+            document.getElementById('txtModifyPhone_number1').addEventListener("keydown", allowNumbersSpacesPlusAndBackspace);
+            document.getElementById('txtModifyPhone_number2').addEventListener("keydown", allowNumbersSpacesPlusAndBackspace);
+
+            DropDown_Load();
+
+            InitializerPhoneInput('txtPhone_number1', 'txtPhone_number2', 'txtModifyPhone_number1','txtModifyPhone_number2')
+
+
+        });
+  
+    function InitializerPhoneInput(txtPhone_number1, txtPhone_number2, txtModifyPhone_number1, txtModifyPhone_number2) {
+
+             input1 = $("#" + txtPhone_number1)[0];
+           iti1= intlTelInput(input1, {
+                initialCountry: "cr",
+                utilsScript: "~/Content/JS/PhoneInput/JS/utils.js"
+            });
+              input2 = $("#" + txtPhone_number2)[0];
+            iti2 =intlTelInput(input2, {
+                  initialCountry: "cr",
+                  utilsScript: "~/Content/JS/PhoneInput/JS/utils.js"
+            });
+            input3 = $("#" + txtModifyPhone_number1)[0];
+            Modifyiti1 = intlTelInput(input3, {
+                initialCountry: "cr",
+                utilsScript: "~/Content/JS/PhoneInput/JS/utils.js"
+            });
+            input4 = $("#" + txtModifyPhone_number2)[0];
+            Modifyiti2 = intlTelInput(input4, {
+                initialCountry: "cr",
+                utilsScript: "~/Content/JS/PhoneInput/JS/utils.js"
+            });
+
+        }
+              
+        function DropDown_Load() {
+        InitializerEventDropDownList('ddlClient', 'clientList');
+        InitializerEventDropDownList('ddlModifyClient', 'ModifyclientList');
+        InitializerEventDropDownList('ddlAddClientRateType', 'AddRateTypeList');
+        InitializerEventDropDownList('ddlModifyClientRateType', 'ModifyRateTypeList');
+
+    }
+        
+        function InitializerEventDropDownList(DropDownInput,dataList) {
+        var typingTimer;
+        var doneTypingInterval = 1000;
+
+        document.getElementById(DropDownInput).addEventListener("input", function () {
+            clearTimeout(typingTimer);
+
+            typingTimer = setTimeout(function () {
+                var inputValue = document.getElementById(DropDownInput).value.toLowerCase();
+                var inputObject = document.getElementById(DropDownInput);
+                var options = document.getElementById(dataList).options;
+
+                for (var i = 0; i < options.length; i++) {
+                    var option = options[i];
+                    var text = option.textContent.toLowerCase();
+
+                    if (text.indexOf(removeAccents(inputValue)) !== -1) {
+                        option.style.display = "block";
+                    } else {
+                        option.style.display = "none";
+                    }
+                }
+                var selectedOption = null;
+                for (var i = 0; i < options.length; i++) {
+                    if (options[i].value === inputObject.value) {
+                        selectedOption = options[i];
+                        break;
+                    }
+                }
+                if (selectedOption) {
+                    inputObject.value = selectedOption.textContent;
+                }
+                if (GetDropDownValueSelected(DropDownInput, dataList) === null) {
+                    inputObject.value = '';
+                    inputObject.placeholder = "No se encontró el registro digitado";
+                    typingTimer = setTimeout(function () {
+                        inputObject.placeholder = "Seleccione una opción...";
+                    }, 700)
+                }
+                else {
+
+                    document.getElementById(DropDownInput).value = GetDropDownTextContentSelected(DropDownInput, dataList);
+                    options[0].selected = true;
+                }
+            }, doneTypingInterval);
+
+
+        });
+
+
+    }
+        function CloseModalAddClient() {
+            $("#btnCloseModalAddClient").click(function () {
+                $("#mdlAddClient").modal("hide"); // Abre el modal con el id "myModal"
+            });
+        }
+        function CloseModalModifyClient() {
+            $("#btnCloseModalModifyClient").click(function () {
+                $("#mdlModifyClient").modal("hide"); // Abre el modal con el id "myModal"
+            });
+        }
+
+         function OpenModalModifyClient(button, modal) {
+            var clientJson = button.getAttribute("data-client");
+            var client = JSON.parse(clientJson);
+
+            document.getElementById('txtModifyName').value = client.Full_Name;
+            document.getElementById('txtModifyIdCard').value = client.IdCard;
+            document.getElementById('txModifytMail').value = client.Mail;
+           // document.getElementById('txtModifyPhone_number1').value = client.Phone_number1;
+           // document.getElementById('txtModifyPhone_number2').value = client.Phone_number2;
+             Modifyiti1.setNumber(client.Phone_number1);
+             Modifyiti2.setNumber(client.Phone_number2);
+            document.getElementById('txtModifyDetail').value = client.Detail;
+            document.getElementById("ddlModifyClient").value = client.IdentificationType_Description
+            document.getElementById("ddlModifyClientRateType").value = client.RateType_Description
+
+
+
+
+            OpenModal(modal);
+        }
+
+         function Empty() {
+        var inputElement = document.getElementById("ddlClient");
+        inputElement.placeholder = "Seleccione una opción...";
+
+    }
+
+
+</script>
+
+<script src="~/Content/JS/jsClient.js"></script>
+

@@ -1,0 +1,137 @@
+﻿@model IEnumerable<EntityLayer.DailyJobsE>
+
+@{
+    ViewBag.Title = "IndexDailyJob";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+<h2 style="text-align-last: center;">Labores del día</h2>
+
+<div id="contenedorVistaParcial" style="padding-bottom: 2rem;">
+    @Html.Partial("DailyJobListView", Model)
+</div>
+
+
+
+<script type="text/javascript">
+
+    $(document).ready(function () {
+        $('#tblDailyJobs').DataTable({
+            
+            "paging": true,
+            "lengthChange": true,
+            "searching": true,
+            "ordering": true,
+            "responsive": true,
+            "buttons": [
+                'copy', 'excel', 'pdf', 'print'
+            ],
+            "lengthMenu": [[5, 10, 25, 50, 100], [5, 10, 25, 50, "Todo"]],
+            "language": {
+                "lengthMenu": "Mostrar _MENU_ registros por página",
+                "zeroRecords": "No se encontraron registros",
+                "info": "Mostrando _START_ a _END_ de _TOTAL_ registros",
+                "infoEmpty": "No hay registros disponibles",
+                "infoFiltered": "(filtrados de _MAX_ registros en total)",
+                "search": "Buscar:",
+                "paginate": {
+                    "first": "Primero",
+                    "last": "Último",
+                    "next": "Siguiente",
+                    "previous": "Anterior"
+                }
+            }
+        });
+
+
+    });
+
+   
+    function JobDone(button) {
+        var DailyJobJson = button.getAttribute("data-dailyJob");
+        var dailyJob = JSON.parse(DailyJobJson);
+
+        Swal.fire({
+            title: '¿Está seguro?',
+            text: '¡Que desea marcar como realizada esta labor!',
+            icon: 'warning',
+            showCancelButton: true,
+            confirmButtonColor: '#d33',
+            cancelButtonColor: '#3085d6',
+            confirmButtonText: 'Sí',
+            cancelButtonText: 'No'
+        }).then((result) => {
+            if (result.isConfirmed) {
+
+                $.ajax({
+                    url: '/DailyJobs/JobDone',
+                    type: 'POST',
+                    data: dailyJob,
+                }).done(function (response) {
+
+                    if (response.includes("exitosamente")) {
+
+
+                         $.ajax({
+      url: '@Url.Action("UpdateTable", "DailyJobs")',
+      type: 'GET',
+      data:null,
+      success: function(partialView) {
+
+          
+              Swal.fire({
+                  text: 'Se ha registrado la labor en estado realizado',
+                  icon: 'success',
+                  didClose: () => {
+                      
+                  }
+              });
+
+        
+
+          $('#contenedorVistaParcial').html(partialView);
+
+          $('#tblDailyJobs').DataTable({
+          
+              "paging": true,
+              "lengthChange": true,
+              "searching": true,
+              "ordering": true,
+              "responsive": true,
+              "buttons": [
+                  'copy', 'excel', 'pdf', 'print'
+              ],
+              "lengthMenu": [[5, 10, 25, 50, 100], [5, 10, 25, 50, "Todo"]],
+              "language": {
+                  "lengthMenu": "Mostrar _MENU_ registros por página",
+                  "zeroRecords": "No se encontraron registros",
+                  "info": "Mostrando _START_ a _END_ de _TOTAL_ registros",
+                  "infoEmpty": "No hay registros disponibles",
+                  "infoFiltered": "(filtrados de _MAX_ registros en total)",
+                  "search": "Buscar:",
+                  "paginate": {
+                      "first": "Primero",
+                      "last": "Último",
+                      "next": "Siguiente",
+                      "previous": "Anterior"
+                  }
+              }
+          });
+      },
+          error: function() {
+          alert('Ha ocurrido un error al obtener los datos.');
+                      }
+          });
+
+
+                    }
+                    else {
+                        Swal.fire('', response, 'warning');
+                    }
+                });
+            }
+        });
+    }
+
+
+</script>

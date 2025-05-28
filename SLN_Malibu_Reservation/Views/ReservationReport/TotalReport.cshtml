@@ -1,0 +1,61 @@
+﻿@model List<EntityLayer.TotalReportE>
+@{
+    ViewBag.Title = "ReservationReport";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+<h2 style="text-align-last: center;">Reporte Total de Ingresos</h2>
+
+<div class="row">
+    <div class="col-md-12">
+        <div class="row">
+            <div class="col-md-5">
+                <div class="form-group">
+                    <label for="txtCheckInTotalReport">Fecha Inicio:</label>
+                    <input type="date" class="form-control" id="txtCheckInTotalReport" name="txtCheckInTotalReport">
+                </div>
+            </div>
+            <div class="col-md-5">
+                <div class="form-group">
+                    <label for="txtCheckOutTotalReport">Fecha Final:</label>
+                    <input type="date" class="form-control" id="txtCheckOutTotalReport" name="txtCheckOutTotalReport">
+                </div>
+            </div>
+            <div class="col-md-2" style="padding-top: 1%">
+                <button type="submit" style="width:100%" class="btn green-button" id="btnExportDataTotalReport">Extaer Información</button>
+            </div>
+        </div>
+        <div class="row" id="divBtnDownloadTotalReport" style="display:none">
+            <div class="col-md-10"></div>
+            <div class="col-md-2">
+                <a href="@Url.Action("ExportReservationsToExcel", "ReservationReport")" class="btn btn-cobrizo">Exportar a Excel</a>
+            </div>
+        </div>
+        <br />
+    </div>
+
+    <br />
+    <br />
+
+    <div id="tablaContainer"></div>
+
+    <div id="contenedorVistaParcialTotalReport" style="padding-bottom: 2rem;">
+        @Html.Partial("ViewExportDataTotalReport", Model)
+        <br />
+    </div>
+
+
+</div>
+
+
+<script>
+    $(document).ready(function () {
+        ExportDataTotalReportEStart();
+        ExportDataTotalReport();
+
+    });
+</script>
+
+
+<script src="~/Content/JS/Reservation/jsReservationReport.js"></script>
+

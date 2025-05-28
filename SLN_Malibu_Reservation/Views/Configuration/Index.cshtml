@@ -1,0 +1,295 @@
+﻿@model IEnumerable<EntityLayer.ConfigurationE>
+@using Newtonsoft.Json
+@{
+    ViewBag.Title = "Index";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+<style>
+    .selected-row {
+        background-color: #a6c9e2; /* Cambia el color de fondo a tu elección */
+    }
+</style>
+<h1 style="padding-bottom: 2rem; text-align-last: center;">Configuración del sistema</h1>
+<table class="table tblConfiguration" id="tblConfiguration" >
+    <thead>
+        <tr>
+            <!-- Encabezados de la tabla -->
+            <th>
+                @Html.DisplayNameFor(model => model.DESCRIPTION)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.KEY02)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.KEY03)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.KEY04)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.KEY05)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.KEY06)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.VALUE)
+            </th>
+            <th>Acciones</th>
+
+        </tr>
+        </thead>
+
+        @foreach (var item in Model)
+        {
+            <tr>
+                <td>
+                    @Html.DisplayFor(modelItem => item.DESCRIPTION)
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.KEY02)
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.KEY03)
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.KEY04)
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.KEY05)
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.KEY06)
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.VALUE)
+                </td>
+                <td>
+                    <button type="button" class="btn green-button" onclick="ModifyConfiguration(this)" data-configuration='@JsonConvert.SerializeObject(item)'>
+                        <i class="fa-solid fa-pen"></i>
+                    </button>
+                </td>
+
+            </tr>
+        }
+</table>
+
+@*Modal to add Jobs*@
+<div class="modal fade" id="mdlModifyConfiguration">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header" style="background-color: #2E7D32; color:white; justify-content: center; ">
+                <h5 class="modal-title">Modificar configuración</h5>
+            </div>
+            <div class="modal-body">
+                <div class="row" style="padding-bottom: 2rem; padding-top: 2rem; ">
+                    <div class="row">
+                        <!-- Campos de entrada -->
+                        <div class="col-md-6">
+                            <label for="lblKey03" class="form-label">Llave 3:</label>
+                            <input type="text" class="form-control" id="txtKey03" readonly>
+                        </div>
+                        <div class="col-md-6">
+                            <label for="txtKey04" class="form-label">Llave 4:</label>
+                            <input type="text" class="form-control" id="txtKey04" readonly>
+                        </div>
+                        <div class="col-md-6">
+                            <label for="lblKey05" class="form-label">Llave 5:</label>
+                            <input type="text" class="form-control" id="txtKey05" readonly>
+                        </div>
+                        <div class="col-md-6">
+                            <label for="lblKey06" class="form-label">Llave 6:</label>
+                            <input type="text" class="form-control" id="txtKey06" readonly>
+                        </div>
+                        <div class="col-md-12">
+                            <label for="lblValue" class="form-label">Valor:</label>
+                            <input type="text" class="form-control" id="txtValue">
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <br />
+            <div class="modal-footer">
+             
+                    <button type="button" id="captureButton" onclick="UpdateSettings()" class="btn green-button align-content-center">Guardar</button>
+                    <button type="button" id="btnCloseModalAddJobs" class="btn red-button" onclick="CloseModal('mdlModifyConfiguration');">Cerrar</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+
+
+
+<script type="text/javascript">
+    var selectedRow = null; // Variable para la fila seleccionada
+
+    $(document).ready(function () {
+      
+
+
+        $('#tblConfiguration').DataTable({
+            "paging": true,
+            "lengthChange": true,
+            "searching": true,
+            "ordering": true,
+            "responsive": true,
+            "buttons": [
+                'copy', 'excel', 'pdf', 'print'
+            ],
+            "lengthMenu": [[5, 10, 25, 50, 100], [5, 10, 25, 50, "Todo"]],
+            "language": {
+                "lengthMenu": "Mostrar _MENU_ registros por página",
+                "zeroRecords": "No se encontraron registros",
+                "info": "Mostrando _START_ a _END_ de _TOTAL_ registros",
+                "infoEmpty": "No hay registros disponibles",
+                "infoFiltered": "(filtrados de _MAX_ registros en total)",
+                "search": "Buscar:",
+                "paginate": {
+                    "first": "Primero",
+                    "last": "Último",
+                    "next": "Siguiente",
+                    "previous": "Anterior"
+                }
+            }
+        });
+
+       
+    });
+
+
+    function GetDataForTableToTxt() {
+        // Manejar clic en una fila de la tabla
+        document.getElementById('tblConfiguration').addEventListener('click', function (e) {
+            // Verificar si se hizo clic en una celda (td)
+            if (e.target.tagName === 'TD') {
+                // Obtener la fila (tr) asociada a la celda clicada
+                var fila = e.target.closest('tr');
+
+                var Key03 = fila.cells[2].innerText;
+                var Key04 = fila.cells[3].innerText;
+                var Key05 = fila.cells[4].innerText;
+                var Key06 = fila.cells[5].innerText;
+                var Value = fila.cells[6].innerText;
+
+                // Actualizar el valor del textbox con los datos de la fila
+                document.getElementById('txtKey03').value = Key03;
+                document.getElementById('txtKey04').value = Key04;
+                document.getElementById('txtKey05').value = Key05;
+                document.getElementById('txtKey06').value = Key06;
+                document.getElementById('txtValue').value = Value;
+            }
+        });
+    }
+    function updateInputFields(row) {
+        // Actualizar los campos de entrada con los datos de la fila seleccionada
+        var Key03 = row.find('td:eq(2)').text();
+        var Key04 = row.find('td:eq(3)').text();
+        var Key05 = row.find('td:eq(4)').text();
+        var Key06 = row.find('td:eq(5)').text();
+        var Value = row.find('td:eq(6)').text();
+
+        $('#txtKey03').val(Key03);
+        $('#txtKey04').val(Key04);
+        $('#txtKey05').val(Key05);
+        $('#txtKey06').val(Key06);
+        $('#txtValue').val(Value);
+    }
+    function ModifyConfiguration(button) {
+        var ConfigurationJson = button.getAttribute("data-configuration");
+        var configuration = JSON.parse(ConfigurationJson);
+
+        $('#txtKey03').val(configuration.KEY03);
+
+       
+        $('#txtKey04').val(configuration.KEY04);
+
+       
+        $('#txtKey05').val(configuration.KEY05);
+
+      
+        $('#txtKey06').val(configuration.KEY06);
+
+       
+        $('#txtValue').val(configuration.VALUE);
+
+        OpenModal('mdlModifyConfiguration');
+    }
+    function Validate() {
+
+        if ($("#txtKey03").val() === '') {
+            Swal.fire('', 'Debe seleccionar la configuración a modificar', 'error');
+            return false;
+        }
+        if ($("#txtKey04").val() === '') {
+            Swal.fire('', 'Debe seleccionar la configuración a modificar', 'error');
+            return false;
+        }
+        if ($('#txtValue').val() === '') {
+            Swal.fire('', 'Debe digitar el valor de la configuración', 'error');
+            return false;
+        }
+
+
+        return true;
+    }
+    function Empty() {
+        $("#txtKey03").val('');
+        $("#txtKey04").val('');
+        $("#txtKey05").val('');
+        $("#txtKey06").val('');
+        $("#txtValue").val('');
+    }
+    function UpdateSettings() {
+        var Opcion = 0;
+        var KEY03 = $("#txtKey03").val();
+        var KEY04 = $("#txtKey04").val();
+        var KEY05 = $("#txtKey05").val();
+        var KEY06 = $("#txtKey06").val();
+        var VALUE = $("#txtValue").val();
+
+
+        if (Validate()) {
+            var configuracion = {
+                Opcion: Opcion,
+                KEY03: KEY03,
+                KEY04: KEY04,
+                KEY05: KEY05,
+                KEY06: KEY06,
+                VALUE: VALUE
+            };
+
+            Swal.fire({
+                title: '¿Estás seguro de modificar el registro?',
+                text: 'Esta acción actualizará los ajustes. ¿Deseas continuar?',
+                icon: 'question',
+                showCancelButton: true,
+                confirmButtonText: 'Sí, modificar',
+                cancelButtonText: 'Cancelar'
+            }).then((result) => {
+                if (result.isConfirmed) {
+                    $.ajax({
+                        url: '@Url.Action("UpdateConfiguration", "Configuration")',
+                        type: 'POST',
+                        data: configuracion,
+                    }).done(function (response) {
+                        if (response.includes("exitosamente")) {
+                            Swal.fire('', response, 'success');
+                            setTimeout(function () {
+                                window.location.href = '/Configuration/Index';
+                            }, 1000);
+                        } else {
+                            Swal.fire('', response, 'warning');
+                        }
+                    });
+                }
+            });
+        }
+        else {
+        return}
+
+
+    }
+</script>
