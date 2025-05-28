@@ -6,7 +6,7 @@ using System.Web.Mvc;
 using Unity;
 using Unity.Mvc5;
 
-namespace SLN_Malibu_Reservation
+namespace SLN_Reservation
 {
     public static class UnityConfig
     {

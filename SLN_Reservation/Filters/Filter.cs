@@ -5,7 +5,7 @@ using System.Linq;
 using System.Web;
 using System.Web.Mvc;
 
-namespace SLN_Malibu_Reservation.Filters
+namespace SLN_Reservation.Filters
 {
     public class Filter:ActionFilterAttribute
     {

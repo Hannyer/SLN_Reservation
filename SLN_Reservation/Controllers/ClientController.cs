@@ -8,7 +8,7 @@ using System.Web;
 using System.Web.Mvc;
 using System.Web.Services.Description;
 
-namespace SLN_Malibu_Reservation.Controllers.Mantenimientos
+namespace SLN_Reservation.Controllers.Mantenimientos
 {
     public class ClientController : Controller
     {

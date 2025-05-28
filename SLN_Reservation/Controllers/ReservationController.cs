@@ -25,7 +25,7 @@ using System.Xml;
 using System.Net.Mail;
 using System.Net;
 
-namespace SLN_Malibu_Reservation.Controllers
+namespace SLN_Reservation.Controllers
 {
     public class ReservationController : Controller
     {

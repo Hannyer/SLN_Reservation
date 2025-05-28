@@ -1,7 +1,7 @@
 ﻿using System.Web;
 using System.Web.Optimization;
 
-namespace SLN_Malibu_Reservation
+namespace SLN_Reservation
 {
     public class BundleConfig
     {

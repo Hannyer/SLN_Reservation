@@ -6,7 +6,7 @@ using Service.Service;
 using System;
 using System.Web.Mvc;
 
-namespace SLN_Malibu_Reservation.Controllers
+namespace SLN_Reservation.Controllers
 {
     public class HomeController : Controller
     {

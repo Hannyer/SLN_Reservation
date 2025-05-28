@@ -5,7 +5,7 @@ using System.Web;
 using System.Web.Mvc;
 using System.Web.Routing;
 
-namespace SLN_Malibu_Reservation
+namespace SLN_Reservation
 {
     public class RouteConfig
     {
