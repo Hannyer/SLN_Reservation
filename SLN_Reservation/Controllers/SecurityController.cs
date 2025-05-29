@@ -4,6 +4,7 @@ using Service.IService;
 using Service.Service;
 using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Linq;
 using System.Web;
 using System.Web.Mvc;
@@ -184,9 +185,11 @@ namespace SLN_Reservation.Controllers
 
         public ActionResult PartialPermissionView(int roleId)
         {
+            var sw = new Stopwatch();
 
             if (roleId != 0)
             {
+                sw.Start();
                 List<MenuE> updatedMenuData = _menuService.GetList(new MenuE()
                 {
                     Opcion = 0,
@@ -194,6 +197,9 @@ namespace SLN_Reservation.Controllers
                     STATUS_Menu = false,
                     Permisson_Status = false
                 });
+                sw.Stop();
+                var tiempoGetList = sw.Elapsed;
+                Debug.WriteLine($"GetList tardó: {tiempoGetList.TotalMilliseconds} ms");
                 LimpiarCheck(updatedMenuData, 1);
                 return PartialView(OrderMenus(updatedMenuData));
             }
