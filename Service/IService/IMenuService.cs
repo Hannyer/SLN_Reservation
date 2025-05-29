@@ -10,6 +10,7 @@ namespace Service.IService
     public interface IMenuService
     {
         List<MenuE> GetList(MenuE menu);
+        Task<List<MenuE>> GetListAsync(MenuE menu);
         void Maintenance(MenuE menu);
     }
 }

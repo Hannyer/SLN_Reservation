@@ -5,6 +5,7 @@ using Service.IService;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Threading.Tasks;
 using System.Web;
 
 namespace Service.Service
@@ -22,6 +23,19 @@ namespace Service.Service
             try
             {
                 return _menuRepository.GetList(menu);
+            }
+            catch (Exception ex)
+            {
+
+                throw ex;
+            }
+        }
+
+        public async Task<List<MenuE>> GetListAsync(MenuE menu)
+        {
+            try
+            {
+                return await _menuRepository.GetListAsync(menu);
             }
             catch (Exception ex)
             {

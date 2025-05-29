@@ -1,6 +1,7 @@
 ﻿using Datos;
 using EntityLayer;
 using Repository.IRepository;
+using Repository.Supabase;
 using System;
 using System.Collections.Generic;
 using System.Data.SqlClient;
@@ -66,6 +67,31 @@ namespace Repository.Repository
             catch (Exception ex)
             {
                 throw ex;
+            }
+        }
+        public async Task<List<MenuE>> GetListAsync(MenuE menu)
+        {
+            try
+            {
+                var rpcParams = new
+                {
+                    p_opcion = (short)menu.Opcion,
+                    p_pk_menu = menu.ID,
+                    p_fk_role = menu.IDP_ROLE,
+                    p_menu_status = menu.STATUS_Menu ? "1" : null,
+                    p_perm_status = menu.Permisson_Status ? "1" : null
+                };
+                var task = await SupabaseRest.PostRpcAsync<List<MenuE>>(
+                    "pa_con_mbr_menu",
+                    rpcParams
+                );
+             
+                return task;
+            }
+            catch (Exception ex)
+            {
+                
+                throw;
             }
         }
 

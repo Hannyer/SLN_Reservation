@@ -9,7 +9,8 @@ namespace Repository.IRepository
 {
     public interface IMenuRepository
     {
-        List<MenuE> GetListAsync(MenuE menu);
+        List<MenuE> GetList(MenuE menu);
+        Task<List<MenuE>> GetListAsync(MenuE menu);
         void Maintenance(MenuE menu );
     }
 }
