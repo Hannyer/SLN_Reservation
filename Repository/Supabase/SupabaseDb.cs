@@ -31,29 +31,21 @@ namespace Repository.Supabase
         {
             var relative = $"rpc/{functionName}";
             var requestUri = _http.BaseAddress + relative;
-
             var json = JsonConvert.SerializeObject(payload);
             var content = new StringContent(json, Encoding.UTF8, "application/json");
-
             Debug.WriteLine("POST to: " + requestUri);
             Debug.WriteLine("Body: " + json);
-
-
             var response = await _http.PostAsync(relative, content);
             var body = await response.Content.ReadAsStringAsync();
-
             Debug.WriteLine($"Status: {(int)response.StatusCode} {response.ReasonPhrase}");
             Debug.WriteLine("Response Body: " + body);
-
             if (!response.IsSuccessStatusCode)
             {
                 throw new Exception(
                     $"RPC '{functionName}' falló ({(int)response.StatusCode}): {body}"
                 );
             }
-
             return JsonConvert.DeserializeObject<T>(body);
         }
-
     }
 }
