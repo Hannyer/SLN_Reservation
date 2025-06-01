@@ -23,45 +23,48 @@
     </div>
 </div>
 <div class="row">
-    <table id="tblUser" class="table table-hover">
-        <thead>
-            <tr>
-                <th>Nombre</th>
-                <th>Usuario</th>
-                <th>Rol</th>
-                <th>Estado</th>
-                <th>Acciones</th>
-                <th></th>
-            </tr>
-        </thead>
+    <div class="table-responsive">
 
-        @foreach (var user in Model)
-        {
-            <tr>
-                <td>@Html.DisplayFor(model => user.Name)</td>
-                <td>@Html.DisplayFor(model => user.User)</td>
+        <table id="tblUser" class="table table-hover table-custom">
+            <thead>
+                <tr>
+                    <th>Nombre</th>
+                    <th>Usuario</th>
+                    <th>Rol</th>
+                    <th>Estado</th>
+                    <th>Acciones</th>
+                    <th></th>
+                </tr>
+            </thead>
 
-                <td>@Html.DisplayFor(model => user.Description)</td>
-                <td>
+            @foreach (var user in Model)
+            {
+                <tr>
+                    <td>@Html.DisplayFor(model => user.Name)</td>
+                    <td>@Html.DisplayFor(model => user.User)</td>
 
-                    <input type="checkbox" class="form-check-input readonly-checkbox" readonly="readonly" disabled="disabled" @(user.Status ? "checked" : "")>
+                    <td>@Html.DisplayFor(model => user.Description)</td>
+                    <td>
 
-                </td>
-                <td>
-                    <button type="button" class="btn green-button" onclick="OpenModalModifyRole(this,'mdlModifyUser')" data-user='@JsonConvert.SerializeObject(user)'>
-                        <i class="fas fa-edit"></i>
-                    </button>
-                    @*<button type="button" id="btnDeleteClient" class="btn btn-danger"  onclick="DeleteUser('@JsonConvert.SerializeObject(user)')" >
+                        <input type="checkbox" class="form-check-input readonly-checkbox" readonly="readonly" disabled="disabled" @(user.Status ? "checked" : "")>
 
-                        <i class="fas fa-trash-alt"></i>
-                    </button>*@
+                    </td>
+                    <td>
+                        <button type="button" class="btn green-button" onclick="OpenModalModifyRole(this,'mdlModifyUser')" data-user='@JsonConvert.SerializeObject(user)'>
+                            <i class="fas fa-edit"></i>
+                        </button>
+                        @*<button type="button" id="btnDeleteClient" class="btn btn-danger"  onclick="DeleteUser('@JsonConvert.SerializeObject(user)')" >
 
-                </td>
-                <td>@Html.HiddenFor(model => user.Password)</td>
-            </tr>
-        }
+                                <i class="fas fa-trash-alt"></i>
+                            </button>*@
 
-    </table>
+                    </td>
+                    <td>@Html.HiddenFor(model => user.Password)</td>
+                </tr>
+            }
+
+        </table>
+    </div>
 </div>
 
 
@@ -81,7 +84,7 @@
 <div class="modal fade" id="mdlAddUser">
     <div class="modal-dialog">
         <div class="modal-content">
-            <div class="modal-header"  style="background-color: #2E7D32; color:white; justify-content: center; ">
+            <div class="modal-header" style="background-color: #2E7D32; color:white; justify-content: center; ">
                 <h5 class="modal-title">Crear Usuarios</h5>
             </div>
             <div class="modal-body">
@@ -141,7 +144,7 @@
 <div class="modal fade" id="mdlModifyUser">
     <div class="modal-dialog">
         <div class="modal-content">
-            <div class="modal-header"  style="background-color: #2E7D32; color:white; justify-content: center; ">
+            <div class="modal-header" style="background-color: #2E7D32; color:white; justify-content: center; ">
                 <h5 class="modal-title">Modificar Usuarios</h5>
             </div>
             <div class="modal-body">
@@ -201,8 +204,8 @@
 <script>
  var userList = @Html.Raw(Json.Encode(Model));
     $(document).ready(function () {
-     
-    
+
+
         $('#tblUser').DataTable({
             "paging": true,
             "lengthChange": true,
@@ -229,12 +232,12 @@
                     "previous": "Anterior"
                 },
                 "drawCallback": function (settings) {
-                  
+
                     $('#tblUser input[type="text"]').attr('autocomplete', 'off');
                 }
             }
         });
-      
+
     });
 
 
