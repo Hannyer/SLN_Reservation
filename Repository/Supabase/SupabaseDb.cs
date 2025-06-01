@@ -29,23 +29,19 @@ namespace Repository.Supabase
 
         public static async Task<T> PostRpcAsync<T>(string functionName, object payload)
         {
-            // Construye la URL completa
             var relative = $"rpc/{functionName}";
             var requestUri = _http.BaseAddress + relative;
 
-            // Serializa el payload
             var json = JsonConvert.SerializeObject(payload);
             var content = new StringContent(json, Encoding.UTF8, "application/json");
 
-            // **Loguea URL + body**
             Debug.WriteLine("POST to: " + requestUri);
             Debug.WriteLine("Body: " + json);
 
-            // Ejecuta la llamada
+
             var response = await _http.PostAsync(relative, content);
             var body = await response.Content.ReadAsStringAsync();
 
-            // **Loguea status + respuesta**
             Debug.WriteLine($"Status: {(int)response.StatusCode} {response.ReasonPhrase}");
             Debug.WriteLine("Response Body: " + body);
 

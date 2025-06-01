@@ -19,3 +19,65 @@ textarea {
     max-width: 280px;
 }
 
+/* ======= ESTILO UNIFICADO PARA TODAS LAS TABLAS ======= */
+.table-custom {
+  width: 100%;
+  border-collapse: collapse;
+}
+
+/* Encabezados */
+.table-custom thead th {
+  background-color: #2C3E50;    /* mismo azul oscuro del sidebar */
+  color: #FFFFFF;
+  font-weight: 600;
+  padding: 0.75rem 1rem;
+  text-align: left;
+  border-bottom: 2px solid #1f2937; /* línea más oscura para separar thead de tbody */
+}
+
+/* Filas normales */
+.table-custom tbody tr {
+  background-color: #FFFFFF;
+  transition: background-color 0.2s ease-in-out;
+}
+
+/* Hover sobre filas */
+.table-custom tbody tr:hover {
+  background-color: #f1f5f9; /* un gris muy claro al pasar el ratón */
+}
+
+/* Celdas de cuerpo */
+.table-custom tbody td {
+  padding: 0.75rem 1rem;
+  border-bottom: 1px solid #e5e7eb; /* línea sutil entre filas */
+  color: #333333;
+}
+
+/* Si quieres alternar colores en filas (opcional) */
+.table-custom tbody tr:nth-child(even) {
+  background-color: #f9fafb;
+}
+
+/* Botones dentro de tablas: */
+.table-custom .btn {
+  font-size: 0.875rem;
+  padding: 0.4rem 0.7rem;
+}
+
+/* Ajustes especiales para celdas de “Acciones” */
+.table-custom tbody td:last-child {
+  text-align: center;
+}
+
+/* Campos vacíos o mensajes de “No se encontraron datos” */
+.table-custom .no-data {
+  text-align: center;
+  padding: 2rem;
+  color: #6b7280;
+  font-style: italic;
+}
+
+/* Responsive: agrega padding cuando la tabla sea scrollable en pantallas pequeñas */
+.table-responsive .table-custom {
+  min-width: 600px; /* si quieres forzar scroll horizontal en móviles */
+}

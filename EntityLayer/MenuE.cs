@@ -1,4 +1,5 @@
 ﻿using EntityLayer;
+using Newtonsoft.Json;
 using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
@@ -10,6 +11,7 @@ namespace EntityLayer
 {
     public class MenuE : BaseE
     {
+        [JsonProperty("ID_MENU")]
         public int ID { get; set; }
         public int IDP_ROLE { get; set; }
         public string PARENT_CODE { get; set; }
