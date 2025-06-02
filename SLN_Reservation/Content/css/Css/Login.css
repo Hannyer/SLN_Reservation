@@ -4,3 +4,115 @@
         display: none;
     }
 }
+
+/* Estilos generales para el fondo del body */
+body {
+    background: linear-gradient(to right top, #ffffff, #4f4f4f); /* Fondo degradado suave */
+}
+
+/* Contenedor principal de los paneles (actúa como la "tarjeta" grande) */
+.custom-card {
+    background-color: #ffffff; /* Fondo blanco por defecto para la tarjeta */
+    border-radius: 15px; /* Bordes redondeados para la tarjeta */
+    box-shadow: 0 10px 25px rgba(0, 0, 0, 0.2); /* Sombra suave */
+    overflow: hidden; /* Asegura que los bordes redondeados se vean bien */
+    width: 80%; /* Ancho general para la tarjeta */
+    max-width: 900px; /* Ancho máximo */
+    min-height: 550px; /* Altura mínima para que se vea el diseño */
+}
+
+/* Estilos específicos para el panel de Login */
+.login-panel-bootstrap {
+    background-color: #ffffff; /* Asegura que el panel de login sea blanco */
+    /* No se necesitan muchos estilos aquí, Bootstrap se encarga del layout */
+}
+
+/* Estilos para el panel de Registro (el de la derecha con degradado) */
+.register-panel-bootstrap {
+    background: linear-gradient(to right bottom, #ff7e5f, #feb47b); /* Degradado naranja/rojo */
+    /* Bootstrap ya maneja el color del texto blanco con text-white */
+    /* rounded-end aplica el borde redondeado solo al final */
+}
+
+/* Estilos para los íconos sociales */
+.btn-social {
+    width: 50px;
+    height: 50px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    font-size: 1.2em;
+    color: #555;
+    border-color: #ddd;
+    transition: all 0.3s ease;
+}
+
+    .btn-social:hover {
+        background-color: #f0f0f0;
+        border-color: #bbb;
+        color: #333;
+    }
+
+/* Separador "o usa tu email" */
+.separator-text {
+    display: flex;
+    align-items: center;
+    text-align: center;
+    color: #888;
+    font-size: 0.9em;
+}
+
+    .separator-text::before,
+    .separator-text::after {
+        content: '';
+        flex-grow: 1;
+        height: 1px;
+        background-color: #ccc;
+        margin: 0 10px; /* Espacio entre la línea y el texto */
+    }
+
+/* Estilo para los inputs personalizados (redondeados y con fondo gris) */
+.custom-input {
+    border: none; /* Eliminar el borde por defecto de Bootstrap */
+    background-color: #f0f0f0; /* Fondo gris claro */
+    padding: 12px 20px;
+    font-size: 1em;
+}
+
+    .custom-input:focus {
+        outline: none; /* Eliminar el outline por defecto */
+        background-color: #e5e5e5; /* Fondo un poco más oscuro al enfocar */
+        box-shadow: 0 0 0 0.25rem rgba(0, 123, 255, 0.25); /* Sombra suave de enfoque (similar a Bootstrap primary) */
+    }
+
+/* Estilo para el botón de iniciar sesión */
+.custom-submit-btn {
+    background-color: #198754; /* Rojo tomate */
+    border-color: #198754; /* Borde del mismo color */
+    font-weight: bold;
+    letter-spacing: 1px;
+    transition: background-color 0.3s ease, border-color 0.3s ease, transform 0.2s ease;
+}
+
+    .custom-submit-btn:hover {
+        background-color: #689680; /* Rojo un poco más oscuro al pasar el ratón */
+        border-color: #689680;
+        transform: translateY(-2px); /* Efecto de "levantar" */
+    }
+
+/* Estilo para el botón de registrar en el panel derecho */
+.custom-register-btn {
+    font-weight: bold;
+    letter-spacing: 1px;
+    transition: background-color 0.3s ease, color 0.3s ease;
+}
+
+    .custom-register-btn:hover {
+        background-color: white; /* Fondo blanco al pasar el ratón */
+        color: #ff6347; /* Texto del color del botón de login */
+    }
+
+/* Estilo para el enlace de "olvidaste tu contraseña" */
+.forgot-password-link {
+    font-size: 0.9em;
+}

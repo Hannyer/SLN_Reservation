@@ -32,6 +32,7 @@ namespace Repository.Repository
                         cmd.Parameters.AddWithValue("@P_OPCION", user.Opcion);
                         cmd.Parameters.AddWithValue("@P_ID",user.ID);
                         cmd.Parameters.AddWithValue("@P_User", user.User);
+                        cmd.Parameters.AddWithValue("@P_Email", user.Email);
 
                         using (SqlDataReader reader=cmd.ExecuteReader())
                         {
@@ -45,7 +46,10 @@ namespace Repository.Repository
                                     Id_Role = Convert.ToInt32(reader["Id_Role"].ToString()),
                                     Description = reader["Descripcion"].ToString(),
                                     Status = UtilitySQL.ObtieneBool(reader, "Status"),
-                                    Name = UtilitySQL.ObtieneString(reader,"Name")
+                                    Name = UtilitySQL.ObtieneString(reader,"Name"),
+                                    Email = UtilitySQL.ObtieneString(reader, "Email"),
+                                    PhoneNumber = UtilitySQL.ObtieneString(reader, "PhoneNumber"),
+                                    DocumentID = UtilitySQL.ObtieneString(reader, "DocumentID")
                                 }) ;      
                             }
                             return List;
@@ -107,6 +111,10 @@ namespace Repository.Repository
                         cmd.Parameters.AddWithValue("@P_ID_ROLE", user.Id_Role);
                         cmd.Parameters.AddWithValue("@P_Status", user.Status);
                         cmd.Parameters.AddWithValue("@P_Name", user.Name);
+                        cmd.Parameters.AddWithValue("@P_Email", user.Email);
+                        cmd.Parameters.AddWithValue("@P_PhoneNumber", user.PhoneNumber);
+                        cmd.Parameters.AddWithValue("@P_DocumentID", user.DocumentID);
+                        cmd.Parameters.AddWithValue("@P_ResetPassword", user.ResetPassword);
                         int AffectedRows = Convert.ToInt32(cmd.ExecuteNonQuery());
 
                         return AffectedRows > 0;
