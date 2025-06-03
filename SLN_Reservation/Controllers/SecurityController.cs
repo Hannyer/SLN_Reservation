@@ -84,7 +84,7 @@ namespace SLN_Reservation.Controllers
                 LimpiarCheck(updatedMenuData, 1);
                 return Json(new { success = true });
             }
-            catch (Exception)
+            catch (Exception ex)
             {
 
                 return Json(new { success = false });
@@ -97,7 +97,6 @@ namespace SLN_Reservation.Controllers
         public string GetSelectedMenus(List<MenuE> Lista)
         {
             List<MenuE> listaA = Lista.Where(x => x.STATUS_Menu).ToList();
-
 
             string SelectecMenu = "";
             foreach (MenuE menuE in listaA) { SelectecMenu += menuE.ID.ToString() + ","; }

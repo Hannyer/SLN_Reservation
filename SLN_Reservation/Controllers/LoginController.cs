@@ -20,6 +20,7 @@ namespace SLN_Reservation
         public ActionResult Index()
         {
             Session["User"] = null;
+            Session["List_Menu"] = null;
             return View();
         }
 
