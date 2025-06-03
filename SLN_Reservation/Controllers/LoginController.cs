@@ -1,6 +1,7 @@
 ﻿
 using EntityLayer;
 using Service.IService;
+using Service.Service;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -13,9 +14,11 @@ namespace SLN_Reservation
     public class LoginController : Controller
     {
         IUserService _UserService;
-        public LoginController(IUserService service)
+        IConfigurationService _configurationService;
+        public LoginController(IUserService service, IConfigurationService configurationService)
         {
             _UserService = service;
+            _configurationService = configurationService;
         }
         public ActionResult Index()
         {
@@ -233,12 +236,24 @@ namespace SLN_Reservation
 
                 if (updateResult)
                 {
-                    var emailConfig = new EmailConfigurationE
+
+                    var configEmail = _configurationService.GetList(new ConfigurationE()
                     {
-                        Host = System.Configuration.ConfigurationManager.AppSettings["SmtpHost"],
-                        Port = Convert.ToInt32(System.Configuration.ConfigurationManager.AppSettings["SmtpPort"]),
-                        Email = System.Configuration.ConfigurationManager.AppSettings["SmtpUser"],
-                        Password = System.Configuration.ConfigurationManager.AppSettings["SmtpPassword"]
+                        Opcion = 0,
+                        KEY01 = "PARAMETRO",
+                        KEY02 = "FUNCIONALIDAD",
+                        KEY03 = "MRB",
+                        KEY04 = "CREDENCIALES",
+                        KEY05 = "CORREO"
+                    });
+
+                    var emailConfig = new EmailConfigurationE()
+                    {
+                        Email = configEmail.Where(x => x.KEY06 == "CORREO").FirstOrDefault().VALUE,
+                        Password = configEmail.Where(x => x.KEY06 == "PASSWORD").FirstOrDefault().VALUE,
+                        Host = configEmail.Where(x => x.KEY06 == "HOST").FirstOrDefault().VALUE,
+                        Port = Convert.ToInt32(configEmail.Where(x => x.KEY06 == "PORT").FirstOrDefault().VALUE),
+
                     };
 
                     string emailSubject = "Restablecimiento de Contraseña - Hotel Malibú";
