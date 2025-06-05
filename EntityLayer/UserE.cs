@@ -8,7 +8,7 @@ namespace EntityLayer
     {
         public int ID { get; set; }
 
-        [Required(ErrorMessage = "El campo Usuario es obligatorio.")]
+
         [Display(Name = "Usuario")]
         public string User { get; set; }
 
@@ -27,6 +27,7 @@ namespace EntityLayer
         [Display(Name = "Estado")]
         public bool Status { get; set; }
 
+        [Required(ErrorMessage = "El campo Usuario es obligatorio.")]
         [Display(Name = "Correo Electrónico")]
         [EmailAddress(ErrorMessage = "Ingrese un correo electrónico válido.")]
         public string Email { get; set; }
@@ -40,6 +41,9 @@ namespace EntityLayer
 
         [Display(Name = "Cambio de Contraseña")]
         public bool ResetPassword { get; set; }
+
+        [Display(Name = "Tipo de identificación")]
+        public string IdentificationType_Description { get; set; }
 
     }
 }
