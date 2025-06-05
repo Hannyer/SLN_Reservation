@@ -23,20 +23,21 @@
                     {
                         <div class="card" id="cardAsignacion" runat="server">
                             <div class="content">
-                                @if (iMenu_Parent.CONTROLLER.Equals("DailyJobs")) { 
-                                
-                                          <div class="p-2">
+                                @if (iMenu_Parent.CONTROLLER.Equals("DailyJobs"))
+                                {
 
-                                             <a id="btn" Text="@ViewBag.DailyJobCount" class="contenedorPrincipal float-right" OnClick="" >
-                                                 <div data-toggle="tooltip"
-                                                     data-placement="top" class="contenedorSecundario"
-                                                     title="Aprobaciones pendientes" style="width: 45px; height: 45px; margin-left: 173px; margin-top: -35% !important; color: #2c3e50;">
-                                                     <span class="bi bi-bell iconsize"><mark id="MarcadorAprobaciones">@ViewBag.DailyJobCount</mark></span>
-                                                 </div>
-                                             </a>
-                                         </div>
+                                    <div class="p-2">
 
-                                
+                                        <a id="btn" Text="@ViewBag.DailyJobCount" class="contenedorPrincipal float-right" OnClick="">
+                                            <div data-toggle="tooltip"
+                                                 data-placement="top" class="contenedorSecundario"
+                                                 title="Aprobaciones pendientes" style="width: 45px; height: 45px; margin-left: 173px; margin-top: -35% !important; color: #2c3e50;">
+                                                <span class="bi bi-bell iconsize"><mark id="MarcadorAprobaciones">@ViewBag.DailyJobCount</mark></span>
+                                            </div>
+                                        </a>
+                                    </div>
+
+
                                 }
                                 <div class="imgBx">
 
@@ -56,39 +57,149 @@
                                                 @class = "nav-link text-dark col-6 float-right",
                                          style = "width: 100%; padding-right: 2rem;"
                                             })
-                                </a>
+                                    </a>
 
-                            </li>
+                                </li>
 
-                        </ul>
-                    </div>
+                            </ul>
+                        </div>
+
+                    }
 
                 }
-
             }
-
-
-            }
-
-
-
             @*<div class="card" id="cardAsignacion" runat="server">
-            <div class="content">
-                <div class="imgBx">
+                    <div class="content">
+                        <div class="imgBx">
 
-                    <img src="~/Content/Img/jobTask.jpg" />
-                </div>
+                            <img src="~/Content/Img/jobTask.jpg" />
+                        </div>
 
-            </div>
-            <ul class="sci">
-                <li>
-                    <a style="padding-right: 2rem;" href="ProcesoAsignacion.aspx">Labores</a>
-                </li>
+                    </div>
+                    <ul class="sci">
+                        <li>
+                            <a style="padding-right: 2rem;" href="ProcesoAsignacion.aspx">Labores</a>
+                        </li>
 
-            </ul>
-        </div>*@
-
+                    </ul>
+                </div>*@
         </div>
-
     </div>
 </main>
+
+<div class="modal fade" id="changePasswordModal" tabindex="-1" role="dialog" aria-labelledby="changePasswordModalLabel" aria-hidden="true" data-backdrop="static" data-keyboard="false">
+    <div class="modal-dialog modal-dialog-centered" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="changePasswordModalLabel">Establece tu Nueva Contraseña</h5>
+            </div>
+            <div class="modal-body">
+                <div class="alert alert-warning" role="alert">
+                    Es necesario que cambies tu contraseña autogenerada para poder continuar.
+                </div>
+                <form id="changePasswordForm" action="@Url.Action("ChangePasswordFromModal", "Home")" method="post">
+                    @Html.AntiForgeryToken()
+                    <div class="form-group mb-3">
+                        <label for="newPassword">Nueva Contraseña:</label>
+                        <input type="password" class="form-control" id="newPassword" name="newPassword" required autocomplete="new-password">
+                    </div>
+                    <div class="form-group mb-3">
+                        <label for="confirmNewPassword">Confirmar Nueva Contraseña:</label>
+                        <input type="password" class="form-control" id="confirmNewPassword" name="confirmNewPassword" required autocomplete="new-password">
+                    </div>
+                    <div class="alert alert-danger d-none" role="alert" id="passwordErrorMessages">
+                    </div>
+                    <div class="modal-footer">
+                        <button type="submit" class="btn btn-primary">Cambiar Contraseña</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+
+@section scripts { 
+    <script src="https://code.jquery.com/jquery-3.5.1.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@4.5.2/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+
+    <script type="text/javascript">
+        $(document).ready(function () {
+            @if (ViewBag.ShowChangePasswordModal == true)
+            {
+                <text>
+                    $('#changePasswordModal').modal({
+                        backdrop: 'static',
+                        keyboard: false
+                    });
+                    $('#changePasswordModal').modal('show');
+                </text>
+            }
+
+            $('#changePasswordForm').submit(function (e) {
+                e.preventDefault();
+
+                var newPassword = $('#newPassword').val();
+                var confirmNewPassword = $('#confirmNewPassword').val();
+                var errorDiv = $('#passwordErrorMessages');
+                errorDiv.addClass('d-none').text('');
+
+                if (newPassword === "" || confirmNewPassword === "") {
+                    errorDiv.removeClass('d-none').text('Por favor, ingresa y confirma la nueva contraseña.');
+                    return;
+                }
+
+                if (newPassword !== confirmNewPassword) {
+                    errorDiv.removeClass('d-none').text('La nueva contraseña y la confirmación no coinciden.');
+                    return;
+                }
+
+                if (newPassword.length < 6) {
+                    errorDiv.removeClass('d-none').text('La nueva contraseña debe tener al menos 6 caracteres.');
+                    return;
+                }
+
+                Swal.fire({
+                    title: '¿Estás seguro?',
+                    text: "¿Quieres cambiar tu contraseña?",
+                    icon: 'warning',
+                    showCancelButton: true,
+                    confirmButtonColor: '#3085d6',
+                    cancelButtonColor: '#d33',
+                    confirmButtonText: 'Sí, cambiarla',
+                    cancelButtonText: 'Cancelar'
+                }).then((result) => {
+                    if (result.isConfirmed) {
+                        $.ajax({
+                            url: $(this).attr('action'),
+                            type: 'POST',
+                            data: $(this).serialize(),
+                            success: function (response) {
+                                if (response.success) {
+                                    Swal.fire({
+                                        icon: 'success',
+                                        title: '¡Contraseña Cambiada!',
+                                        text: response.message,
+                                        showConfirmButton: true, 
+                                        allowOutsideClick: false, 
+                                        allowEscapeKey: false 
+                                    }).then(() => {
+                                        
+                                        $('#changePasswordModal').modal('hide');
+                                    });
+                                } else {
+                                    // Si hay un error, mostrar el mensaje en el div de errores del modal
+                                    errorDiv.removeClass('d-none').text(response.message);
+                                }
+                            },
+                            error: function (jqXHR, textStatus, errorThrown) {
+                                console.error("AJAX Error: ", textStatus, errorThrown, jqXHR.responseText);
+                                errorDiv.removeClass('d-none').text('Ocurrió un error al intentar cambiar la contraseña. Por favor, intente de nuevo.');
+                            }
+                        });
+                    }
+                });
+            });
+        });
+    </script>
+}

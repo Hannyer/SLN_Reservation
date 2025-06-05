@@ -1,13 +1,13 @@
-﻿using Repository.IRepository;
+﻿using Datos;
 using EntityLayer;
+using Repository.IRepository;
+using Repository.Supabase;
 using System;
 using System.Collections.Generic;
 using System.Data.SqlClient;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
-
-using Datos;
 using System.Xml.Linq;
 
 namespace Repository.Repository
@@ -18,6 +18,8 @@ namespace Repository.Repository
         {
             
         }
+
+        #region SQL
         public List<UserE> GetList(UserE user)
         {
             try
@@ -49,7 +51,8 @@ namespace Repository.Repository
                                     Name = UtilitySQL.ObtieneString(reader,"Name"),
                                     Email = UtilitySQL.ObtieneString(reader, "Email"),
                                     PhoneNumber = UtilitySQL.ObtieneString(reader, "PhoneNumber"),
-                                    DocumentID = UtilitySQL.ObtieneString(reader, "DocumentID")
+                                    DocumentID = UtilitySQL.ObtieneString(reader, "DocumentID"),
+                                    ResetPassword = UtilitySQL.ObtieneBool(reader, "ResetPassword")
                                 }) ;      
                             }
                             return List;
@@ -126,5 +129,85 @@ namespace Repository.Repository
                 return false;
             }
         }
+
+        #endregion
+
+        #region SUPABASE
+
+        public async Task<List<UserE>> GetListAsync(UserE user)
+        {
+            try
+            {
+                var rpcParams = new
+                {
+                    p_opcion = user.Opcion,
+                    p_id = user.ID,
+                    p_user = user.User,
+                    p_email = user.Email
+                };
+
+                var result = await SupabaseRest.PostRpcAsync<List<UserE>>("pa_con_mbr_tbl_user", rpcParams);
+                return result;
+            }
+            catch (Exception)
+            {
+                throw;
+            }
+        }
+
+
+        public async Task<bool> MaintenanceAsync(UserE user)
+        {
+            try
+            {
+                var rpcParams = new
+                {
+                    p_opcion = user.Opcion,
+                    p_id = user.ID,
+                    p_user = user.User,
+                    p_password = UtilitarioE.EncriptarString(user.Password),
+                    p_id_role = user.Id_Role,
+                    p_status = user.Status,
+                    p_name = user.Name,
+                    p_email = user.Email,
+                    p_phonenumber = user.PhoneNumber,
+                    p_documentid = user.DocumentID,
+                    p_resetpassword = user.ResetPassword
+                };
+
+                await SupabaseRest.PostRpcAsync<object>("pa_man_mbr_tbl_user", rpcParams);
+                return true;
+            }
+            catch (Exception)
+            {
+                return false;
+            }
+        }
+
+
+        public async Task<bool> MaintenanceAsync(int opcion, int id, string user, string password, int role)
+        {
+            try
+            {
+                var rpcParams = new
+                {
+                    p_opcion = opcion,
+                    p_id = id,
+                    p_user = user,
+                    p_password = UtilitarioE.EncriptarString(password),
+                    p_id_role = role
+                };
+
+                await SupabaseRest.PostRpcAsync<object>("pa_man_mbr_tbl_user", rpcParams);
+                return true;
+            }
+            catch (Exception)
+            {
+                return false;
+            }
+        }
+
+
+        #endregion
     }
 }

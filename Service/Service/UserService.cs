@@ -1,6 +1,7 @@
-﻿using Repository.IRepository;
+﻿using EntityLayer;
+using Repository.IRepository;
+using Repository.Supabase;
 using Service.IService;
-using EntityLayer;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -12,9 +13,12 @@ namespace Service.Service
     public class UserService : IUserService
     {
         private IUserRepository _userRepository;
-        public UserService(IUserRepository iUserRepository) { 
-        this._userRepository = iUserRepository;
+        public UserService(IUserRepository iUserRepository)
+        {
+            this._userRepository = iUserRepository;
         }
+
+        #region SQL
         public List<UserE> GetList(UserE user)
         {
             try
@@ -45,5 +49,50 @@ namespace Service.Service
                 throw ex;
             }
         }
+
+        #endregion
+
+
+        #region SUPABASE
+
+        public async Task<List<UserE>> GetListAsync(UserE user)
+        {
+            try
+            {
+                return await _userRepository.GetListAsync(user);
+            }
+            catch (Exception ex)
+            {
+                throw ex;
+            }
+        }
+
+        public async Task<bool> MaintenanceAsync(UserE user)
+        {
+            try
+            {
+                return await _userRepository.MaintenanceAsync(user);
+            }
+            catch (Exception ex)
+            {
+                throw ex;
+            }
+        }
+
+        public async Task<bool> MaintenanceAsync(int opcion, int id, string user, string password, int role)
+        {
+            try
+            {
+                return await _userRepository.MaintenanceAsync(opcion, id, user, password, role);
+            }
+            catch (Exception ex)
+            {
+                throw ex;
+            }
+        }
+
+        #endregion
+
+
     }
 }
