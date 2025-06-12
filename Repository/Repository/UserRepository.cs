@@ -52,7 +52,8 @@ namespace Repository.Repository
                                     Email = UtilitySQL.ObtieneString(reader, "Email"),
                                     PhoneNumber = UtilitySQL.ObtieneString(reader, "PhoneNumber"),
                                     DocumentID = UtilitySQL.ObtieneString(reader, "DocumentID"),
-                                    ResetPassword = UtilitySQL.ObtieneBool(reader, "ResetPassword")
+                                    ResetPassword = UtilitySQL.ObtieneBool(reader, "ResetPassword"),
+                                    IdIdentificationType = Convert.ToInt32(reader["IdIdentificationType"].ToString()),
                                 }) ;      
                             }
                             return List;
@@ -118,6 +119,7 @@ namespace Repository.Repository
                         cmd.Parameters.AddWithValue("@P_PhoneNumber", user.PhoneNumber);
                         cmd.Parameters.AddWithValue("@P_DocumentID", user.DocumentID);
                         cmd.Parameters.AddWithValue("@P_ResetPassword", user.ResetPassword);
+                        cmd.Parameters.AddWithValue("@P_IdIdentificationType", user.IdIdentificationType);
                         int AffectedRows = Convert.ToInt32(cmd.ExecuteNonQuery());
 
                         return AffectedRows > 0;

@@ -15,10 +15,12 @@ namespace SLN_Reservation.Controllers
     {
         private IUserService _service;
         IRoleService _roleService;
-        public UserController(IUserService userService, IRoleService roleService)
+        IIdentificationTypeService _IdentificationTypeService;
+        public UserController(IUserService userService, IRoleService roleService, IIdentificationTypeService identificationTypeService)
         {
             this._service = userService;
             _roleService = roleService;
+            _IdentificationTypeService = identificationTypeService;
         }
         // GET: User
         public ActionResult Index()
@@ -30,6 +32,7 @@ namespace SLN_Reservation.Controllers
                 return RedirectToAction("Index", "Login");
             }
             FillDropDownListRole();
+            FillDropDownListIdentificationType();
             var list = _service.GetList(new UserE());           
             return View(list);
         }
@@ -142,6 +145,22 @@ namespace SLN_Reservation.Controllers
 
                 throw;
             }
+        }
+
+        public void FillDropDownListIdentificationType()
+        {
+            var Identification = _IdentificationTypeService.GetList(new IdentificationTypeE() { Opcion = 0 });
+
+
+            var IdentificationList = Identification.Select(IdentificationL => new SelectListItem
+            {
+                Value = IdentificationL.ID.ToString(),
+                Text = IdentificationL.Description
+            });
+
+
+            ViewBag.IdentificationList = IdentificationList;
+
         }
     }
 }
