@@ -161,7 +161,7 @@ namespace SLN_Reservation.Controllers
             {
                 answer = "Reservación Agregada con exitosamente!";
                 var getGenerateReservation = _reservation.GetList(new ReservationE() { Opcion = 2, Id = IdGenerate, START_DATE = DateTime.Now, END_DATE = DateTime.Now }).FirstOrDefault();
-               // UtilitarioE.SendEmail(email, getGenerateReservation.Client_Mail, "Confirmación de reservación", GenerateReservationConfirmationEmail(getGenerateReservation, DollarData));
+                UtilitarioE.SendEmail(email, getGenerateReservation.Client_Mail, "Confirmación de reservación", GenerateReservationConfirmationEmail(getGenerateReservation, DollarData));
                 //RedirectToAction("Index");
             }
             else

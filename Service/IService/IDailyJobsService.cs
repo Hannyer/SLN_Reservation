@@ -11,6 +11,7 @@ namespace Service.IService
     public interface IDailyJobsService
     {
         List<DailyJobsE> GetList(DailyJobsE dailyJobsE);
+        int GetListCount(DailyJobsE dailyJobsE);
         bool Maintenance(DailyJobsE dailyJob);
     }
 }

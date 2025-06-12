@@ -81,6 +81,9 @@ namespace SLN_Reservation.Controllers
                     STATUS_Menu = false,
                     Permisson_Status = false
                 });
+                if ((Session["User"] as UserE).Id_Role == IdRoleselected) {
+                    Session["Required_Update_Menu"] = true;
+                }
                 LimpiarCheck(updatedMenuData, 1);
                 return Json(new { success = true });
             }

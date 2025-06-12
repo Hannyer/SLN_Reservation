@@ -4,6 +4,7 @@ using EntityLayer;
 using Repository.IRepository;
 using System;
 using System.Collections.Generic;
+using System.Data;
 using System.Data.SqlClient;
 using System.Linq;
 using System.Text;
@@ -58,6 +59,25 @@ namespace Repository.Repository
                 throw ex;
             }
         }
+
+        public int GetListCount(DailyJobsE dailyJobsE)
+        {
+            using (var connection = new SqlConnection(Connection.GetConnectionString()))
+            using (var cmd = new SqlCommand("dbo.PA_CON_MBR_TBL_DAILYJOBS", connection))
+            {
+                cmd.CommandType = CommandType.StoredProcedure;
+                cmd.Parameters.AddWithValue("@P_OPCION", dailyJobsE.Opcion);
+                cmd.Parameters.AddWithValue("@P_ID", dailyJobsE.Id);
+                cmd.Parameters.AddWithValue("@P_TYPE", dailyJobsE.Type ?? string.Empty);
+                connection.Open();
+                object resultado = cmd.ExecuteScalar();
+                return resultado == null || resultado == DBNull.Value
+                    ? 0
+                    : Convert.ToInt32(resultado);
+            }
+        }
+
+
 
         public bool Maintenance(DailyJobsE dailyJob)
         {

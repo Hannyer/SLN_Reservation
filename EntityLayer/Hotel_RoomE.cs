@@ -12,7 +12,9 @@ namespace EntityLayer
         public int ID { get; set; }
         public string Description { get; set; }
         public int Capacity { get; set; }
-        public DateTime StardDate { get; set; }
-        public DateTime EndDate { get; set; }
+        public DateTime? StardDate { get; set; }
+        public DateTime? EndDate { get; set; }
+        public decimal Price { get; set; }
+        public decimal DolarPrice { get; set; }
     }
 }

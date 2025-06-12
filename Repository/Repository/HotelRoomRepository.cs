@@ -39,7 +39,9 @@ namespace Repository.Repository
                                 {
                                     ID = Convert.ToInt32(reader["ID"].ToString()),
                                     Description = reader["DESCRIPTION"].ToString(),
-                                    Capacity=UtilitySQL.ObtieneInt(reader,"CAPACITY")
+                                    Capacity=UtilitySQL.ObtieneInt(reader,"CAPACITY"),
+                                    Price= UtilitySQL.ObtieneDecimal(reader, "PRICE"),
+                                    DolarPrice = UtilitySQL.ObtieneDecimal(reader, "DOLARPRICE")
                                 });
                             }
                             return List;

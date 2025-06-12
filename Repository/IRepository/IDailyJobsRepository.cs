@@ -11,6 +11,7 @@ namespace Repository.IRepository
     public interface IDailyJobsRepository
     {
         List<DailyJobsE> GetList(DailyJobsE dailyJobsE);
+       int GetListCount(DailyJobsE dailyJobsE);
         bool Maintenance(DailyJobsE dailyJob);
     }
 }

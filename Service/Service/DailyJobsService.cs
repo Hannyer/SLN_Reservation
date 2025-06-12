@@ -31,6 +31,19 @@ namespace Service.Service
             }
         }
 
+        public int GetListCount(DailyJobsE dailyJobsE)
+        {
+            try
+            {
+                return _dailyJobsRepository.GetListCount(dailyJobsE);
+            }
+            catch (Exception ex)
+            {
+
+                throw ex;
+            }
+        }
+
         public bool Maintenance(DailyJobsE dailyJob)
         {
             try

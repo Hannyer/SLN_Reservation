@@ -1,9 +1,11 @@
-﻿using EntityLayer;
+﻿using DocumentFormat.OpenXml.Office2010.ExcelAc;
+using EntityLayer;
 
 using Repository.Repository;
 using Service.IService;
 using Service.Service;
 using System;
+using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using System.Web.Mvc;
@@ -17,16 +19,21 @@ namespace SLN_Reservation.Controllers
         private IMenuService _menuService;
         IDailyJobsService _dailyJobsService;
         IUserService _UserService;
+    
         public HomeController(IUserService service, IMenuService menuService , IDailyJobsService dailyJobsService, IUserService userService) { 
             _service = service;
             _menuService = menuService;
             _dailyJobsService = dailyJobsService;
             _UserService = userService;
+            
+
+
         }
         public async Task<ActionResult> Index()
         {
             try
             {
+             
                 if (Session["User"] == null)
                 {
 
@@ -76,7 +83,7 @@ namespace SLN_Reservation.Controllers
             return View();
         }
 
-        public ActionResult Contact()
+        public ActionResult Contact() 
         {
             ViewBag.Message = "Your contact page.";
 
