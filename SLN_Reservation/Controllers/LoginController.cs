@@ -5,7 +5,9 @@ using Service.IService;
 using Service.Service;
 using System;
 using System.Collections.Generic;
+using System.Globalization;
 using System.Linq;
+using System.Text;
 using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 using System.Web;
@@ -104,7 +106,11 @@ namespace SLN_Reservation
                 return Json(new { success = false, message = "Por favor, complete todos los campos obligatorios." });
             }
 
-            
+            if (!IsValidPassword(userRequest.Password))
+            {
+                return Json(new { success = false, message = "El formato de la contraseña no es válido (Debe contener al menos 8 caracteres, una mayúscula, una minúscula y un número)." });
+            }
+
             if (!IsValidEmail(userRequest.Email))
             {
                 return Json(new { success = false, message = "El formato del correo electrónico es inválido." });
@@ -155,6 +161,7 @@ namespace SLN_Reservation
             userRequest.Id_Role = int.Parse(configEmail.Where(x => x.KEY06 == "ROLCLIENTE").FirstOrDefault().VALUE);
             userRequest.Status = true; 
             userRequest.ResetPassword = false;
+            userRequest.IdIdentificationType = Convert.ToInt32(userRequest.IdentificationType_Description);
 
             try
             {
@@ -202,27 +209,59 @@ namespace SLN_Reservation
         {
             if (string.IsNullOrWhiteSpace(docId)) return false;
 
-            // Permite 1-XXXX-XXXX o XXXXXXXXX
             string cedulaFisicaRegex = @"^(\d-\d{4}-\d{4}|\d{9})$";
-
             string cedulaJuridicaRegex = @"^\d-\d{3}-\d{6}$";
             string dimexPasaporteRegex = @"^[A-Z0-9]{6,15}$";
             string niteRegex = @"^\d{10}$";
 
-            switch (identificationTypeID)
+            var list = _IdentificationTypeService.GetList(new EntityLayer.IdentificationTypeE { Opcion = 0 });
+            var selectedIdType = list.FirstOrDefault(it =>
+                it.ID.ToString().Equals(identificationTypeID, StringComparison.OrdinalIgnoreCase));
+
+            if (selectedIdType == null) return false;
+
+            string Normalize(string text)
             {
-                case "1": // Cédula Física
-                    return Regex.IsMatch(docId, cedulaFisicaRegex);
-                case "2": // Cédula Jurídica
-                    return Regex.IsMatch(docId, cedulaJuridicaRegex);
-                case "3": // DIMEX / Pasaporte
-                    return Regex.IsMatch(docId, dimexPasaporteRegex, RegexOptions.IgnoreCase);
-                case "4": // NITE
-                    return Regex.IsMatch(docId, niteRegex);
-                default:
-                    return false;
+                if (string.IsNullOrWhiteSpace(text)) return "";
+                var normalized = text.Normalize(NormalizationForm.FormD);
+                var sb = new StringBuilder();
+                foreach (var c in normalized)
+                {
+                    if (CharUnicodeInfo.GetUnicodeCategory(c) != UnicodeCategory.NonSpacingMark)
+                        sb.Append(c);
+                }
+                return sb.ToString().Normalize(NormalizationForm.FormC).ToLowerInvariant();
             }
+
+            string normalizedDescription = Normalize(selectedIdType.Description);
+
+            if (normalizedDescription == "cedula fisica")
+            {
+                return Regex.IsMatch(docId, cedulaFisicaRegex);
+            }
+            else if (normalizedDescription == "cedula juridica")
+            {
+                return Regex.IsMatch(docId, cedulaJuridicaRegex);
+            }
+            else if (normalizedDescription == "dimex/pasaporte")
+            {
+                return Regex.IsMatch(docId, dimexPasaporteRegex, RegexOptions.IgnoreCase);
+            }
+            else if (normalizedDescription == "nite")
+            {
+                return Regex.IsMatch(docId, niteRegex);
+            }
+
+            return false;
         }
+
+        private bool IsValidPassword(string password)
+        {
+            // La misma lógica de expresión regular que en JavaScript
+            string regexPattern = @"^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)[A-Za-z\d]{8,}$";
+            return Regex.IsMatch(password, regexPattern);
+        }
+
 
         private string GenerateRandomPassword(int length)
         {

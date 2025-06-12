@@ -29,7 +29,7 @@
             <thead>
                 <tr>
                     <th>Nombre</th>
-                    <th>Usuario</th>
+                    <th>Correo</th>
                     <th>Rol</th>
                     <th>Estado</th>
                     <th>Acciones</th>
@@ -41,7 +41,7 @@
             {
                 <tr>
                     <td>@Html.DisplayFor(model => user.Name)</td>
-                    <td>@Html.DisplayFor(model => user.User)</td>
+                    <td>@Html.DisplayFor(model => user.Email)</td>
 
                     <td>@Html.DisplayFor(model => user.Description)</td>
                     <td>
@@ -53,10 +53,10 @@
                         <button type="button" class="btn green-button" onclick="OpenModalModifyRole(this,'mdlModifyUser')" data-user='@JsonConvert.SerializeObject(user)'>
                             <i class="fas fa-edit"></i>
                         </button>
-                        @*<button type="button" id="btnDeleteClient" class="btn btn-danger"  onclick="DeleteUser('@JsonConvert.SerializeObject(user)')" >
+                        <button type="button" id="btnDeleteClient" class="btn btn-danger" onclick="DeleteUser('@JsonConvert.SerializeObject(user)')">
 
-                                <i class="fas fa-trash-alt"></i>
-                            </button>*@
+                            <i class="fas fa-trash-alt"></i>
+                        </button>
 
                     </td>
                     <td>@Html.HiddenFor(model => user.Password)</td>
@@ -96,6 +96,36 @@
                 </div>
                 <div class="row">
                     <div class="col-12">
+                        <label for="txtEmailAdd" class="form-label">Correo Electrónico:</label>
+                        <input type="email" class="form-control" id="txtEmailAdd" required>
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="col-12">
+                        <label for="txtPhoneAdd" class="form-label">Teléfono (8 dígitos):</label>
+                        <input type="tel" class="form-control" id="txtPhoneAdd" placeholder="xxxxxxxx" maxlength="8" pattern="[0-9]{8}" required>
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="form-group">
+                        <label for="ddlClient">Selecciona un tipo de Identificación:</label>
+                        <select id="ddlAddIdentificationType" name="TipoIdentificacionId" class="form-control">
+                            <option value="">Seleccione una opción...</option>
+                            @foreach (var item in (IEnumerable<SelectListItem>)ViewBag.IdentificationList)
+                            {
+                                <option value="@item.Value">@item.Text</option>
+                            }
+                        </select>
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="col-12">
+                        <label for="txtDocumentIdAdd" class="form-label">Cédula/Pasaporte:</label>
+                        <input type="text" class="form-control" id="txtDocumentIdAdd" placeholder="Ej: 1-2345-6789 (Cédula) / ABC123456 (Pasaporte)" required>
+                    </div>
+                </div>
+                <div class="row" style="display: none;">
+                    <div class="col-12">
                         <label for="lblIdUserAdd" class="form-label">Usuario:</label>
                         <input type="text" class="form-control" id="txtUserAdd" required>
                     </div>
@@ -132,7 +162,7 @@
             <br />
             <div class="modal-footer">
 
-                <button type="button" id="btnModifyUser" class="btn green-button" onclick="AddUser()">Aceptar</button>
+                <button type="button" id="btnAddUser" class="btn green-button" onclick="AddUser()">Aceptar</button>
                 <button type="button" id="btncloseModal" class="btn red-button" onclick="CloseModal('mdlAddUser')">Cerrar</button>
             </div>
         </div>
@@ -149,12 +179,43 @@
             </div>
             <div class="modal-body">
                 <div class="row">
+                    <input type="hidden" id="txtIdUserModify"/>
                     <div class="col-12">
                         <label for="txtNameModify" class="form-label">Nombre:</label>
                         <input type="text" class="form-control" id="txtNameModify">
                     </div>
                 </div>
                 <div class="row">
+                    <div class="col-12">
+                        <label for="txtEmailModify" class="form-label">Correo Electrónico:</label>
+                        <input type="email" class="form-control" id="txtEmailModify" required>
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="col-12">
+                        <label for="txtPhoneModify" class="form-label">Teléfono (8 dígitos):</label>
+                        <input type="tel" class="form-control" id="txtPhoneModify" placeholder="xxxxxxxx" maxlength="8" pattern="[0-9]{8}" required>
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="form-group">
+                        <label for="ddlModifyIdentificationType">Selecciona un tipo de Identificación:</label>
+                        <select id="ddlModifyIdentificationType" name="TipoIdentificacionId" class="form-control">
+                            <option value="">Seleccione una opción...</option>
+                            @foreach (var item in (IEnumerable<SelectListItem>)ViewBag.IdentificationList)
+                            {
+                                <option value="@item.Value">@item.Text</option>
+                            }
+                        </select>
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="col-12">
+                        <label for="txtDocumentIdModify" class="form-label">Cédula/Pasaporte:</label>
+                        <input type="text" class="form-control" id="txtDocumentIdModify" placeholder="Ej: 1-2345-6789 (Cédula) / ABC123456 (Pasaporte)" required>
+                    </div>
+                </div>
+                <div class="row" style="display: none;">
                     <div class="col-12">
                         <label for="lblIdUserModify" class="form-label">Usuario:</label>
                         <input type="text" class="form-control" id="txtUserModify" required readonly>
@@ -251,9 +312,14 @@
         document.getElementById('txtPassModify').value = user.Password;
         document.getElementById('txtConfirmPassModify').value = user.Password;
         $("#ddlModifyRoles").val(user.Id_Role);
-        ;
         $("#chkModifyUser").prop("checked", JSON.parse(user.Status))
-
+        $("#txtIdUserModify").val(user.ID);
+        $('#txtEmailModify').val(user.Email);
+        $('#txtPhoneModify').val(user.PhoneNumber);
+        $('#ddlModifyIdentificationType').val(user.IdIdentificationType);
+        $('#txtDocumentIdModify').val(user.DocumentID);
+        $("#ddlModifyRoles").val(user.Id_Role);
+        $("#chkModifyUser").prop("checked", user.Status);
         OpenModal(modal);
     }
 

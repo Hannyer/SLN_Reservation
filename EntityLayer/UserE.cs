@@ -45,5 +45,9 @@ namespace EntityLayer
         [Display(Name = "Tipo de identificación")]
         public string IdentificationType_Description { get; set; }
 
+        [Required(ErrorMessage = "Debe seleccionar un tipo de identificación para el usuario.")]
+        [Display(Name = "Perfil")]
+        public int IdIdentificationType { get; set; }
+
     }
 }
