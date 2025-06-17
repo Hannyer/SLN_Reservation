@@ -1,11 +1,10 @@
-﻿@model List<EntityLayer.ReservationE>
+﻿@model  SLN_Reservation.DTO.ReservationDto
 
 @{
     ViewBag.Title = "Index";
     Layout = "~/Views/Shared/_Layout.cshtml";
 
 }
-
 
 <h2 style="text-align-last: center;">Reservación de hospedaje</h2>
 
@@ -89,69 +88,18 @@
 @*Modal to add Reservation*@
 <div class="modal fade" id="mdlAddReservation">
     <div class="modal-dialog modal-lg dialogPDF">
-        <div class="modal-content contentPDF">
-            <div class="modal-header" style="background-color: #2E7D32; color:white; justify-content: center; ">
+        <div class="modal-content contentPDF" style=" margin-top: 4rem;">
+            <div class="modal-header" style="background-color: #2C3E50; color: white; justify-content: center;">
                 <h5 class="modal-title">Agregar Reservaciones</h5>
             </div>
             <div class="modal-body">
                 <div class="row" style=" padding-left: 3rem;">
-                    <div class="col-lg-6 col-md-12 col-sm-12 col-xs-12 pt-4 p-0">
+                    <div class="col-lg-12 col-md-12 col-sm-12 col-xs-12 pt-4 p-0">
                         <div class="col-lg-12 col-md-12 col-sm-12 col-xs-12 ">
                             <div class="form-group">
                                 <label for="ddlAddReservationModal">Selecciona el cliente</label>
-                                <input type="text" id="ddlAddReservationModal" list="AddReservationList" class="form-control" placeholder="Buscar cliente..." autocomplete="off">
-                                <datalist id="AddReservationList">
+                                <select id="ddlAddReservationModal" class="form-control" style="width: 85%;"></select>
 
-                                    @{
-                                        if ((IEnumerable<SelectListItem>)ViewBag.ClientList != null)
-                                        {
-                                            foreach (var item in (IEnumerable<SelectListItem>)ViewBag.ClientList)
-                                            {
-                                                <option value="@item.Value">@item.Text</option>
-                                            }
-
-                                        } }
-                                </datalist>
-                            </div>
-                        </div>
-                    </div>
-                    <div class="col-lg-6 col-md-12 col-sm-12 col-xs-12 pt-4 p-0">
-                        <div class="col-lg-12 col-md-12 col-sm-12 col-xs-12 ">
-                            <div class="form-group">
-                                <label for="ddlAddTarifaModal">Selecciona la tarifa</label>
-                                <input type="text" id="ddlAddTarifaModal" list="AddTarifaList" class="form-control" placeholder="Buscar tarifa..." autocomplete="off">
-                                <datalist id="AddTarifaList">
-
-                                    @{
-                                        if ((IEnumerable<SelectListItem>)ViewBag.RateClientList != null)
-                                        {
-                                            foreach (var item in (IEnumerable<SelectListItem>)ViewBag.RateClientList)
-                                            {
-                                                <option value="@item.Value">@item.Text</option>
-                                            }
-                                        }
-
-                                    }
-                                </datalist>
-                            </div>
-
-                        </div>
-                    </div>
-                    <div class="col-lg-6 col-md-12 col-sm-12 col-xs-12 pt-4 p-0">
-                        <div class="col-lg-12 col-md-12 col-sm-12 col-xs-12 ">
-
-                            <div class="mb-3">
-                                <label for="lblDescription" class="form-label">Descripción:</label>
-                                <textarea class="form-control" id="txtDescription" disabled="disabled" cols="60" rows="8"></textarea>
-                            </div>
-                        </div>
-                    </div>
-                    <div class="col-lg-6 col-md-12 col-sm-12 col-xs-12 pt-4 p-0">
-                        <div class="col-lg-12 col-md-12 col-sm-12 col-xs-12 ">
-
-                            <div class="mb-3">
-                                <label for="txtExpenseDetails" class="form-label">Desglose:</label>
-                                <textarea class="form-control" id="txtExpenseDetails" disabled="disabled" cols="60" rows="8"></textarea>
                             </div>
                         </div>
                     </div>
@@ -184,6 +132,30 @@
 
                         </div>
                     </div>
+
+                    <div class="col-lg-12 col-md-12 col-sm-12 col-xs-12 pt-4 p-0">
+                        <div class="col-lg-12 col-md-12 col-sm-12 col-xs-12 ">
+                        </div>
+                    </div>
+                    <div class="col-lg-6 col-md-12 col-sm-12 col-xs-12 pt-4 p-0">
+                        <div class="col-lg-12 col-md-12 col-sm-12 col-xs-12 ">
+
+                            <div class="mb-3">
+                                <label for="lblDescription" class="form-label">Descripción:</label>
+                                <textarea class="form-control" id="txtDescription" disabled="disabled" cols="60" rows="8"></textarea>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-lg-6 col-md-12 col-sm-12 col-xs-12 pt-4 p-0">
+                        <div class="col-lg-12 col-md-12 col-sm-12 col-xs-12 ">
+
+                            <div class="mb-3">
+                                <label for="txtExpenseDetails" class="form-label">Desglose:</label>
+                                <textarea class="form-control" id="txtExpenseDetails" disabled="disabled" cols="60" rows="8"></textarea>
+                            </div>
+                        </div>
+                    </div>
+
                 </div>
 
             </div>
@@ -200,7 +172,7 @@
 @*Modal to Modify Reservation*@
 <div class="modal fade" id="mdlModifyReservation">
     <div class="modal-dialog modal-lg">
-        <div class="modal-content">
+        <div class="modal-content" style=" margin-top: 4rem;">
             <div class="modal-header" style="background-color: #2E7D32; color:white; justify-content: center; ">
                 <h5 class="modal-title">Modificar Reservaciones</h5>
             </div>
@@ -296,7 +268,7 @@
 @*Modal Deposito*@
 <div class="modal fade" id="mdlDeposit">
     <div class="modal-dialog modal-lg">
-        <div class="modal-content">
+        <div class="modal-content" style=" margin-top: 4rem;">
             <div class="modal-header" style="background-color: #2E7D32; color:white; justify-content: center; ">
                 <h5 class="modal-title">Agregar Depósito</h5>
             </div>
@@ -484,17 +456,49 @@
             $('#txtCheckIn, #txtCheckOut').attr('min', fechaActual);
             $('#txtModifyCheckIn, #txtModifyCheckOut').attr('min', fechaActual);
 
-
-
-        InitializerEventDropDownList2('ddlAddReservationModal', 'AddReservationList', 'AddTarifaList','AddRoomList');
-        InitializerEventDropDownListClient('ddlAddTarifaModal', 'AddTarifaList', 'Buscar tarifa...', 'txtDescription', 'txtExpenseDetails', 'AddRoomList');
         InitializerEventDropDownListClassic('ddlAddRoomModal', 'AddRoomList');
 
             InitializerEventDropDownList2('ddlModifyReservationModal', 'ModifyReservationList', 'ModifyTarifaList','');
         InitializerEventDropDownListClient('ddlModifyTarifaModal', 'ModifyTarifaList', 'Buscar tarifa...', 'txtModifyDescription', 'txtExpenseDetails','AddRoomList');
 
-
-
+        $('#ddlAddReservationModal').select2({
+            dropdownParent: $('#mdlAddReservation'),
+            placeholder: 'Buscar cliente...',
+            allowClear: true,
+            minimumInputLength: 2,
+            language: {
+                inputTooShort: function (args) {
+                    return 'Por favor ingrese ' + args.minimum + ' o más caracteres';
+                },
+                noResults: function () {
+                    return "No se encontraron resultados";
+                },
+                searching: function () {
+                    return "Buscando...";
+                }
+            },
+            ajax: {
+                url: '/Reservation/BuscarClientes',
+                dataType: 'json',
+                delay: 250,
+                data: function (params) {
+                    return {
+                        term: params.term
+                    };
+                },
+                processResults: function (data) {
+                    return {
+                        results: data.map(function (cliente) {
+                            return {
+                                id: cliente.id,
+                                text: cliente.nombre + ' - ' + cliente.cedula + ' (' + cliente.correo + ')'
+                            };
+                        })
+                    };
+                },
+                cache: true
+            }
+        });
 
 
         });
@@ -875,7 +879,7 @@
                    $('#contenedorVistaParcial').html(partialView);
 
                    $('#tblReservation').DataTable({
-                        
+
                        "paging": true,
                        "lengthChange": true,
                        "searching": true,
@@ -956,7 +960,7 @@
     //$('.modal-header').dblclick(() => {
 
     //    var heightWindows = $(window).height();
-    //    var widthWindows = $(window).width();  
+    //    var widthWindows = $(window).width();
 
     //    var width = $('.contentPDF').width();
     //    var height = $('.contentPDF').height();

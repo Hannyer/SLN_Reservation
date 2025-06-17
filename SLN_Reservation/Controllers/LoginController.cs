@@ -62,7 +62,7 @@ namespace SLN_Reservation
 
                 if (user != null)
                 {
-                    if (user.Password == model.Password)
+                    if (user.Password == UtilitarioE.EncriptarString(model.Password))
                     {
                         if (user.Status)
                         {

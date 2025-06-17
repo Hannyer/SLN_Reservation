@@ -24,6 +24,7 @@ using DocumentFormat.OpenXml.Spreadsheet;
 using System.Xml;
 using System.Net.Mail;
 using System.Net;
+using SLN_Reservation.DTO;
 
 namespace SLN_Reservation.Controllers
 {
@@ -37,6 +38,7 @@ namespace SLN_Reservation.Controllers
         IConfigurationService _configurationService;
         IAboutService _aboutService;
         IHotelRoomService _hotelRoomService;
+        ReservationDto reservationDto;
 
         public ReservationController(IReservationService reservationService, IClientService clientService, IRateService operateService, IRateTypeService operateTypeService, IConfigurationService configurationService, IAboutService aboutService, IHotelRoomService hotelRoomService)
         {
@@ -47,6 +49,7 @@ namespace SLN_Reservation.Controllers
             _configurationService = configurationService;
             _aboutService = aboutService;
             _hotelRoomService = hotelRoomService;
+            reservationDto=new ReservationDto();
         }
         // GET: Reservation
         public async Task<ActionResult> Index()
@@ -56,10 +59,12 @@ namespace SLN_Reservation.Controllers
 
                 return RedirectToAction("Index", "Login");
             }
+            reservationDto.reservationList = _reservation.GetList(new ReservationE() { Opcion = 1, START_DATE = DateTime.Now.AddDays(-5), END_DATE = DateTime.Now.AddDays(1) });
+
             FillDropDownListSeachClient();
             await GetDollarValue();
-            var list = _reservation.GetList(new ReservationE() { Opcion = 1, START_DATE = DateTime.Now, END_DATE = DateTime.Now.AddDays(1) });
-            return View(list);
+           
+            return View(reservationDto);
         }
         [HttpGet]
         public ActionResult SeachReservationByStatus(string reservationStatus, DateTime StartDate, DateTime EndDate)
@@ -82,7 +87,7 @@ namespace SLN_Reservation.Controllers
         [HttpGet]
         public ActionResult PartialViewReservation(List<ReservationE> Lista)
         {
-
+            
 
             return PartialView(Lista);
         }
@@ -869,6 +874,23 @@ namespace SLN_Reservation.Controllers
             }
         }
 
+        [HttpGet]
+        public JsonResult BuscarClientes(string term)
+        {
+            var clientes = _clientService.GetList(new ClientE() { Opcion = 1 })
+                .Where(c => c.Full_Name.ToLower().Contains(term.ToLower()) || c.IdCard.Contains(term) || c.Mail.ToLower().Contains(term.ToLower()))
+                .Select(c => new {
+                    id = c.Id,
+                    nombre = c.Full_Name,
+                    cedula = c.IdCard,
+                    correo = c.Mail
+                })
+                .Take(20)
+                .ToList();
+
+
+            return Json(clientes, JsonRequestBehavior.AllowGet);
+        }
 
 
 
