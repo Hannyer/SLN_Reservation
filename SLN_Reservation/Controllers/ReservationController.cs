@@ -441,15 +441,18 @@ namespace SLN_Reservation.Controllers
 
             return Json(rateList, JsonRequestBehavior.AllowGet);
         }
-        public JsonResult GetHotelRoomListByCapacity(int Id_RateSelected, DateTime StartDate, DateTime EndDate)
+        public JsonResult GetHotelRoomListByCapacity( DateTime StartDate, DateTime EndDate, int GuestCount)
         {
-
+            int Id_RateSelected = 1;
             var rate = _operateService.GetList(new RateE() { Opcion = 0, ID = Id_RateSelected }).FirstOrDefault();
-            var hotelRoom = _hotelRoomService.GetList(new Hotel_RoomE() { Opcion = 1, Capacity = rate.Number_People, StardDate = StartDate, EndDate = EndDate });
-            var hotelRoomList = hotelRoom.Select(hotelL => new SelectListItem
+            var hotelRoom = _hotelRoomService.GetList(new Hotel_RoomE() { Opcion = 1, Capacity = GuestCount, StardDate = StartDate, EndDate = EndDate });
+            var hotelRoomList = hotelRoom.Select(hotelL => new Hotel_RoomE
             {
-                Value = hotelL.ID.ToString(),
-                Text = hotelL.Description + " - Capacidad: " + hotelL.Capacity
+                ID = hotelL.ID,
+                Description = hotelL.Description + " - Capacidad: " + hotelL.Capacity,
+                Price = hotelL.Price,
+                DolarPrice = hotelL.DolarPrice,
+
             });
 
             return Json(hotelRoomList, JsonRequestBehavior.AllowGet);
@@ -480,9 +483,10 @@ namespace SLN_Reservation.Controllers
 
             return Json(Rate, JsonRequestBehavior.AllowGet);
         }
-        public JsonResult Expense_Details(int Id_Rate, int numberOfNights)
+        public JsonResult Expense_Details(int numberOfNights, int roomId)
         {
-            var Rate = _operateService.GetList(new RateE() { Opcion = 0, ID = Id_Rate }).FirstOrDefault();
+         
+            var hotelRoom = _hotelRoomService.GetList(new Hotel_RoomE() { Opcion = 0, ID = roomId }).FirstOrDefault();
             var config = _configurationService.GetList(new ConfigurationE()
             {
                 Opcion = 0,
@@ -493,7 +497,7 @@ namespace SLN_Reservation.Controllers
                 KEY05 = "IVA"
             }).FirstOrDefault();
 
-            double subtotal = Convert.ToDouble(numberOfNights * Rate.Price);
+            double subtotal = Convert.ToDouble(numberOfNights * hotelRoom.Price);
             double valor = Convert.ToDouble(config.VALUE) / 100;
 
             double subtotalWithoutTax = Math.Round((subtotal / valor), 2);
@@ -502,25 +506,13 @@ namespace SLN_Reservation.Controllers
             string expenseDetail = "";
             if (subtotalWithoutTax > 0)
             {
-                if (Rate.Currency.ToUpper().Equals("CRC"))
-                {
+               
 
                     expenseDetail = "Noches: " + numberOfNights + "\n" +
-                       "Precio por noche: " + Rate.Price.ToString("C", CultureInfo.CreateSpecificCulture("es-CR")) + "\n" +
+                       "Precio por noche: " + hotelRoom.Price.ToString("C", CultureInfo.CreateSpecificCulture("es-CR")) + "\n" +
                        "SubTotal: " + subtotalWithoutTax.ToString("C", CultureInfo.CreateSpecificCulture("es-CR")) + "\n" +
                        "Impuesto: " + taxAmount.ToString("C", CultureInfo.CreateSpecificCulture("es-CR")) + "\n" +
                        "Total: " + totalAmount.ToString("C", CultureInfo.CreateSpecificCulture("es-CR"));
-                }
-                else
-                {
-
-                    expenseDetail = "Noches: " + numberOfNights + "\n" +
-                       "Precio por noche: " + Rate.Price.ToString("C", CultureInfo.CreateSpecificCulture("en-US")) + "\n" +
-                       "SubTotal: " + subtotalWithoutTax.ToString("C", CultureInfo.CreateSpecificCulture("en-US")) + "\n" +
-                       "Impuesto: " + taxAmount.ToString("C", CultureInfo.CreateSpecificCulture("en-US")) + "\n" +
-                       "Total: " + totalAmount.ToString("C", CultureInfo.CreateSpecificCulture("en-US"));
-                }
-
             }
             else
             {

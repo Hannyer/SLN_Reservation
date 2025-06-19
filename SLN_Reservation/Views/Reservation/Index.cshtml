@@ -5,6 +5,44 @@
     Layout = "~/Views/Shared/_Layout.cshtml";
 
 }
+<style>
+    .room-card {
+        border: 1px solid #ccc;
+        border-radius: 10px;
+        padding: 1rem;
+        width: 220px;
+        cursor: pointer;
+        background-color: white;
+        box-shadow: 1px 1px 4px rgba(0,0,0,0.1);
+        transition: transform 0.2s;
+    }
+
+        .room-card:hover {
+            transform: scale(1.02);
+            border-color: #2c3e50;
+        }
+
+        .room-card.selected {
+            border: 2px solid #2c3e50;
+            background-color: #eaf2f8;
+        }
+    #roomCardsScroll {
+        max-height: 250px;
+        overflow-y: auto;
+        border: 1px solid #ddd;
+        padding: 0.5rem;
+        border-radius: 10px;
+    }
+        #roomCardsScroll::-webkit-scrollbar {
+            width: 10px;
+        }
+
+        #roomCardsScroll::-webkit-scrollbar-thumb {
+            background-color: #aaa;
+            border-radius: 4px;
+        }
+
+</style>
 
 <h2 style="text-align-last: center;">Reservación de hospedaje</h2>
 
@@ -87,7 +125,7 @@
 
 @*Modal to add Reservation*@
 <div class="modal fade" id="mdlAddReservation">
-    <div class="modal-dialog modal-lg dialogPDF">
+    <div class="modal-dialog modal-xl dialogPDF">
         <div class="modal-content contentPDF" style=" margin-top: 4rem;">
             <div class="modal-header" style="background-color: #2C3E50; color: white; justify-content: center;">
                 <h5 class="modal-title">Agregar Reservaciones</h5>
@@ -103,33 +141,47 @@
                             </div>
                         </div>
                     </div>
-                    <div class="col-lg-6 col-md-12 col-sm-12 col-xs-12 pt-4 p-0">
+                    <div class="col-lg-4 col-md-12 col-sm-12 col-xs-12 pt-4 p-0">
                         <div class="col-lg-12 col-md-12 col-sm-12 col-xs-12 ">
                             <div class="mb-3">
-                                <label for="lblCheckIn" class="form-label">Entrada:</label>
-                                <input type="date" class="form-control" id="txtCheckIn" required>
+                                <div class="form-group">
+                                    <label for="lblCheckIn" class="form-label">Entrada:</label>
+                                    <input type="date" class="form-control" id="txtCheckIn" required>
+                                </div>
+
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-lg-4 col-md-12 col-sm-12 col-xs-12 pt-4 p-0">
+                        <div class="col-lg-12 col-md-12 col-sm-12 col-xs-12 ">
+                            <div class="mb-3">
+                                <div class="form-group">
+                                    <label for="lblCheckOut" class="form-label">Salida:</label>
+                                    <input type="date" class="form-control" id="txtCheckOut" required>
+                                </div>
                             </div>
 
                         </div>
                     </div>
-                    <div class="col-lg-6 col-md-12 col-sm-12 col-xs-12 pt-4 p-0">
+                    <div class="col-lg-4 col-md-12 col-sm-12 col-xs-12 pt-4 p-0">
                         <div class="col-lg-12 col-md-12 col-sm-12 col-xs-12 ">
                             <div class="mb-3">
-                                <label for="lblCheckOut" class="form-label">Salida:</label>
-                                <input type="date" class="form-control" id="txtCheckOut" required>
+                                <div class="form-group">
+                                    <input type="hidden" id="ddlAddRoomModal" />
+                                    <label for="txtGuestCount" class="form-label">Cantidad de huéspedes</label>
+                                    <input type="number" class="form-control" id="txtGuestCount" min="1" value="1" required />
+                                </div>
                             </div>
-
                         </div>
                     </div>
-                    <div class="col-lg-6 col-md-12 col-sm-12 col-xs-12 pt-4 p-0">
+                    <div class="col-lg-12 col-md-12 col-sm-12 col-xs-12 pt-4 p-0">
                         <div class="col-lg-12 col-md-12 col-sm-12 col-xs-12 ">
                             <div class="form-group">
-                                <label for="ddlAddRoomModal">Selecciona una habitación</label>
-                                <input type="text" id="ddlAddRoomModal" list="AddRoomList" class="form-control" placeholder="Buscar habitación..." autocomplete="off">
-                                <datalist id="AddRoomList">
-                                </datalist>
+                                <label>Selecciona una habitación</label>
+                                <div id="roomCardsScroll">
+                                    <div id="roomCardsContainer" class="d-flex flex-wrap gap-3"></div>
+                                </div>
                             </div>
-
                         </div>
                     </div>
 
@@ -141,17 +193,8 @@
                         <div class="col-lg-12 col-md-12 col-sm-12 col-xs-12 ">
 
                             <div class="mb-3">
-                                <label for="lblDescription" class="form-label">Descripción:</label>
-                                <textarea class="form-control" id="txtDescription" disabled="disabled" cols="60" rows="8"></textarea>
-                            </div>
-                        </div>
-                    </div>
-                    <div class="col-lg-6 col-md-12 col-sm-12 col-xs-12 pt-4 p-0">
-                        <div class="col-lg-12 col-md-12 col-sm-12 col-xs-12 ">
-
-                            <div class="mb-3">
                                 <label for="txtExpenseDetails" class="form-label">Desglose:</label>
-                                <textarea class="form-control" id="txtExpenseDetails" disabled="disabled" cols="60" rows="8"></textarea>
+                                <textarea class="form-control" id="txtExpenseDetails" disabled="disabled" cols="100" rows="4"></textarea>
                             </div>
                         </div>
                     </div>
@@ -416,12 +459,12 @@
             } else {
                 $(this).data('lastValue', newCheckIn);
                 var Days = tmpDays(newCheckIn, checkOutVal);
-                var Id_rate = GetDropDownValueSelected('ddlAddTarifaModal', 'AddTarifaList');
 
-                if (Id_rate != null) {
-                    Expense_Details(Id_rate, Days, 'txtExpenseDetails');
-                    updateDatalistHotelRoomFromServer(Id_rate, 'AddRoomList', newCheckIn, checkOutVal);
-                }
+
+                    Expense_Details( Days, 'txtExpenseDetails');
+                    var guestCount = parseInt($("#txtGuestCount").val()) || 1;
+                    updateDatalistHotelRoomFromServer( 'AddRoomList', newCheckIn, checkOutVal, guestCount);
+
             }
         }).data('lastValue', $('#txtCheckIn').val());
 
@@ -437,22 +480,28 @@
             } else {
                 $(this).data('lastValue', newCheckOut);
                 var Days = tmpDays(checkInVal, newCheckOut);
-                var Id_rate = GetDropDownValueSelected('ddlAddTarifaModal', 'AddTarifaList');
 
-                if (Id_rate != null) {
-                    Expense_Details(Id_rate, Days, 'txtExpenseDetails');
-                    updateDatalistHotelRoomFromServer(Id_rate, 'AddRoomList', checkInVal, newCheckOut);
-                }
+
+                    Expense_Details( Days, 'txtExpenseDetails');
+                    var guestCount = parseInt($("#txtGuestCount").val()) || 1;
+                    updateDatalistHotelRoomFromServer( 'AddRoomList', checkInVal, newCheckOut, guestCount);
+
             }
         }).data('lastValue', $('#txtCheckOut').val());
+        $('#txtGuestCount').on('change', function () {
+            var checkIn = $('#txtCheckIn').val();
+            var checkOut = $('#txtCheckOut').val();
+            var guestCount = parseInt($(this).val()) || 1;
 
-
-
-
+            updateDatalistHotelRoomFromServer('AddRoomList', checkIn, checkOut, guestCount);
+        
+            
+            var Days = tmpDays(checkIn, checkOut);
+            Expense_Details(Days, 'txtExpenseDetails');
+            
+        });
 
             var fechaActual = new Date().toISOString().split('T')[0];
-
-
             $('#txtCheckIn, #txtCheckOut').attr('min', fechaActual);
             $('#txtModifyCheckIn, #txtModifyCheckOut').attr('min', fechaActual);
 
@@ -508,17 +557,17 @@
 
         function OpenModalAddReservation() {
             $("#btnModalAddReservation").click(function () {
-                $("#mdlAddReservation").modal("show"); // Abre el modal con el id "myModal"
+                $("#mdlAddReservation").modal("show"); 
             });
         }
         function CloseModalAddReservation() {
             $("#btnCloseModalAddReservation").click(function () {
-                $("#mdlAddReservation").modal("hide"); // Abre el modal con el id "myModal"
+                $("#mdlAddReservation").modal("hide"); 
             });
         }
         function CloseModalModifyReservation() {
             $("#btnCloseModalModifyReservation").click(function () {
-                $("#mdlModifyReservation").modal("hide"); // Abre el modal con el id "myModal"
+                $("#mdlModifyReservation").modal("hide"); 
             });
         }
     function CloseModalDeposit() {
@@ -527,11 +576,6 @@
         });
     }
         function OpenModalModifyReservation(button, modal) {
-
-            //var dataList = document.getElementById('ModifyTarifaList');
-            //while (dataList.options.length > 0) {
-            //    dataList.removeChild(dataList.options[0]);
-            //}
 
             var ReservationJson = button.getAttribute("data-reservation");
             var reservation = JSON.parse(ReservationJson);
@@ -775,51 +819,62 @@
                 }
             });
         }
-    function updateDatalistHotelRoomFromServer(Id_RateSelected, dataListParameter, startDate, endDate) {
-
+    function updateDatalistHotelRoomFromServer(dataListContainerId, startDate, endDate, guestCount) {
         if (!(startDate instanceof Date)) startDate = new Date(startDate);
         if (!(endDate instanceof Date)) endDate = new Date(endDate);
 
-
-        var formattedStartDate = startDate.toISOString().slice(0, 19).replace('T', ' ');
-        var formattedEndDate = endDate.toISOString().slice(0, 19).replace('T', ' ');
-
+        const formattedStartDate = startDate.toISOString().slice(0, 19).replace('T', ' ');
+        const formattedEndDate = endDate.toISOString().slice(0, 19).replace('T', ' ');
 
         $.ajax({
             type: "GET",
             url: "/Reservation/GetHotelRoomListByCapacity",
             data: {
-                Id_RateSelected: Id_RateSelected.toString(),
                 StartDate: formattedStartDate,
-                EndDate: formattedEndDate
+                EndDate: formattedEndDate,
+                GuestCount: guestCount
             },
             success: function (data) {
+                const container = document.getElementById("roomCardsContainer");
+                container.innerHTML = "";
 
-                var dataList = document.getElementById(dataListParameter);
-                console.log(dataListParameter);
-                while (dataList.options.length > 0) {
-                    dataList.removeChild(dataList.options[0]);
-                }
-                console.log(data.length);
-                if (data.length > 0) {
-                    for (var i = 0; i < data.length; i++) {
-
-                        var option = document.createElement("option");
-                        option.value = data[i].Value;
-                        option.text = data[i].Text;
-                        dataList.appendChild(option);
-                    }
-                }
-                else {
+                if (data.length === 0) {
                     Swal.fire('', 'No hay habitaciónes disponibles en las fechas solicitadas.', 'error');
+                    return;
                 }
 
+                data.forEach(hotel => {
+                    const card = document.createElement("div");
+                    card.className = "room-card";
+                    card.dataset.roomId = hotel.Value;
+
+                                      card.innerHTML = `
+                    <strong>${hotel.Description}</strong><br/>
+                    <span>Precio: ₡${parseFloat(hotel.Price).toLocaleString('es-CR', { minimumFractionDigits: 2 })}</span><br/>
+                    <span>USD: $${parseFloat(hotel.DolarPrice).toFixed(2)}</span><br/>
+                    <small>ID: ${hotel.ID}</small>
+`;
+
+                    card.dataset.roomId = hotel.ID;
+                    card.addEventListener("click", function () {
+                        document.querySelectorAll(".room-card").forEach(c => c.classList.remove("selected"));
+                        this.classList.add("selected");
+                        $("#ddlAddRoomModal").val(hotel.ID);
+                        var CheckIn = $("#txtCheckIn").val();
+                        var CheckOut = $("#txtCheckOut").val();
+                        var Days = tmpDays(CheckIn, CheckOut);
+                           Expense_Details( Days, 'txtExpenseDetails');
+                    });
+
+                    container.appendChild(card);
+                });
             },
             error: function (error) {
-                console.error("Error al obtener los datos del servidor: " + error);
+                console.error("Error al obtener habitaciones:", error);
             }
         });
     }
+
     function GetRateTypeById(Id_Rate, RateDrescription, txtDescription, numberOfNights, txtExpenseDetail) {
 
             $.ajax({
@@ -829,7 +884,7 @@
 
                     var split = RateDrescription.split('-');
                     $("#" + txtDescription).val('Tipo de tarifa aplicada al cliente: ' + data.Description_RateType + '\n Precio: ' + split[0].toString().trim() + ' / IVA incluido' + '\n-' + split[1].toString().trim());
-                    Expense_Details(Id_Rate, numberOfNights, txtExpenseDetail)
+                    Expense_Details( numberOfNights, txtExpenseDetail)
                 },
                 error: function (error) {
                     console.error("Error al obtener los datos del servidor: " + error);
@@ -837,22 +892,31 @@
             });
     }
 
-    function Expense_Details(Id_Rate, numberOfNights,txtExpenseDetail) {
+    function Expense_Details(numberOfNights, txtExpenseDetail) {
+        const roomId = $("#ddlAddRoomModal").val();
+
+        if (!roomId) {
+            console.log("No hay habitación seleccionada.");
+            return;
+        }
 
         $.ajax({
             type: "GET",
-            url: "/Reservation/Expense_Details?Id_Rate=" + Id_Rate + "&numberOfNights=" + numberOfNights,
+            url: "/Reservation/Expense_Details",
+            data: {
+                numberOfNights: numberOfNights,
+                roomId: roomId
+            },
             success: function (data) {
-
                 console.log(data);
                 $("#" + txtExpenseDetail).val(data);
-
             },
             error: function (error) {
-                console.error("Error al obtener los datos del servidor: " + error);
+                console.error("Error al obtener los datos del servidor:", error);
             }
         });
     }
+
 
     function FilterReservacion() {
         var selectedValue = $('#ddlReservationStatus').val();
