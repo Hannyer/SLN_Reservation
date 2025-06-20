@@ -7,6 +7,7 @@ using Service.Service;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 using System.Web.Mvc;
 
@@ -96,6 +97,7 @@ namespace SLN_Reservation.Controllers
         {
             UserE currentUser = Session["User"] as UserE;
 
+
             if (currentUser == null)
             {
                 return Json(new { success = false, message = "Tu sesión ha expirado. Por favor, inicia sesión de nuevo." });
@@ -109,6 +111,11 @@ namespace SLN_Reservation.Controllers
             if (newPassword != confirmNewPassword)
             {
                 return Json(new { success = false, message = "La nueva contraseña y la confirmación no coinciden." });
+            }
+
+            if (!IsValidPassword(newPassword))
+            {
+                return Json(new { success = false, message = "El formato de la contraseña no es válido (Debe contener al menos 8 caracteres, una mayúscula, una minúscula y un número)." });
             }
 
             try
@@ -144,6 +151,13 @@ namespace SLN_Reservation.Controllers
                 System.Diagnostics.Debug.WriteLine($"Error en ChangePasswordFromModal: {ex.Message}");
                 return Json(new { success = false, message = "Ocurrió un error inesperado al cambiar la contraseña. Por favor, inténtalo de nuevo más tarde." });
             }
+        }
+
+        private bool IsValidPassword(string password)
+        {
+            // La misma lógica de expresión regular que en JavaScript
+            string regexPattern = @"^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)[A-Za-z\d]{8,}$";
+            return Regex.IsMatch(password, regexPattern);
         }
 
     }
