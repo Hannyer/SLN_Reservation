@@ -2965,6 +2965,7 @@
     <Content Include="Content\Img\imgRecepcion.jpg" />
     <Content Include="Content\Img\jobTask.jpg" />
     <Content Include="Content\Img\Malibu-3.jpg" />
+    <Content Include="Content\Img\ReservacionCliente.png" />
     <Content Include="Content\JS\Client\select2.min.js" />
     <Content Include="Content\JS\jsClient.js" />
     <Content Include="Content\JS\jsDailyJobsE.js" />
@@ -4826,6 +4827,7 @@
     <Content Include="Views\ReservationReport\ReportAvailability.cshtml" />
     <Content Include="Views\ReservationClient\Index.cshtml" />
     <Content Include="Views\Client\IndexS.cshtml" />
+    <Content Include="Views\Client\IndexReservation.cshtml" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="App_Data\" />

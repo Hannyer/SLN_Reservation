@@ -1,0 +1,137 @@
+﻿@{
+    ViewBag.Title = "IndexReservation";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+<div class="container mt-5">
+    <h2>Reservación de habitación</h2>
+    <hr />
+
+    <form id="roomSearchForm" class="mb-4">
+        <div class="row g-3 align-items-end">
+            <div class="col-md-4">
+                <label for="checkInDate" class="form-label">Check‑in</label>
+                <input type="date" class="form-control" id="checkInDate"
+                       name="checkInDate" required />
+            </div>
+            <div class="col-md-4">
+                <label for="checkOutDate" class="form-label">Check‑out</label>
+                <input type="date" class="form-control" id="checkOutDate"
+                       name="checkOutDate" required />
+            </div>
+            <div class="col-md-2">
+                <label for="numberOfGuests" class="form-label">Huéspedes</label>
+                <input type="number" class="form-control" id="numberOfGuests"
+                       name="numberOfGuests" min="1" value="1" required />
+            </div>
+            <div class="col-md-2 d-grid">
+                <button type="submit" class="btn btn-primary">Buscar</button>
+            </div>
+        </div>
+    </form>
+
+    <div id="roomResults" class="row row-cols-1 row-cols-md-2 row-cols-lg-3 g-4" style="max-height: 70vh; overflow-y: auto;">
+    </div>
+</div>
+
+<div class="modal fade" id="mdlConfirmReservation" tabindex="-1" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content" style="margin-top: 4rem;">
+            <div class="modal-header" style="background-color: #2C3E50; color: white; justify-content: center;">
+                <h5 class="modal-title">Confirmar Reserva</h5>
+            </div>
+            <div class="modal-body">
+                <p>¿Estás seguro de que deseas reservar la habitación seleccionada para las fechas indicadas?</p>
+                <p><strong>Habitación #</strong> <span id="confirmRoomId"></span></p>
+                <p><strong>Check-in:</strong> <span id="confirmCheckIn"></span></p>
+                <p><strong>Check-out:</strong> <span id="confirmCheckOut"></span></p>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn green-button" id="btnConfirmBooking">Confirmar</button>
+                <button type="button" class="btn red-button" data-bs-dismiss="modal">Cancelar</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    <script>
+        // Store booking details temporarily
+        let currentBookingDetails = {};
+
+        // intercepta el submit y llama vía AJAX
+        $("#roomSearchForm").on("submit", function (e) {
+            e.preventDefault();
+            const $form = $(this);
+
+            $.post(
+                "@Url.Action("SearchReservation", "Client")",
+                $form.serialize()
+            ).done(function (html) {
+                $("#roomResults").html(html);
+            });
+        });
+
+        // manejador “Reservar” (delegado porque las tarjetas se cargan después)
+        $("#roomResults").on("click", ".btn-book", function () {
+            const idRoom = $(this).data("id");
+            const checkIn = $("#checkInDate").val();
+            const checkOut = $("#checkOutDate").val();
+
+            // Store details for later use when modal's confirm button is clicked
+            currentBookingDetails = { idRoom, checkIn, checkOut };
+
+            // Populate modal fields
+            $("#confirmRoomId").text(idRoom);
+            $("#confirmCheckIn").text(checkIn);
+            $("#confirmCheckOut").text(checkOut);
+
+            // Show the custom confirmation modal
+            $('#mdlConfirmReservation').modal('show');
+        });
+
+        // Handle the "Confirmar" button click inside the modal
+        $("#btnConfirmBooking").on("click", function () {
+            // Retrieve details from stored object
+            const { idRoom, checkIn, checkOut } = currentBookingDetails;
+
+            // Close the confirmation modal
+            $('#mdlConfirmReservation').modal('hide');
+
+            // Proceed with the booking request
+            $.post("@Url.Action("BookRoom", "Client")", {
+                idRoom: idRoom,
+                checkIn: checkIn,
+                checkOut: checkOut
+            }).done((responseMessage) => {
+                // Use SweetAlert2 for the final message
+                Swal.fire({
+                    icon: 'success', // For success messages
+                    title: '¡Éxito!',
+                    text: responseMessage, // The message from the controller
+                    showConfirmButton: true,
+                    confirmButtonText: 'OK',
+                    customClass: {
+                        confirmButton: 'green-button' // Apply your green-button class if it makes sense for SweetAlert2
+                    }
+                }).then((result) => {
+                    // Optional: Re-run the search to update room availability if needed after user clicks OK
+                    if (result.isConfirmed) {
+                        // $("#roomSearchForm").submit();
+                    }
+                });
+
+            }).fail((jqXHR, textStatus, errorThrown) => {
+                // Use SweetAlert2 for error messages
+                Swal.fire({
+                    icon: 'error',
+                    title: 'Error',
+                    text: 'Ha ocurrido un error inesperado. Por favor, inténtalo de nuevo.', // General error for AJAX fail
+                    showConfirmButton: true,
+                    confirmButtonText: 'OK'
+                });
+                console.error("Error en la solicitud AJAX:", textStatus, errorThrown, jqXHR.responseText);
+            });
+        });
+    </script>
+}
