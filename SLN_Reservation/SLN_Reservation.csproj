@@ -441,6 +441,7 @@
     <Compile Include="Controllers\ReservationReportController.cs" />
     <Compile Include="Controllers\SecurityController.cs" />
     <Compile Include="Controllers\UserController.cs" />
+    <Compile Include="DTO\ReservationDto.cs" />
     <Compile Include="Filters\AuthorizeUser.cs" />
     <Compile Include="Filters\Filter.cs" />
     <Compile Include="Global.asax.cs">

@@ -24,6 +24,7 @@
     <link href="~/Content/css/Css/select2.min.css" rel="stylesheet" />
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/intl-tel-input/17.0.8/css/intlTelInput.css" />
     <link href="~/Content/Site.css" rel="stylesheet" />
+
     <style>
         .sidebar {
             background-color: #2C3E50;
@@ -328,7 +329,7 @@
                                                     {
                                                         <li class="nav-item">
                                                             <a class="nav-link text-dark" href="@Url.Action(item.ACTION, item.CONTROLLER)">
-                                                                <i  style="margin-right: 0.75rem;" class="@(item.ICON)"></i>
+                                                                <i style="margin-right: 0.75rem;" class="@(item.ICON)"></i>
                                                                 @item.DESCRIPTION
                                                             </a>
                                                         </li>
@@ -366,9 +367,10 @@
     @Scripts.Render("~/bundles/bootstrap")
     @RenderSection("scripts", required: false)
     <script src="~/Library/DataTable/jquery.dataTables.min.js"></script>
-    <script src="~/Content/JS/Client/select2.min.js"></script>
     <script src="~/Content/JS/PhoneInput/JS/intlTelInput.min.js"></script>
     <script src="~/Content/JS/PhoneInput/JS/utils.js"></script>
+    <script src="~/Content/JS/Client/select2.min.js"></script>
+
     <script>
         $(document).ready(function () {
             ocultarSpinner();

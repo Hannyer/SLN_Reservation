@@ -1,4 +1,4 @@
-﻿@model IEnumerable<EntityLayer.ReservationE>
+﻿@model SLN_Reservation.DTO.ReservationDto
 @using Newtonsoft.Json
 @using System.Globalization
 <style>
@@ -23,10 +23,10 @@
                 <th>Acciones</th>
             </tr>
         </thead>
-        @if (Model.Count() > 0)
+        @if (Model.reservationList.Count > 0)
         {
 
-            foreach (var reservation in Model)
+            foreach (var reservation in Model.reservationList)
             {
                 <tr>
                     <td>@Html.DisplayFor(model => reservation.Full_Name)</td>
