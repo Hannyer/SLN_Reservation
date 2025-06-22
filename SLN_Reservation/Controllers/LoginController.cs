@@ -62,7 +62,7 @@ namespace SLN_Reservation
 
                 if (user != null)
                 {
-                    if (user.Password == UtilitarioE.EncriptarString(model.Password))
+                    if (user.Password == model.Password)
                     {
                         if (user.Status)
                         {
@@ -327,8 +327,8 @@ namespace SLN_Reservation
 
                     };
 
-                    string emailSubject = "Restablecimiento de Contraseña - Hotel Malibú";
-                    string emailBody = $"Hola {userFound.Name},<br><br>Tu nueva contraseña para iniciar sesión en Hotel Malibú es: <strong>{newPlainTextPassword}</strong><br><br>Por favor, inicia sesión con esta nueva contraseña y cámbiala lo antes posible por una que puedas recordar.<br><br>Saludos cordiales,<br>El equipo de Hotel Malibú";
+                    string emailSubject = "Restablecimiento de Contraseña - Hotel CTP";
+                    string emailBody = $"Hola {userFound.Name},<br><br>Tu nueva contraseña para iniciar sesión en Hotel CTP es: <strong>{newPlainTextPassword}</strong><br><br>Por favor, inicia sesión con esta nueva contraseña y cámbiala lo antes posible por una que puedas recordar.<br><br>Saludos cordiales,<br>El equipo de Hotel Malibú";
 
                     try
                     {

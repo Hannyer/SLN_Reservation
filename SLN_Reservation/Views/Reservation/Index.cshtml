@@ -536,8 +536,11 @@
                     };
                 },
                 processResults: function (data) {
+                    console.log(data)
                     return {
+                       
                         results: data.map(function (cliente) {
+                            console.log(cliente.id)
                             return {
                                 id: cliente.id,
                                 text: cliente.nombre + ' - ' + cliente.cedula + ' (' + cliente.correo + ')'
@@ -549,6 +552,34 @@
             }
         });
 
+        $('#ddlAddReservationModal').on('change', function () {
+    const clientId = $(this).val();
+    const clientName = $('#ddlAddReservationModal option:selected').text();
+    const checkIn = $('#txtCheckIn').val();
+    const checkOut = $('#txtCheckOut').val();
+    const guestCount = parseInt($("#txtGuestCount").val()) || 1;
+    const roomId = $("#ddlAddRoomModal").val();
+
+
+    const nights = tmpDays(checkIn, checkOut);
+
+    const shouldClean =
+        !clientId || !checkIn || !checkOut || nights <= 0;
+
+    if (shouldClean) {
+        $("#txtDescription").val("");
+        $("#txtExpenseDetails").val("");
+        return; // no hace nada más si hay datos incompletos
+    }
+
+    // Actualiza lista de habitaciones disponibles
+    updateDatalistHotelRoomFromServer("AddRoomList", checkIn, checkOut, guestCount);
+});
+
+        $('#ddlAddReservationModal').on('select2:select', function (e) {
+            const selectedClient = e.params.data;
+            console.log("Cliente seleccionado:", selectedClient);
+        });
 
         });
 
@@ -635,8 +666,6 @@
                         var CheckOut = $("#txtCheckOut").val();
 
                         var Days = tmpDays(CheckIn, CheckOut);
-
-                        GetRateTypeById(selectedOption.value, selectedOption.textContent, txtDescription_ID, Days, txtExpenseDetail);
 
                         if (tmpDays(CheckIn, CheckOut) > 0) {
                              updateDatalistHotelRoomFromServer(selectedOption.value, dataListHotelRoom,CheckIn,CheckOut);
@@ -875,26 +904,10 @@
         });
     }
 
-    function GetRateTypeById(Id_Rate, RateDrescription, txtDescription, numberOfNights, txtExpenseDetail) {
-
-            $.ajax({
-                type: "GET",
-                url: "/Reservation/GetRateTypebyId?Id_Rate=" + Id_Rate.toString() + "&numberOfNights=" + numberOfNights,
-                success: function (data) {
-
-                    var split = RateDrescription.split('-');
-                    $("#" + txtDescription).val('Tipo de tarifa aplicada al cliente: ' + data.Description_RateType + '\n Precio: ' + split[0].toString().trim() + ' / IVA incluido' + '\n-' + split[1].toString().trim());
-                    Expense_Details( numberOfNights, txtExpenseDetail)
-                },
-                error: function (error) {
-                    console.error("Error al obtener los datos del servidor: " + error);
-                }
-            });
-    }
+    
 
     function Expense_Details(numberOfNights, txtExpenseDetail) {
         const roomId = $("#ddlAddRoomModal").val();
-
         if (!roomId) {
             console.log("No hay habitación seleccionada.");
             return;
@@ -908,14 +921,25 @@
                 roomId: roomId
             },
             success: function (data) {
+                if (data === null) {
+                    $("#" + txtExpenseDetail).val("No se pudo obtener el desglose.");
+                    return;
+                }
                 console.log(data);
-                $("#" + txtExpenseDetail).val(data);
+                const detailText = `Noches: ${data.Nights}
+Precio por noche: ₡${data.PricePerNight.toLocaleString('es-CR', { minimumFractionDigits: 2 })}
+SubTotal: ₡${data.SubTotal.toLocaleString('es-CR', { minimumFractionDigits: 2 })}
+Impuesto: ₡${data.Tax.toLocaleString('es-CR', { minimumFractionDigits: 2 })}
+Total: ₡${data.Total.toLocaleString('es-CR', { minimumFractionDigits: 2 })}`;
+
+                $("#" + txtExpenseDetail).val(detailText);
             },
             error: function (error) {
                 console.error("Error al obtener los datos del servidor:", error);
             }
         });
     }
+
 
 
     function FilterReservacion() {
@@ -929,6 +953,8 @@
 
      var formattedStartDate = checkInVal.toISOString().slice(0, 19).replace('T', ' ');
      var formattedEndDate = checkOutVal.toISOString().slice(0, 19).replace('T', ' ');
+
+        console.log(formattedStartDate + " " + formattedEndDate)
 
      mostrarSpinner();
             $.ajax({

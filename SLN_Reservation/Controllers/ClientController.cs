@@ -334,7 +334,7 @@ namespace SLN_Reservation.Controllers.Mantenimientos
                 {
                     answer = "Reservación Agregada con exitosamente!";
                     var getGenerateReservation = _reservation.GetList(new ReservationE() { Opcion = 2, Id = IdGenerate, START_DATE = DateTime.Now, END_DATE = DateTime.Now }).FirstOrDefault();
-                    UtilitarioE.SendEmail(email, getGenerateReservation.Client_Mail, "Confirmación de reservación", GenerateReservationConfirmationEmail(getGenerateReservation, null));
+                    UtilitarioE.SendEmail(email, user.Email, "Confirmación de reservación", GenerateReservationConfirmationEmail(getGenerateReservation, null));
                     //RedirectToAction("Index");
                 }
                 else
@@ -363,7 +363,7 @@ namespace SLN_Reservation.Controllers.Mantenimientos
             emailContentBuilder.AppendLine("</style>");
             emailContentBuilder.AppendLine("</head>");
             emailContentBuilder.AppendLine("<body>");
-            emailContentBuilder.AppendLine("<h2 style='text-align: center;'>Hotel Malibú los Sueños</h2>");
+            emailContentBuilder.AppendLine("<h2 style='text-align: center;'>Hotel CTP</h2>");
             emailContentBuilder.AppendLine($"<p>Estimado(a) {reservation.Full_Name},</p>");
             emailContentBuilder.AppendLine("<p>Le confirmamos su reserva con los siguientes detalles:</p>");
             emailContentBuilder.AppendLine($"<p>Tipo de tarifa {reservation.RateType_Description}</p>");

@@ -41,27 +41,18 @@ namespace Repository.Repository
                                 List.Add(new ReservationE()
                                 {
                                     Id = Convert.ToInt32(reader["Id"].ToString()),
-                                    IdCard_Client = reader["IdCard_Client"].ToString(),
-                                    Full_Name = reader["Full_Name"].ToString(),
                                     Reservation_Description = reader["RESERVATION_DESCRIPTION"].ToString(),
                                     CheckIn = Convert.ToDateTime(reader["CheckIn"].ToString()),
                                     CheckOut = Convert.ToDateTime(reader["CheckOut"].ToString()),
                                     Status = reader["Status"].ToString(),
                                     Days = Convert.ToInt32(reader["Days"].ToString()),
-                                    ID_Rate = Convert.ToInt32(reader["ID_Rate"].ToString()),
-                                    DisplayName_Rate=UtilitySQL.ObtieneString(reader, "DISPLAYNAME"),
-                                    Rate_Description = UtilitySQL.ObtieneString(reader, "RATE_DESCRIPTION"),
-                                    RateType_Description = UtilitySQL.ObtieneString(reader, "RATETYPE_DESCRIPTION"),
                                     Price = UtilitySQL.ObtieneDecimal(reader, "PRICE"),
-                                    Currency = UtilitySQL.ObtieneString(reader, "Currency"),
-                                    Client_Mail = UtilitySQL.ObtieneString(reader, "Client_Mail"),
                                     SubtotalWithoutTax = UtilitySQL.ObtieneDouble(reader, "SubtotalWithoutTax"),
                                     TaxAmount = UtilitySQL.ObtieneDouble(reader, "TaxAmount"),
                                     TotalAmount = UtilitySQL.ObtieneDouble(reader, "TotalAmount"),
-                                    ID_ROOM=UtilitySQL.ObtieneInt(reader, "ID_ROOM"),
+                                    ID_ROOM = UtilitySQL.ObtieneInt(reader, "ID_ROOM"),
                                     DESCRIPTION_HOTELROOM = UtilitySQL.ObtieneString(reader, "DESCRIPTION_HOTELROOM"),
                                     Deposit = UtilitySQL.ObtieneDecimal(reader, "Deposit"),
-
 
 
                                 });

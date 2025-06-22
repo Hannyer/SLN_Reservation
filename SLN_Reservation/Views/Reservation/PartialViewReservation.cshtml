@@ -63,19 +63,19 @@
                                 <i class="fa-solid fa-cash-register"></i>
                             </button>
 
-                            if (reservation.Currency.ToUpper().Equals("CRC"))
-                            {
+                            //if (reservation.Currency.ToUpper().Equals("CRC"))
+                            //{
                                 <button type="button" id="btnModalAddRole" onclick="AddDeposit(this);" data-reservation='@JsonConvert.SerializeObject(reservation)' class="btn green-button" title="Depósito">
                                     ₡
                                 </button>
 
-                            }
+                            @*}
                             else
                             {
                                 <button type="button" id="btnModalAddRole" onclick="AddDeposit(this);" data-reservation='@JsonConvert.SerializeObject(reservation)' class="btn green-button" title="Depósito">
                                     $
                                 </button>
-                            }
+                            }*@
 
                             @*<button type="button" class="btn btn-primary" onclick="OpenModalModifyReservation(this,'mdlModifyReservation')" data-reservation='@JsonConvert.SerializeObject(reservation)'>
                     <i class="fas fa-edit"></i>

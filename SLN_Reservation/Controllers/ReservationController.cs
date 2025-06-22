@@ -25,6 +25,8 @@ using System.Xml;
 using System.Net.Mail;
 using System.Net;
 using SLN_Reservation.DTO;
+using SLN_Reservation.model.DTo;
+using Service.Service;
 
 namespace SLN_Reservation.Controllers
 {
@@ -38,9 +40,13 @@ namespace SLN_Reservation.Controllers
         IConfigurationService _configurationService;
         IAboutService _aboutService;
         IHotelRoomService _hotelRoomService;
+        IUserService _userService;
         ReservationDto reservationDto;
 
-        public ReservationController(IReservationService reservationService, IClientService clientService, IRateService operateService, IRateTypeService operateTypeService, IConfigurationService configurationService, IAboutService aboutService, IHotelRoomService hotelRoomService)
+        int IDRolClient;
+
+        public ReservationController(IReservationService reservationService, IClientService clientService, IRateService operateService, IRateTypeService operateTypeService, IConfigurationService configurationService, IAboutService aboutService, IHotelRoomService hotelRoomService,
+            IUserService service)
         {
             this._reservation = reservationService;
             _clientService = clientService;
@@ -49,7 +55,18 @@ namespace SLN_Reservation.Controllers
             _configurationService = configurationService;
             _aboutService = aboutService;
             _hotelRoomService = hotelRoomService;
-            reservationDto=new ReservationDto();
+            _userService = service;
+            reservationDto =new ReservationDto();
+
+            IDRolClient = Convert.ToInt32(_configurationService.GetList(new ConfigurationE()
+            {
+                Opcion = 0,
+                KEY01 = "PARAMETRO",
+                KEY02 = "FUNCIONALIDAD",
+                KEY03 = "MRB",
+                KEY04 = "ROL",
+                KEY05 = "CLIENTE"
+            }).FirstOrDefault().VALUE);
         }
         // GET: Reservation
         public async Task<ActionResult> Index()
@@ -82,7 +99,7 @@ namespace SLN_Reservation.Controllers
                 list = _reservation.GetList(new ReservationE() { Opcion = 1, START_DATE = StartDate, END_DATE = EndDate });
             }
 
-            return PartialView("PartialViewReservation", list);
+            return PartialView("PartialViewReservation", new ReservationDto() {reservationList=list });
         }
         [HttpGet]
         public ActionResult PartialViewReservation(List<ReservationE> Lista)
@@ -504,22 +521,19 @@ namespace SLN_Reservation.Controllers
             double taxAmount = subtotal - subtotalWithoutTax;
             double totalAmount = subtotal;
             string expenseDetail = "";
-            if (subtotalWithoutTax > 0)
-            {
-               
+ 
 
-                    expenseDetail = "Noches: " + numberOfNights + "\n" +
-                       "Precio por noche: " + hotelRoom.Price.ToString("C", CultureInfo.CreateSpecificCulture("es-CR")) + "\n" +
-                       "SubTotal: " + subtotalWithoutTax.ToString("C", CultureInfo.CreateSpecificCulture("es-CR")) + "\n" +
-                       "Impuesto: " + taxAmount.ToString("C", CultureInfo.CreateSpecificCulture("es-CR")) + "\n" +
-                       "Total: " + totalAmount.ToString("C", CultureInfo.CreateSpecificCulture("es-CR"));
-            }
-            else
+            var detalle = new ExpenseDetailDto
             {
+                Nights = numberOfNights,
+                PricePerNight = hotelRoom.Price,
+                SubTotal = subtotalWithoutTax,
+                Tax = taxAmount,
+                Total = totalAmount
+            };
 
-            }
-            FillDropDownListSeachClient();
-            return Json(expenseDetail, JsonRequestBehavior.AllowGet);
+            // FillDropDownListSeachClient();
+            return Json(detalle, JsonRequestBehavior.AllowGet);
         }
         public async Task<ActionResult> GetDollarValue()
         {
@@ -568,7 +582,7 @@ namespace SLN_Reservation.Controllers
             emailContentBuilder.AppendLine("</style>");
             emailContentBuilder.AppendLine("</head>");
             emailContentBuilder.AppendLine("<body>");
-            emailContentBuilder.AppendLine("<h2 style='text-align: center;'>Hotel Malibú los Sueños</h2>");
+            emailContentBuilder.AppendLine("<h2 style='text-align: center;'>Hotel CTP</h2>");
             emailContentBuilder.AppendLine($"<p>Estimado(a) {reservation.Full_Name},</p>");
             emailContentBuilder.AppendLine("<p>Le confirmamos su reserva con los siguientes detalles:</p>");
             emailContentBuilder.AppendLine($"<p>Tipo de tarifa {reservation.RateType_Description}</p>");
@@ -868,14 +882,14 @@ namespace SLN_Reservation.Controllers
 
         [HttpGet]
         public JsonResult BuscarClientes(string term)
-        {
-            var clientes = _clientService.GetList(new ClientE() { Opcion = 1 })
-                .Where(c => c.Full_Name.ToLower().Contains(term.ToLower()) || c.IdCard.Contains(term) || c.Mail.ToLower().Contains(term.ToLower()))
+       {
+            var clientes = _userService.GetList(new UserE() { Opcion = 1,Id_Role= IDRolClient })
+                .Where(c => c.Name.ToLower().Contains(term.ToLower()) || c.DocumentID.Contains(term) )
                 .Select(c => new {
-                    id = c.Id,
-                    nombre = c.Full_Name,
-                    cedula = c.IdCard,
-                    correo = c.Mail
+                    id = c.ID ,
+                    nombre = c.Name,
+                    cedula = c.DocumentID,
+                    correo = c.Email
                 })
                 .Take(20)
                 .ToList();
