@@ -42,6 +42,20 @@
             border-radius: 4px;
         }
 
+
+    .modal-xl .modal-body {
+        max-height: 70vh;
+        overflow-y: auto;
+        overflow-x: hidden;
+    }
+
+    #expenseBreakdown table td,
+    #expenseBreakdown table th {
+        vertical-align: middle;
+        padding: 0.5rem;
+    }
+
+
 </style>
 
 <h2 style="text-align-last: center;">Reservación de hospedaje</h2>
@@ -174,32 +188,68 @@
                             </div>
                         </div>
                     </div>
-                    <div class="col-lg-12 col-md-12 col-sm-12 col-xs-12 pt-4 p-0">
+                    <div class="col-lg-12 col-md-12 pt-4 p-0">
                         <div class="col-lg-12 col-md-12 col-sm-12 col-xs-12 ">
                             <div class="form-group">
-                                <label>Selecciona una habitación</label>
-                                <div id="roomCardsScroll">
-                                    <div id="roomCardsContainer" class="d-flex flex-wrap gap-3"></div>
+                                <label for="txtDescription" class="form-label">Descripción:</label>
+                                <textarea class="form-control" id="txtDescription" rows="3"
+                                          placeholder="Ingresa una descripción opcional…"></textarea>
+                            </div>
+                        </div>
+                        </div>
+                        <div class="col-lg-12 col-md-12 col-sm-12 col-xs-12 pt-4 p-0">
+                            <div class="col-lg-12 col-md-12 col-sm-12 col-xs-12 ">
+                                <div class="form-group">
+                                    <label>Selecciona una habitación</label>
+                                    <div id="roomCardsScroll">
+                                        <div id="roomCardsContainer" class="d-flex flex-wrap gap-3"></div>
+                                    </div>
                                 </div>
                             </div>
                         </div>
-                    </div>
 
-                    <div class="col-lg-12 col-md-12 col-sm-12 col-xs-12 pt-4 p-0">
-                        <div class="col-lg-12 col-md-12 col-sm-12 col-xs-12 ">
-                        </div>
-                    </div>
-                    <div class="col-lg-6 col-md-12 col-sm-12 col-xs-12 pt-4 p-0">
-                        <div class="col-lg-12 col-md-12 col-sm-12 col-xs-12 ">
-
-                            <div class="mb-3">
-                                <label for="txtExpenseDetails" class="form-label">Desglose:</label>
-                                <textarea class="form-control" id="txtExpenseDetails" disabled="disabled" cols="100" rows="4"></textarea>
+                        <div class="col-lg-12 col-md-12 col-sm-12 col-xs-12 pt-4 p-0">
+                            <div class="col-lg-12 col-md-12 col-sm-12 col-xs-12 ">
                             </div>
                         </div>
-                    </div>
+                        <div class="col-lg-6 col-md-12 col-sm-12 col-xs-12 pt-4 p-0">
+                            <div class="col-lg-12 col-md-12 col-sm-12 col-xs-12 ">
 
-                </div>
+                                <div class="mb-3">
+                                    <label class="form-label">Total a pagar:</label>
+                                    <div class="table-responsive">
+                                        <table class="table table-sm table-bordered">
+                                            <tbody>
+                                                <tr>
+                                                    <th>Noches</th>
+                                                    <td class="text-end"><span id="ebNumberNight"></span></td>
+                                                </tr>
+                                                <tr>
+                                                    <th>Precio por noche</th>
+                                                    <td class="text-end">₡<span id="ebPricePerNight">0.00</span></td>
+                                                </tr>
+                                                <tr>
+                                                    <th>SubTotal</th>
+                                                    <td class="text-end">₡<span id="ebSubTotal">0.00</span></td>
+                                                </tr>
+                                                <tr>
+                                                    <th>Impuesto</th>
+                                                    <td class="text-end">₡<span id="ebTax">0.00</span></td>
+                                                </tr>
+                                                <tr class="table-active">
+                                                    <th>Total</th>
+                                                    <td class="text-end fw-bold">₡<span id="ebTotal">0.00</span></td>
+                                                </tr>
+                                            </tbody>
+                                        </table>
+                                    </div>
+                                </div>
+
+
+                            </div>
+                        </div>
+
+                    </div>
 
             </div>
             <br />
@@ -355,10 +405,12 @@
         $('#txtCheckOut').val(fechaFormateada);
         $('#txtCheckInReservation').val(fechaFormateada);
         $('#txtCheckOutReservation').val(fechaFormateada);
-
+        if ($.fn.DataTable.isDataTable('#tblReservation')) {
+            $('#tblReservation').DataTable().destroy();
+        }
 
         $('#tblReservation').DataTable({
-                "scrollX": true,
+                
                 "paging": true,
                 "lengthChange": true,
                 "searching": true,
@@ -407,7 +459,10 @@
                      StartDate: formattedStartDate,
                      EndDate: formattedEndDate
                  },
-                success: function(partialView) {
+                 success: function (partialView) {
+                     if ($.fn.DataTable.isDataTable('#tblReservation')) {
+                         $('#tblReservation').DataTable().destroy();
+                     }
                     $('#contenedorVistaParcial').html(partialView);
 
                     $('#tblReservation').DataTable({
@@ -489,16 +544,16 @@
             }
         }).data('lastValue', $('#txtCheckOut').val());
         $('#txtGuestCount').on('change', function () {
+            clearRoomSelection();
             var checkIn = $('#txtCheckIn').val();
             var checkOut = $('#txtCheckOut').val();
             var guestCount = parseInt($(this).val()) || 1;
 
-            updateDatalistHotelRoomFromServer('AddRoomList', checkIn, checkOut, guestCount);
-        
-            
             var Days = tmpDays(checkIn, checkOut);
             Expense_Details(Days, 'txtExpenseDetails');
-            
+
+            updateDatalistHotelRoomFromServer('AddRoomList', checkIn, checkOut, guestCount);
+
         });
 
             var fechaActual = new Date().toISOString().split('T')[0];
@@ -569,10 +624,10 @@
     if (shouldClean) {
         $("#txtDescription").val("");
         $("#txtExpenseDetails").val("");
-        return; // no hace nada más si hay datos incompletos
+        return;
     }
 
-    // Actualiza lista de habitaciones disponibles
+  
     updateDatalistHotelRoomFromServer("AddRoomList", checkIn, checkOut, guestCount);
 });
 
@@ -583,7 +638,15 @@
 
         });
 
-
+    function clearRoomSelection() {
+        $('.room-card').removeClass('selected');
+        $('#ddlAddRoomModal').val('');
+        $('#ebNumberNight').text('');
+        $('#ebPricePerNight').text('0.00');
+        $('#ebSubTotal').text('0.00');
+        $('#ebTax').text('0.00');
+        $('#ebTotal').text('0.00');
+    }
 
 
         function OpenModalAddReservation() {
@@ -603,19 +666,13 @@
         }
     function CloseModalDeposit() {
         $("#btncloseDeposit").click(function () {
-            $("#mdlDeposit").modal("hide"); // Abre el modal con el id "myModal"
+            $("#mdlDeposit").modal("hide"); 
         });
     }
         function OpenModalModifyReservation(button, modal) {
 
             var ReservationJson = button.getAttribute("data-reservation");
             var reservation = JSON.parse(ReservationJson);
-
-            //var text = reservation.Currency.toUpperCase() === "USD"
-            //    ? "$ " + reservation.Price.toLocaleString('en-US', { maximumFractionDigits: 0 }) + " - " + reservation.DisplayName_Rate
-            //    : "₡ " + reservation.Price.toLocaleString('es-CR', { maximumFractionDigits: 0 }) + " - " + reservation.DisplayName_Rate;
-
-            //text = text.replace(/,/g, ' ');
             document.getElementById('ddlModifyReservationModal').value = reservation.Full_Name;
             document.getElementById('ddlModifyTarifaModal').value = reservation.ID_Rate;
             updateDatalistFromServer(reservation.IdCard_Client, 'ModifyTarifaList');
@@ -849,6 +906,8 @@
             });
         }
     function updateDatalistHotelRoomFromServer(dataListContainerId, startDate, endDate, guestCount) {
+        const prevRoomId = $('#ddlAddRoomModal').val();
+
         if (!(startDate instanceof Date)) startDate = new Date(startDate);
         if (!(endDate instanceof Date)) endDate = new Date(endDate);
 
@@ -864,48 +923,59 @@
                 GuestCount: guestCount
             },
             success: function (data) {
-                const container = document.getElementById("roomCardsContainer");
-                container.innerHTML = "";
+                const container = $('#roomCardsContainer');
+                container.empty();
 
                 if (data.length === 0) {
-                    Swal.fire('', 'No hay habitaciónes disponibles en las fechas solicitadas.', 'error');
+                    Swal.fire('', 'No hay habitaciones disponibles en las fechas solicitadas.', 'error');
+                    clearRoomSelection();
                     return;
                 }
 
+                let foundPrev = false;
                 data.forEach(hotel => {
-                    const card = document.createElement("div");
-                    card.className = "room-card";
-                    card.dataset.roomId = hotel.Value;
-
-                                      card.innerHTML = `
+                    const card = $(`
+                  <div class="room-card" data-room-id="${hotel.ID}">
                     <strong>${hotel.Description}</strong><br/>
                     <span>Precio: ₡${parseFloat(hotel.Price).toLocaleString('es-CR', { minimumFractionDigits: 2 })}</span><br/>
                     <span>USD: $${parseFloat(hotel.DolarPrice).toFixed(2)}</span><br/>
                     <small>ID: ${hotel.ID}</small>
-`;
+                  </div>
+                `);
 
-                    card.dataset.roomId = hotel.ID;
-                    card.addEventListener("click", function () {
-                        document.querySelectorAll(".room-card").forEach(c => c.classList.remove("selected"));
-                        this.classList.add("selected");
-                        $("#ddlAddRoomModal").val(hotel.ID);
-                        var CheckIn = $("#txtCheckIn").val();
-                        var CheckOut = $("#txtCheckOut").val();
-                        var Days = tmpDays(CheckIn, CheckOut);
-                           Expense_Details( Days, 'txtExpenseDetails');
+                    // Seleccionar solo si existe
+                    if (hotel.ID.toString() === prevRoomId) {
+                        card.addClass('selected');
+                        foundPrev = true; // Ya NO pones el val aquí
+                    }
+
+                    card.on('click', function () {
+                        $('.room-card').removeClass('selected');
+                        $(this).addClass('selected');
+                        $('#ddlAddRoomModal').val(hotel.ID);
+                        const days = tmpDays($('#txtCheckIn').val(), $('#txtCheckOut').val());
+                        Expense_Details(days, 'txtExpenseDetails');
                     });
 
-                    container.appendChild(card);
+                    container.append(card);
                 });
+
+                // Ahora aquí, solo si la habitación sigue existiendo, la pones
+                if (foundPrev) {
+                    $('#ddlAddRoomModal').val(prevRoomId);
+
+                    const days = tmpDays($('#txtCheckIn').val(), $('#txtCheckOut').val());
+                    Expense_Details(days, 'txtExpenseDetails');
+                } else {
+                    $("#ddlAddRoomModal").val('');
+                    clearRoomSelection();
+                }
             },
             error: function (error) {
                 console.error("Error al obtener habitaciones:", error);
             }
         });
     }
-
-    
-
     function Expense_Details(numberOfNights, txtExpenseDetail) {
         const roomId = $("#ddlAddRoomModal").val();
         if (!roomId) {
@@ -922,24 +992,22 @@
             },
             success: function (data) {
                 if (data === null) {
-                    $("#" + txtExpenseDetail).val("No se pudo obtener el desglose.");
+                    $("#expenseBreakdown").html("<p>No se pudo obtener el desglose.</p>");
                     return;
                 }
-                console.log(data);
-                const detailText = `Noches: ${data.Nights}
-Precio por noche: ₡${data.PricePerNight.toLocaleString('es-CR', { minimumFractionDigits: 2 })}
-SubTotal: ₡${data.SubTotal.toLocaleString('es-CR', { minimumFractionDigits: 2 })}
-Impuesto: ₡${data.Tax.toLocaleString('es-CR', { minimumFractionDigits: 2 })}
-Total: ₡${data.Total.toLocaleString('es-CR', { minimumFractionDigits: 2 })}`;
 
-                $("#" + txtExpenseDetail).val(detailText);
+                $("#ebPricePerNight").text(data.PricePerNight.toLocaleString('es-CR', { minimumFractionDigits: 2 }));
+                $("#ebSubTotal").text(data.SubTotal.toLocaleString('es-CR', { minimumFractionDigits: 2 }));
+                $("#ebTax").text(data.Tax.toLocaleString('es-CR', { minimumFractionDigits: 2 }));
+                $("#ebTotal").text(data.Total.toLocaleString('es-CR', { minimumFractionDigits: 2 }));
+                $("#ebNumberNight").text(data.Nights);
+
             },
             error: function (error) {
                 console.error("Error al obtener los datos del servidor:", error);
             }
         });
     }
-
 
 
     function FilterReservacion() {
@@ -965,7 +1033,10 @@ Total: ₡${data.Total.toLocaleString('es-CR', { minimumFractionDigits: 2 })}`;
                     StartDate: formattedStartDate,
                     EndDate: formattedEndDate
                 },
-               success: function(partialView) {
+                success: function (partialView) {
+                    if ($.fn.DataTable.isDataTable('#tblReservation')) {
+                        $('#tblReservation').DataTable().destroy();
+                    }
                    $('#contenedorVistaParcial').html(partialView);
 
                    $('#tblReservation').DataTable({

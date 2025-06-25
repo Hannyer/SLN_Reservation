@@ -3,111 +3,56 @@
 @using System.Globalization
 <style>
 </style>
-
-<div class="row">
-
-    <table id="tblReservation" class="table table-hover">
-        <thead>
+<div class="table-responsive">
+    <table id="tblReservation" class="table table-hover table-custom">
+        <thead class="thead-dark">
             <tr>
                 <th>Cliente</th>
-                @*<th>Tarifa</th>*@
                 <th>Descripción</th>
                 <th>Entrada</th>
                 <th>Salida</th>
-                <th>Días</th>
+                <th>Noches</th>
                 <th>Habitación</th>
                 <th>Estado</th>
-                <th>Depósito</th>
-                <th>Saldo pendiente</th>
                 <th>Monto total</th>
                 <th>Acciones</th>
             </tr>
         </thead>
-        @if (Model.reservationList.Count > 0)
-        {
-
-            foreach (var reservation in Model.reservationList)
-            {
-                <tr>
-                    <td>@Html.DisplayFor(model => reservation.Full_Name)</td>
-                    @*<td>@Html.DisplayFor(model => reservation.DisplayName_Rate)</td>*@
-                    <td>@Html.DisplayFor(model => reservation.Reservation_Description)</td>
-
-
-
-                    <td>@reservation.CheckIn.ToString("dd/MM/yyyy").Replace("01/01/1900", "Sin Fecha")</td>
-                    <td>@reservation.CheckOut.ToString("dd/MM/yyyy").Replace("01/01/1900", "Sin Fecha")</td>
-                    <td>@Html.DisplayFor(model => reservation.Days)</td>
-                    <td>@Html.DisplayFor(model => reservation.DESCRIPTION_HOTELROOM)</td>
-                    <td>@Html.DisplayFor(model => reservation.Status)</td>
-                    @if (reservation.Deposit == 0)
-                    {
-                        <td>No presenta depósito</td>
-                        <td>₡ @reservation.TotalAmount</td>
-                    }
-                    else
-                    {
-
-                        <td>₡ @Html.DisplayFor(model => reservation.Deposit)</td>
-                        <td>₡ @(Math.Round(Convert.ToDecimal(reservation.TotalAmount) - reservation.Deposit,2))</td>
-                    }
-
-                    <td>₡ @(Math.Round(Convert.ToDecimal(reservation.TotalAmount),2))</td>
-
-                    <td>
-
-                        @if (reservation.Status == "Reservado")
-                        {
-
-                            <button type="button" class="btn green-button " onclick="GenerateInvoceReservation(this)" data-reservation='@JsonConvert.SerializeObject(reservation)' title="Facturar">
-                                <i class="fa-solid fa-cash-register"></i>
-                            </button>
-
-                            //if (reservation.Currency.ToUpper().Equals("CRC"))
-                            //{
-                                <button type="button" id="btnModalAddRole" onclick="AddDeposit(this);" data-reservation='@JsonConvert.SerializeObject(reservation)' class="btn green-button" title="Depósito">
-                                    ₡
-                                </button>
-
-                            @*}
-                            else
+        <tbody>
+         
+                @foreach (var r in Model.reservationList)
+                {
+                    <tr>
+                        <td>@r.Full_Name</td>
+                        <td>@(string.IsNullOrWhiteSpace(r.Reservation_Description) ? "-" : r.Reservation_Description)</td>
+                        <td>@(r.CheckIn.ToString("dd/MM/yyyy"))</td>
+                        <td>@(r.CheckOut.ToString("dd/MM/yyyy"))</td>
+                        <td>@r.Days</td>
+                        <td>@r.DESCRIPTION_HOTELROOM</td>
+                        <td>@r.Status</td>
+                        <td>₡ @(Math.Round((decimal)r.TotalAmount,2))</td>
+                        <td>
+                            @if (r.Status == "Reservado")
                             {
-                                <button type="button" id="btnModalAddRole" onclick="AddDeposit(this);" data-reservation='@JsonConvert.SerializeObject(reservation)' class="btn green-button" title="Depósito">
-                                    $
+                                <button class="btn btn-success btn-sm" onclick="GenerateInvoceReservation(this)" title="Facturar"
+                                        data-reservation='@JsonConvert.SerializeObject(r)'>
+                                    <i class="fa-solid fa-cash-register"></i>
                                 </button>
-                            }*@
-
-                            @*<button type="button" class="btn btn-primary" onclick="OpenModalModifyReservation(this,'mdlModifyReservation')" data-reservation='@JsonConvert.SerializeObject(reservation)'>
-                    <i class="fas fa-edit"></i>
-                </button>*@
-                            <button type="button" id="btnDeleteClient" class="btn red-button" onclick="DeleteReservation(@reservation.Id)" title="Eliminar Reservación">
-
-                                <i class="fas fa-trash-alt"></i>
-                            </button>
-                        }
-                        else
-                        {
-                            if (reservation.Status == "Facturado")
+                                <button class="btn btn-danger btn-sm" onclick="DeleteReservation(@r.Id)" title="Eliminar Reservación">
+                                    <i class="fas fa-trash-alt"></i>
+                                </button>
+                            }
+                            else if (r.Status == "Facturado")
                             {
-
-                                <button type="button" class="btn btn-cobrizo" onclick="EndProcess(this)" data-reservation='@JsonConvert.SerializeObject(reservation)' title="Finalizar reservación">
+                                <button class="btn btn-warning btn-sm" onclick="EndProcess(r)" title="Finalizar Reservación"
+                                        data-reservation='@JsonConvert.SerializeObject(r)'>
                                     <i class="fa-solid fa-user-check"></i>
                                 </button>
-
                             }
-
-                        }
-
-
-                    </td>
-                </tr>
-            }
-        }
-        else
-        {
-            <h2>No se encontraron datos</h2>
-        }
-
-
+                        </td>
+                    </tr>
+                }
+           
+        </tbody>
     </table>
 </div>
