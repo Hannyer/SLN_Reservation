@@ -449,6 +449,7 @@
     </Compile>
     <Compile Include="Controllers\LoginController.cs" />
     <Compile Include="model\DTo\ExpenseDetailDto.cs" />
+    <Compile Include="model\DTo\ReservationDTO.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <ItemGroup>

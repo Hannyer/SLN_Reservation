@@ -76,7 +76,7 @@ namespace SLN_Reservation.Controllers
 
                 return RedirectToAction("Index", "Login");
             }
-            reservationDto.reservationList = _reservation.GetList(new ReservationE() { Opcion = 1, START_DATE = DateTime.Now.AddDays(-5), END_DATE = DateTime.Now.AddDays(1) });
+            reservationDto.reservationList = _reservation.GetList(new ReservationE() { Opcion = 1, START_DATE = DateTime.Now.AddDays(-5), END_DATE = DateTime.Now.AddDays(5) });
 
             FillDropDownListSeachClient();
             await GetDollarValue();
@@ -108,10 +108,11 @@ namespace SLN_Reservation.Controllers
 
             return PartialView(Lista);
         }
-        public async Task<string> NewReservation(ReservationE reservation)
+        public async Task<string> NewReservation(ReservationDTO reservation)
         {
-            reservation.START_DATE = DateTime.Now;
-            reservation.END_DATE = DateTime.Now;
+            ReservationE reservationE = new ReservationE();
+            reservationE.START_DATE = DateTime.Now;
+            reservationE.END_DATE = DateTime.Now;
             var config = _configurationService.GetList(new ConfigurationE()
             {
                 Opcion = 0,
@@ -121,43 +122,37 @@ namespace SLN_Reservation.Controllers
                 KEY04 = "IMPUESTO",
                 KEY05 = "IVA"
             }).FirstOrDefault();
-            var RateSelected = _operateService.GetList(new RateE() { Opcion = 0, ID = reservation.ID_Rate }).FirstOrDefault();
-
-            int numberOfNights = reservation.Days;
-            double subtotal = Convert.ToDouble(numberOfNights * RateSelected.Price);
+            Hotel_RoomE room=_hotelRoomService.GetList(new Hotel_RoomE() {ID=reservation.RoomId }).FirstOrDefault();
+          
+            int numberOfNights = reservation.Nights;
+            double subtotal = Convert.ToDouble(numberOfNights * room.Price);
             double valor = Convert.ToDouble(config.VALUE) / 100;
             double subtotalWithoutTax = 0;
             double taxAmount = 0;
             DollarDataE DollarData = null;
             double totalAmount = 0;
-            if (RateSelected.Currency.ToUpper().Equals("CRC"))
-            {
+          
                 subtotalWithoutTax = Math.Round((subtotal / valor), 2);
                 taxAmount = subtotal - subtotalWithoutTax;
                 totalAmount = subtotal;
-            }
-            else
-            {
-                DollarData = await UtilitarioE.GetDollarValue();
-                subtotalWithoutTax = Math.Round((subtotal / valor), 2);
-                taxAmount = (subtotal - subtotalWithoutTax) * DollarData.DollarBuyE.Value;
-                subtotalWithoutTax = subtotalWithoutTax * DollarData.DollarBuyE.Value;
-                totalAmount = subtotal * DollarData.DollarBuyE.Value;
-            }
-            reservation.SubtotalWithoutTax = subtotalWithoutTax;
-            reservation.TaxAmount = taxAmount;
-            reservation.TotalAmount = totalAmount;
+
+            reservationE.SubtotalWithoutTax = subtotalWithoutTax;
+            reservationE.TaxAmount = taxAmount;
+            reservationE.TotalAmount = totalAmount;
+            reservationE.Reservation_Description = "Reservación: "+room.Description+" " +reservation.Description;
 
 
-
-            reservation.CheckIn = new DateTime(reservation.CheckIn.Year, reservation.CheckIn.Month, reservation.CheckIn.Day, 15, 0, 0);
-            reservation.CheckOut = new DateTime(reservation.CheckOut.Year, reservation.CheckOut.Month, reservation.CheckOut.Day, 12, 0, 0);
-            reservation.Opcion = 0;
+            reservationE.CheckIn = new DateTime(reservation.CheckIn.Year, reservation.CheckIn.Month, reservation.CheckIn.Day, 15, 0, 0);
+            reservationE.CheckOut = new DateTime(reservation.CheckOut.Year, reservation.CheckOut.Month, reservation.CheckOut.Day, 12, 0, 0);
+            reservationE.Days = reservation.Nights;
+            reservationE.Opcion = 0;
             string answer = "";
-            reservation.START_DATE = DateTime.Now;
-            reservation.END_DATE = DateTime.Now;
-            reservation.ID_USER = (Session["User"] as UserE).ID;
-            int IdGenerate = _reservation.Maintenance(reservation);
+            reservationE.START_DATE = DateTime.Now;
+            reservationE.END_DATE = DateTime.Now;
+            reservationE.ID_USER = (Session["User"] as UserE).ID;
+            reservationE.ID_ROOM = reservation.RoomId;
+            reservationE.IdCard_Client = reservation.ClientId; 
+            int IdGenerate = _reservation.Maintenance(reservationE);
 
 
             var configEmail = _configurationService.GetList(new ConfigurationE()
@@ -591,20 +586,20 @@ namespace SLN_Reservation.Controllers
             emailContentBuilder.AppendLine($"<p>Salida: {reservation.CheckOut.ToString("dddd, dd MMMM yyyy", CultureInfo.CreateSpecificCulture("es-CR"))}</p>");
             emailContentBuilder.AppendLine($"<p>Noches: {reservation.Days}</p>");
             emailContentBuilder.AppendLine("<table>");
-            if (reservation.Currency.ToUpper().Equals("CRC"))
-            {
+            //if (reservation.Currency.ToUpper().Equals("CRC"))
+            //{
                 emailContentBuilder.AppendLine("<tr><td>Precio por noche:</td><td>" + Math.Round(reservation.Price, 2).ToString("C", CultureInfo.CreateSpecificCulture("es-CR")) + "/IVA incluido</td></tr>");
                 emailContentBuilder.AppendLine("<tr><td>Subtotal:</td><td>" + Math.Round(reservation.SubtotalWithoutTax, 2).ToString("C", CultureInfo.CreateSpecificCulture("es-CR")) + "</td></tr>");
                 emailContentBuilder.AppendLine("<tr><td>IVA:</td><td>" + Math.Round(reservation.TaxAmount, 2).ToString("C", CultureInfo.CreateSpecificCulture("es-CR")) + "</td></tr>");
                 emailContentBuilder.AppendLine("<tr><td>Total:</td><td>" + Math.Round(reservation.TotalAmount, 2).ToString("C", CultureInfo.CreateSpecificCulture("es-CR")) + "</td></tr>");
-            }
-            else
-            {
-                emailContentBuilder.AppendLine("<tr><td>Precio por noche:</td><td>" + Math.Round(reservation.Price, 2).ToString("C", CultureInfo.CreateSpecificCulture("en-US")) + " IVA incluido</td></tr>");
-                emailContentBuilder.AppendLine("<tr><td>Subtotal:</td><td>" + Math.Round(Convert.ToDouble(reservation.SubtotalWithoutTax) / dollarData.DollarBuyE.Value, 2).ToString("C", CultureInfo.CreateSpecificCulture("en-US")) + "</td></tr>");
-                emailContentBuilder.AppendLine("<tr><td>IVA:</td><td>" + Math.Round(Convert.ToDouble(reservation.TaxAmount) / dollarData.DollarBuyE.Value, 2).ToString("C", CultureInfo.CreateSpecificCulture("en-US")) + "</td></tr>");
-                emailContentBuilder.AppendLine("<tr><td>Total:</td><td>" + Math.Round(Convert.ToDouble(reservation.TotalAmount) / dollarData.DollarBuyE.Value, 2).ToString("C", CultureInfo.CreateSpecificCulture("en-US")) + "</td></tr>");
-            }
+            //}
+            //else
+            //{
+            //    emailContentBuilder.AppendLine("<tr><td>Precio por noche:</td><td>" + Math.Round(reservation.Price, 2).ToString("C", CultureInfo.CreateSpecificCulture("en-US")) + " IVA incluido</td></tr>");
+            //    emailContentBuilder.AppendLine("<tr><td>Subtotal:</td><td>" + Math.Round(Convert.ToDouble(reservation.SubtotalWithoutTax) / dollarData.DollarBuyE.Value, 2).ToString("C", CultureInfo.CreateSpecificCulture("en-US")) + "</td></tr>");
+            //    emailContentBuilder.AppendLine("<tr><td>IVA:</td><td>" + Math.Round(Convert.ToDouble(reservation.TaxAmount) / dollarData.DollarBuyE.Value, 2).ToString("C", CultureInfo.CreateSpecificCulture("en-US")) + "</td></tr>");
+            //    emailContentBuilder.AppendLine("<tr><td>Total:</td><td>" + Math.Round(Convert.ToDouble(reservation.TotalAmount) / dollarData.DollarBuyE.Value, 2).ToString("C", CultureInfo.CreateSpecificCulture("en-US")) + "</td></tr>");
+            //}
 
             emailContentBuilder.AppendLine("</table>");
             emailContentBuilder.AppendLine("<p>Gracias por su preferencia. Esperamos que disfrute su estancia.</p>");
@@ -709,8 +704,8 @@ namespace SLN_Reservation.Controllers
 
 
 
-            PdfPTable detailsTable = new PdfPTable(new float[] { 1, 3, 1, 1, 1, 1 }); // 5 columnas con anchos relativos
-            detailsTable.WidthPercentage = 100; // Ancho del 100%
+            PdfPTable detailsTable = new PdfPTable(new float[] { 1, 3, 1, 1, 1, 1 });
+            detailsTable.WidthPercentage = 100;
 
             detailsTable.AddCell(new PdfPCell(new Phrase("Código", subtitleFont)));
             detailsTable.AddCell(new PdfPCell(new Phrase("Descripción", subtitleFont)));
@@ -886,7 +881,7 @@ namespace SLN_Reservation.Controllers
             var clientes = _userService.GetList(new UserE() { Opcion = 1,Id_Role= IDRolClient })
                 .Where(c => c.Name.ToLower().Contains(term.ToLower()) || c.DocumentID.Contains(term) )
                 .Select(c => new {
-                    id = c.ID ,
+                    id = c.DocumentID,
                     nombre = c.Name,
                     cedula = c.DocumentID,
                     correo = c.Email

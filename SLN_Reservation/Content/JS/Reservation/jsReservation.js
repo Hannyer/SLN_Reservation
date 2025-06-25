@@ -1,70 +1,47 @@
 ﻿function NewReservation() {
     try {
-        var IdCard_Client = GetDropDownValueSelected('ddlAddReservationModal', 'AddReservationList');
-        var Reservation_Description = $("#txtDescription").val();
-        var CheckIn = $("#txtCheckIn").val();
-        var CheckOut = $("#txtCheckOut").val();
-        var Status = 1;
-        var Days = tmpDays(CheckIn, CheckOut);
-        var ID_Rate = GetDropDownValueSelected('ddlAddTarifaModal', 'AddTarifaList');
-        var ID_ROOM = GetDropDownValueSelected('ddlAddRoomModal', 'AddRoomList');
-
-        if (Validate('ddlAddReservationModal', 'AddReservationList', 'ddlAddTarifaModal', 'AddTarifaList', 'txtCheckIn', 'txtCheckOut', 'ddlAddRoomModal', 'AddRoomList')) {
-            mostrarSpinner();
-
-            var reservation = {
-                IdCard_Client: IdCard_Client,
-                Reservation_Description: Reservation_Description,
-                CheckIn: CheckIn,
-                CheckOut: CheckOut,
-                Status: Status,
-                Days: Days,
-                ID_Rate: ID_Rate,
-                ID_ROOM: ID_ROOM
-            };
-
-            $.ajax({
-                url: '/Reservation/NewReservation',
-                type: 'POST',
-                data: reservation,
-            }).done(function (response) {
+        if (!ValidateReservation(
+            '#ddlAddReservationModal',
+            '#txtCheckIn',
+            '#txtCheckOut',
+            '#txtGuestCount',
+            '#ddlAddRoomModal',
+            true
+        )) return;
+        const days = tmpDays($('#txtCheckIn').val(), $('#txtCheckOut').val());
+        const description = $('#txtDescription').val().trim();
+        var reservation = {
+            ClientId: $('#ddlAddReservationModal').val(),
+            CheckIn: $('#txtCheckIn').val(),
+            CheckOut: $('#txtCheckOut').val(),
+            GuestCount: parseInt($('#txtGuestCount').val(), 10),
+            RoomId: $('#ddlAddRoomModal').val(),
+            Nights: days
+        };
+        if (description.length > 0) {
+            reservation.Description = description;
+        }
+        console.log(reservation.Description);
+        mostrarSpinner();
+        $.post('/Reservation/NewReservation', reservation)
+            .done(function (response) {
                 ocultarSpinner();
-                if (response.includes("exitosamente")) {
-                    Swal.fire({
-                        text: response,
-                        icon: 'success',
-                        didClose: () => {
-                            $("#txtDescription").text('');
-                            $("#txtModifyDescription").val('');
-                            window.location.href = '/Reservation/Index';
-                        }
-                    });
+                if (response.includes('exitosamente')) {
+                    Swal.fire({ text: response, icon: 'success' }).then(() => location.reload());
                 } else {
                     Swal.fire('', response, 'warning');
                 }
-            }).fail(function (jqXHR, textStatus, errorThrown) {
+            })
+            .fail(function () {
                 ocultarSpinner();
-                console.error("Error en la solicitud AJAX:", textStatus, errorThrown);
-                Swal.fire({
-                    text: "Ocurrió un error al procesar la reservación. Por favor, inténtelo de nuevo más tarde.",
-                    icon: 'error'
-                });
-            }).always(function () {
-                ocultarSpinner();
+                Swal.fire('', 'Error al procesar la reservación. Intente de nuevo.', 'error');
             });
-
-        }
-    } catch (error) {
+    } catch (e) {
         ocultarSpinner();
-        console.error("Error en la función NewReservation:", error);
-        Swal.fire({
-            text: "Ocurrió un error inesperado. Por favor, inténtelo de nuevo más tarde.",
-            icon: 'error'
-        });
+        console.error(e);
+        Swal.fire('', 'Ocurrió un error inesperado.', 'error');
     }
 }
-
-
 
 function ModifyReservation() {
   
@@ -166,42 +143,60 @@ function DeleteReservation(Id) {
 
 }
 
+/**
+ * Valida los datos mínimos de una reservación: cliente, fechas, huéspedes y habitación.
+ *
+ * @param {string} clientSel   Selector jQuery para el dropdown de cliente (p. ej. '#ddlAddReservationModal')
+ * @param {string} checkInSel  Selector jQuery para la fecha de entrada (p. ej. '#txtCheckIn')
+ * @param {string} checkOutSel Selector jQuery para la fecha de salida (p. ej. '#txtCheckOut')
+ * @param {string} guestSel    Selector jQuery para la cantidad de huéspedes (p. ej. '#txtGuestCount')
+ * @param {string} roomSel     Selector jQuery para el campo oculto de habitación (p. ej. '#ddlAddRoomModal')
+ * @param {boolean} checkExisting (opcional) Si es true, también valida que el cliente no tenga ya una reserva activa
+ * @returns {boolean} true si todo es válido; false en otro caso (muestra un Swal.error)
+ */
+function ValidateReservation(clientSel, checkInSel, checkOutSel, guestSel, roomSel, checkExisting = false) {
+    var clientId = $(clientSel).val();
+    if (!clientId) {
+        Swal.fire('', 'Debe seleccionar un cliente.', 'error');
+        return false;
+    }
 
-function Validate(ddlIDClientSelected, dataClientSelected, ddlRateSelected, dataRateSelected, Checkin, Checkout,ddlAddHotelRoomSelected,dataAddHotelRoomselected) {
-    if (GetDropDownValueSelected(ddlIDClientSelected, dataClientSelected) === null) {
-        Swal.fire('', 'Debe seleccionar un cliente', 'error');
+    var checkIn = $(checkInSel).val();
+    var checkOut = $(checkOutSel).val();
+    if (!checkIn) {
+        Swal.fire('', 'Debe seleccionar la fecha de entrada.', 'error');
         return false;
     }
-    if (GetDropDownValueSelected(ddlRateSelected, dataRateSelected) === null) {
-        Swal.fire('', 'Debe seleccionar una tarifa', 'error');
-        return false;
-    }
-    if ($("#" + Checkin).val() === '') {
-        Swal.fire('', 'Debe seleccionar la fecha de entrada .', 'error');
-        return false;
-    }
-    if ($("#" + Checkout).val() === '') {
+    if (!checkOut) {
         Swal.fire('', 'Debe seleccionar la fecha de salida.', 'error');
         return false;
     }
+    var days = tmpDays(checkIn, checkOut);
+    if (days < 1) {
+        Swal.fire('', 'La fecha de salida debe ser posterior a la de entrada.', 'error');
+        return false;
+    }
 
-    if (tmpDays($("#" + Checkin).val(), $("#" + Checkout).val()) < 1) {
-        Swal.fire('', 'La fecha de entrada y de salida no puede ser iguales.', 'error');
+    var guestCount = parseInt($(guestSel).val(), 10) || 0;
+    if (guestCount < 1) {
+        Swal.fire('', 'La cantidad de huéspedes debe ser al menos 1.', 'error');
         return false;
     }
-    console.log(ddlAddHotelRoomSelected);
-    console.log(dataAddHotelRoomselected);
-    if (GetDropDownValueSelected(ddlAddHotelRoomSelected, dataAddHotelRoomselected) === null) {
-        Swal.fire('', 'Debe seleccionar una habitación', 'error');
+
+    var roomId = $(roomSel).val();
+    if (!roomId) {
+        Swal.fire('', 'Debe seleccionar una habitación.', 'error');
         return false;
     }
-    if (SeachExistsReservacionClient(GetDropDownValueSelected(ddlIDClientSelected, dataClientSelected))) {
-        Swal.fire('', 'Ya el cliente posee una reservación.', 'error');
-        return false;
-    }
+
+    //if (checkExisting && SeachExistsReservacionClient(clientId)) {
+    //    Swal.fire('', 'El cliente ya tiene una reservación activa.', 'error');
+    //    return false;
+    //}
 
     return true;
 }
+
 function SeachExistsReservacionClient(IdCar_clientReservation) {
 
     return reservationList.find(function (reservation) {

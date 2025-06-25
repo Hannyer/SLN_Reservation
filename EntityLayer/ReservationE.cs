@@ -65,6 +65,9 @@ namespace EntityLayer
         public double TotalAmount{ get; set; }
         public DateTime START_DATE { get; set; }
         public DateTime END_DATE { get; set; }
+        [Display(Name = "Correo cliente")]
+        public string Mail_Client { get; set; }
+        
 
         [Display(Name = "Entrada Formateada")]
         public string FormattedCheckIn
