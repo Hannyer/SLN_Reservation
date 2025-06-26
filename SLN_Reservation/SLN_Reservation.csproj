@@ -2955,10 +2955,12 @@
     <Content Include="Content\fontawesome-free-6.4.2-web\svgs\solid\yen-sign.svg" />
     <Content Include="Content\fontawesome-free-6.4.2-web\svgs\solid\yin-yang.svg" />
     <Content Include="Content\fontawesome-free-6.4.2-web\svgs\solid\z.svg" />
+    <Content Include="Content\Img\Colegio Técnico.jpeg" />
     <Content Include="Content\Img\Dall E.png" />
     <Content Include="Content\Img\Dalle3.png" />
     <Content Include="Content\Img\Dalle4.png" />
     <Content Include="Content\Img\DALL_E2.png" />
+    <Content Include="Content\Img\Escudo.png" />
     <Content Include="Content\Img\Hotel2.jpg" />
     <Content Include="Content\Img\Imagen Hotel.jpg" />
     <Content Include="Content\Img\ImgHotel.jpeg" />
