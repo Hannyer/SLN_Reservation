@@ -41,7 +41,8 @@ namespace Repository.Repository
                                     Description = reader["DESCRIPTION"].ToString(),
                                     Capacity=UtilitySQL.ObtieneInt(reader,"CAPACITY"),
                                     Price= UtilitySQL.ObtieneDecimal(reader, "PRICE"),
-                                    DolarPrice = UtilitySQL.ObtieneDecimal(reader, "DOLARPRICE")
+                                    DolarPrice = UtilitySQL.ObtieneDecimal(reader, "DOLARPRICE"),
+                                    Name = UtilitySQL.ObtieneString(reader, "NAME")
                                 });
                             }
                             return List;
