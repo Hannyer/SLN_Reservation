@@ -15,6 +15,7 @@
                 <th>Habitación</th>
                 <th>Estado</th>
                 <th>Monto total</th>
+                <th>Creado por externo</th>
                 <th>Acciones</th>
             </tr>
         </thead>
@@ -28,9 +29,21 @@
                         <td>@(r.CheckIn.ToString("dd/MM/yyyy"))</td>
                         <td>@(r.CheckOut.ToString("dd/MM/yyyy"))</td>
                         <td>@r.Days</td>
-                        <td>@r.DESCRIPTION_HOTELROOM</td>
+                        <td>@r.DESCRIPTION_HOTELROOM_NAME</td>
                         <td>@r.Status</td>
                         <td>₡ @(Math.Round((decimal)r.TotalAmount,2))</td>
+                        @if (r.create_by_external)
+                        {
+                            <td>
+                                Sí
+                            </td>
+                        }
+                        else
+                        {
+                            <td>
+                                No
+                            </td>
+                        }
                         <td>
                             @if (r.Status == "Reservado")
                             {

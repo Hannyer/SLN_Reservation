@@ -276,9 +276,11 @@ namespace SLN_Reservation.Controllers.Mantenimientos
                     CheckOut = new DateTime(checkOut.Year, checkOut.Month, checkOut.Day, 12, 0, 0),
                     Days = numberOfNights,
                     Status = "1",
-                    Reservation_Description = roomDetails.Description,
-                    Price = roomDetails.Price, 
-                    DESCRIPTION_HOTELROOM = roomDetails.Description,
+                    Reservation_Description = $"Reservación: {roomDetails.Name} {roomDetails.Description}",
+                    Price = roomDetails.Price,
+                    create_by_external=true,
+
+
 
                     ID_USER = currentUser.ID,
                     IdCard_Client = currentUser.DocumentID,

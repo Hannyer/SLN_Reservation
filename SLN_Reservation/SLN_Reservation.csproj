@@ -2969,7 +2969,10 @@
     <Content Include="Content\Img\imgRecepcion.jpg" />
     <Content Include="Content\Img\jobTask.jpg" />
     <Content Include="Content\Img\Malibu-3.jpg" />
+    <Content Include="Content\Img\Paisaje.png" />
+    <Content Include="Content\Img\R.png" />
     <Content Include="Content\Img\ReservacionCliente.png" />
+    <Content Include="Content\Img\TurismoLogo.png" />
     <Content Include="Content\JS\Client\select2.min.js" />
     <Content Include="Content\JS\jsClient.js" />
     <Content Include="Content\JS\jsDailyJobsE.js" />

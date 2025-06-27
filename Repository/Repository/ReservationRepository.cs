@@ -52,10 +52,12 @@ namespace Repository.Repository
                                     TotalAmount = UtilitySQL.ObtieneDouble(reader, "TotalAmount"),
                                     ID_ROOM = UtilitySQL.ObtieneInt(reader, "ID_ROOM"),
                                     DESCRIPTION_HOTELROOM = UtilitySQL.ObtieneString(reader, "DESCRIPTION_HOTELROOM"),
+                                    DESCRIPTION_HOTELROOM_NAME = UtilitySQL.ObtieneString(reader, "DESCRIPTION_HOTELROOM_NAME"),
                                     Deposit = UtilitySQL.ObtieneDecimal(reader, "Deposit"),
                                    Client_Mail=UtilitySQL.ObtieneString(reader, "Mail_Client"),
                                    Full_Name=UtilitySQL.ObtieneString(reader, "Full_Name"),
-                                   IdCard_Client=UtilitySQL.ObtieneString(reader, "IdCard_Client")
+                                   IdCard_Client=UtilitySQL.ObtieneString(reader, "IdCard_Client"),
+                                   create_by_external=UtilitySQL.ObtieneBool(reader, "create_by_external"),
 
 
 
@@ -100,6 +102,7 @@ namespace Repository.Repository
                         cmd.Parameters.AddWithValue("@P_ID_ROOM", reservation.ID_ROOM);
                         cmd.Parameters.AddWithValue("@P_ID_USER", reservation.ID_USER);
                         cmd.Parameters.AddWithValue("@p_Deposit", reservation.Deposit);
+                        cmd.Parameters.AddWithValue("@p_create_by_external", reservation.create_by_external);
 
 
                         using (SqlDataReader reader = cmd.ExecuteReader()) {

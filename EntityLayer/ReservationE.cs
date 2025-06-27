@@ -53,12 +53,18 @@ namespace EntityLayer
         public int ID_ROOM { get; set; }
         [Display(Name = "DESCRIPTION_HOTELROOM")]
         public string DESCRIPTION_HOTELROOM { get; set; }
+        [Display(Name = "DESCRIPTION_HOTELROOM_NAME")]
+        public string DESCRIPTION_HOTELROOM_NAME { get; set; }
+        [Display(Name = "NAME")]
+        public string Name { get; set; }
         [Display(Name = "ID_USER")]
         public int ID_USER { get; set; }
         [Display(Name = "Description_Room")]
         public int Description_Room { get; set; }
         [Display(Name = "Depósito")]
         public decimal Deposit { get; set; }
+        [Display(Name = "create_by_external")]
+        public bool create_by_external { get; set; }
 
         public double SubtotalWithoutTax { get; set; }
         public double TaxAmount { get; set; }
