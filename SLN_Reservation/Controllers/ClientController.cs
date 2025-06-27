@@ -24,7 +24,6 @@ namespace SLN_Reservation.Controllers.Mantenimientos
         IRateService _operateService;
         IReservationService _reservation;
         IUserService _userService;
-        // GET: Cliente
         public ClientController(IClientService service, IIdentificationTypeService identificationTypeService, IRateTypeService rateTypeService, IHotelRoomService hotelRoomService, ConfigurationService configurationService, IRateService operateService, IReservationService reservation, IUserService userService)
         {
             this._ClientService = service;
@@ -195,16 +194,20 @@ namespace SLN_Reservation.Controllers.Mantenimientos
                                 <div class='text-center mb-3'>
                                     <i class='fas fa-bed fa-3x text-primary'></i>
                                 </div>
-                                <h5 class='card-title'>{room.Description}</h5>
+                                <h5 class='card-title'>{room.Name}</h5>
                                 <p class='card-text mb-1'><strong>Capacidad:</strong> {room.Capacity} {(room.Capacity == 1 ? "persona" : "personas")}</p>
+                                <p class='card-text mb-1'><strong>Descripción:</strong> {room.Description}</p> 
                                 <p class='card-text mb-1'>
                                     <strong>Precio:</strong> ₡{room.Price:N0}<br />
-                                    <small class='text-muted'>USD ${room.DolarPrice:N2}</small>
+                                    <strong>Precio Dolares:</strong> ${room.DolarPrice:N0}<br />
                                 </p>
                                 <div class='mt-auto'>
                                     <button type='button'
                                             class='btn btn-success w-100 btn-book'
-                                            data-id='{room.ID}'>
+                                            data-id='{room.ID}'
+                                            data-price='{room.Price}' 
+                                            data-name='{room.Name}' 
+                                            data-description='{room.Description}'> 
                                         Reservar
                                     </button>
                                 </div>
@@ -222,7 +225,6 @@ namespace SLN_Reservation.Controllers.Mantenimientos
         {
             try
             {
-                // 1. Obtener los detalles de la habitación seleccionada
                 var roomDetails = hotelRoomService.GetList(new Hotel_RoomE { ID = idRoom, Opcion = 0 }).FirstOrDefault();
 
                 if (roomDetails == null)
@@ -230,7 +232,6 @@ namespace SLN_Reservation.Controllers.Mantenimientos
                     return "Error: La habitación seleccionada no fue encontrada.";
                 }
 
-                // 2. Obtener los datos del usuario de la sesión
                 var user = Session["User"] as UserE;
                 var currentUser = _userService.GetList(new UserE() { Opcion = 0, Email = user.Email }).FirstOrDefault();
                 if (currentUser == null)
@@ -238,7 +239,6 @@ namespace SLN_Reservation.Controllers.Mantenimientos
                     return "Error: Usuario no autenticado. Por favor, inicie sesión de nuevo.";
                 }
 
-                // 3. Obtener la configuración del IVA (impuesto)
                 var configIVA = _configurationService.GetList(new ConfigurationE()
                 {
                     Opcion = 0,
@@ -256,28 +256,19 @@ namespace SLN_Reservation.Controllers.Mantenimientos
 
                 double ivaRate = Convert.ToDouble(configIVA.VALUE) / 100;
 
-                // 4. Calcular el número de noches
                 TimeSpan duration = checkOut.Date - checkIn.Date;
                 int numberOfNights = (int)duration.TotalDays;
 
                 if (numberOfNights <= 0)
                 {
-                    return "Error: La fecha de Check-out debe ser posterior a la de Check-in.";
+                    return "Error: La fecha de salida debe ser posterior a la de entrada.";
                 }
 
-                // 5. Realizar cálculos de precios (Directamente en Colones CRC)
-                double subtotal = (double)(numberOfNights * roomDetails.Price); // roomDetails.Price se asume en CRC
+                double totalAmount = (double)(numberOfNights * roomDetails.Price); 
 
-                double subtotalWithoutTax = 0;
-                double taxAmount = 0;
-                double totalAmount = 0;
+                double subtotalWithoutTax = Math.Round(totalAmount /  ivaRate, 2);
+                double taxAmount = Math.Round(totalAmount - subtotalWithoutTax, 2);
 
-                // Lógica de cálculo del IVA: Asumiendo que roomDetails.Price ya incluye el IVA
-                subtotalWithoutTax = Math.Round(subtotal / (1 + ivaRate), 2);
-                taxAmount = subtotal - subtotalWithoutTax;
-                totalAmount = subtotal; // El total es el subtotal original ya con IVA
-
-                // 6. Crear y poblar el objeto ReservationE
                 ReservationE newReservation = new ReservationE
                 {
                     ID_ROOM = idRoom,
@@ -285,28 +276,26 @@ namespace SLN_Reservation.Controllers.Mantenimientos
                     CheckOut = new DateTime(checkOut.Year, checkOut.Month, checkOut.Day, 12, 0, 0),
                     Days = numberOfNights,
                     Status = "1",
-                    Reservation_Description = $"Reserva para habitación {roomDetails.Description} del {checkIn.ToShortDateString()} al {checkOut.ToShortDateString()}",
+                    Reservation_Description = roomDetails.Description,
                     Price = roomDetails.Price, 
                     DESCRIPTION_HOTELROOM = roomDetails.Description,
 
-                    // Datos del cliente de la sesión
                     ID_USER = currentUser.ID,
                     IdCard_Client = currentUser.DocumentID,
                     Full_Name = currentUser.Name,
                     Client_Mail = currentUser.Email,
 
-                    // Datos calculados
                     SubtotalWithoutTax = subtotalWithoutTax,
                     TaxAmount = taxAmount,
                     TotalAmount = totalAmount,
 
                     Opcion = 0,
                     START_DATE = DateTime.Now,
-                    END_DATE = DateTime.Now
+                    END_DATE = DateTime.Now,
+                    creation_date = DateTime.Now
                 };
 
 
-                // 7. Guardar la reservación en la base de datos
                 int IdGenerate = _reservation.Maintenance(newReservation);
 
                 string answer = "";
@@ -335,7 +324,6 @@ namespace SLN_Reservation.Controllers.Mantenimientos
                     answer = "Reservación Agregada con exitosamente!";
                     var getGenerateReservation = _reservation.GetList(new ReservationE() { Opcion = 2, Id = IdGenerate, START_DATE = DateTime.Now, END_DATE = DateTime.Now }).FirstOrDefault();
                     UtilitarioE.SendEmail(email, user.Email, "Confirmación de reservación", GenerateReservationConfirmationEmail(getGenerateReservation, null));
-                    //RedirectToAction("Index");
                 }
                 else
                 {
@@ -352,45 +340,75 @@ namespace SLN_Reservation.Controllers.Mantenimientos
 
         public string GenerateReservationConfirmationEmail(ReservationE reservation, DollarDataE dollarData)
         {
-
-
             var emailContentBuilder = new StringBuilder();
 
             emailContentBuilder.AppendLine("<html>");
             emailContentBuilder.AppendLine("<head>");
+            emailContentBuilder.AppendLine("<meta charset=\"UTF-8\">");
+            emailContentBuilder.AppendLine("<meta name=\"viewport\" content=\"width=device-width, initial-scale=1.0\">");
+            emailContentBuilder.AppendLine("<title>Confirmación de Reserva - Hotel CTP</title>");
             emailContentBuilder.AppendLine("<style>");
-            emailContentBuilder.AppendLine("  /* Your CSS Styles */");
+            emailContentBuilder.AppendLine("    body { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; line-height: 1.6; color: #333; margin: 0; padding: 0; background-color: #f4f4f4; }");
+            emailContentBuilder.AppendLine("    .email-container { max-width: 600px; margin: 20px auto; background-color: #ffffff; border-radius: 8px; overflow: hidden; box-shadow: 0 4px 8px rgba(0,0,0,0.1); }");
+            emailContentBuilder.AppendLine("    .header { background-color: #2C3E50; color: #ffffff; padding: 25px 20px; text-align: center; border-top-left-radius: 8px; border-top-right-radius: 8px; }");
+            emailContentBuilder.AppendLine("    .header h1 { margin: 0; font-size: 28px; }");
+            emailContentBuilder.AppendLine("    .content { padding: 30px; }");
+            emailContentBuilder.AppendLine("    .content p { margin-bottom: 15px; font-size: 15px; }");
+            emailContentBuilder.AppendLine("    .details-table { width: 100%; border-collapse: collapse; margin-top: 25px; margin-bottom: 25px; border: 1px solid #e0e0e0; }");
+            emailContentBuilder.AppendLine("    .details-table th, .details-table td { padding: 12px 15px; text-align: left; border-bottom: 1px solid #e0e0e0; }");
+            emailContentBuilder.AppendLine("    .details-table th { background-color: #f9f9f9; color: #555; font-weight: 600; }");
+            emailContentBuilder.AppendLine("    .details-table tr:last-child td { border-bottom: none; }");
+            emailContentBuilder.AppendLine("    .total-row { background-color: #eaf7ff; font-weight: bold; }");
+            emailContentBuilder.AppendLine("    .footer { background-color: #f0f0f0; color: #777; text-align: center; padding: 20px; font-size: 13px; border-bottom-left-radius: 8px; border-bottom-right-radius: 8px; }");
+            emailContentBuilder.AppendLine("    .button-link { display: inline-block; background-color: #3498db; color: #ffffff !important; padding: 10px 20px; text-decoration: none; border-radius: 5px; margin-top: 20px; font-weight: bold; }");
+            emailContentBuilder.AppendLine("    .button-link:hover { background-color: #2980b9; }");
             emailContentBuilder.AppendLine("</style>");
             emailContentBuilder.AppendLine("</head>");
             emailContentBuilder.AppendLine("<body>");
-            emailContentBuilder.AppendLine("<h2 style='text-align: center;'>Hotel CTP</h2>");
-            emailContentBuilder.AppendLine($"<p>Estimado(a) {reservation.Full_Name},</p>");
-            emailContentBuilder.AppendLine("<p>Le confirmamos su reserva con los siguientes detalles:</p>");
-            emailContentBuilder.AppendLine($"<p>Tipo de tarifa {reservation.RateType_Description}</p>");
-            emailContentBuilder.AppendLine($"<p> {reservation.Reservation_Description}</p>");
-            emailContentBuilder.AppendLine($"<p>Ingreso: {reservation.CheckIn.ToString("dddd, dd MMMM yyyy", CultureInfo.CreateSpecificCulture("es-CR"))}</p>");
-            emailContentBuilder.AppendLine($"<p>Salida: {reservation.CheckOut.ToString("dddd, dd MMMM yyyy", CultureInfo.CreateSpecificCulture("es-CR"))}</p>");
-            emailContentBuilder.AppendLine($"<p>Noches: {reservation.Days}</p>");
-            emailContentBuilder.AppendLine("<table>");
-            //if (reservation.Currency.ToUpper().Equals("CRC"))
-            //{
-                emailContentBuilder.AppendLine("<tr><td>Precio por noche:</td><td>" + Math.Round(reservation.Price, 2).ToString("C", CultureInfo.CreateSpecificCulture("es-CR")) + "/IVA incluido</td></tr>");
-                emailContentBuilder.AppendLine("<tr><td>Subtotal:</td><td>" + Math.Round(reservation.SubtotalWithoutTax, 2).ToString("C", CultureInfo.CreateSpecificCulture("es-CR")) + "</td></tr>");
-                emailContentBuilder.AppendLine("<tr><td>IVA:</td><td>" + Math.Round(reservation.TaxAmount, 2).ToString("C", CultureInfo.CreateSpecificCulture("es-CR")) + "</td></tr>");
-                emailContentBuilder.AppendLine("<tr><td>Total:</td><td>" + Math.Round(reservation.TotalAmount, 2).ToString("C", CultureInfo.CreateSpecificCulture("es-CR")) + "</td></tr>");
-            //}
-            //else
-            //{
-            //    emailContentBuilder.AppendLine("<tr><td>Precio por noche:</td><td>" + Math.Round(reservation.Price, 2).ToString("C", CultureInfo.CreateSpecificCulture("en-US")) + " IVA incluido</td></tr>");
-            //    emailContentBuilder.AppendLine("<tr><td>Subtotal:</td><td>" + Math.Round(Convert.ToDouble(reservation.SubtotalWithoutTax) / dollarData.DollarBuyE.Value, 2).ToString("C", CultureInfo.CreateSpecificCulture("en-US")) + "</td></tr>");
-            //    emailContentBuilder.AppendLine("<tr><td>IVA:</td><td>" + Math.Round(Convert.ToDouble(reservation.TaxAmount) / dollarData.DollarBuyE.Value, 2).ToString("C", CultureInfo.CreateSpecificCulture("en-US")) + "</td></tr>");
-            //    emailContentBuilder.AppendLine("<tr><td>Total:</td><td>" + Math.Round(Convert.ToDouble(reservation.TotalAmount) / dollarData.DollarBuyE.Value, 2).ToString("C", CultureInfo.CreateSpecificCulture("en-US")) + "</td></tr>");
-            //}
+            emailContentBuilder.AppendLine("    <div class=\"email-container\">");
+            emailContentBuilder.AppendLine("        <div class=\"header\">");
+            emailContentBuilder.AppendLine("            <h1>Hotel CTP</h1>");
+            emailContentBuilder.AppendLine("            <p style=\"font-size: 16px;\">¡Su reserva ha sido confirmada!</p>");
+            emailContentBuilder.AppendLine("        </div>");
 
-            emailContentBuilder.AppendLine("</table>");
-            emailContentBuilder.AppendLine("<p>Gracias por su preferencia. Esperamos que disfrute su estancia.</p>");
-            emailContentBuilder.AppendLine("<p>Si tiene alguna pregunta o necesita hacer un cambio en su reserva, no dude en contactarnos.</p>");
-            emailContentBuilder.AppendLine("<p>Este mensaje ha sido generado automáticamente. Por favor, no responda a este correo electrónico.</p>");
+            emailContentBuilder.AppendLine("        <div class=\"content\">");
+            emailContentBuilder.AppendLine($"            <p>Estimado(a) <strong>{reservation.Full_Name}</strong>,</p>");
+            emailContentBuilder.AppendLine("            <p>¡Nos complace informarle que su reserva en Hotel CTP ha sido confirmada exitosamente! Estamos ansiosos por darle la bienvenida y asegurarnos de que disfrute de una estancia inolvidable.</p>");
+
+            emailContentBuilder.AppendLine("            <h3 style=\"color: #2C3E50; margin-top: 30px; border-bottom: 1px solid #eee; padding-bottom: 10px;\">Detalles de su Reserva</h3>");
+
+            emailContentBuilder.AppendLine("            <table class=\"details-table\">");
+            emailContentBuilder.AppendLine("                <tbody>");
+            emailContentBuilder.AppendLine($"                    <tr><td><strong>Habitación #</strong></td><td>{reservation.ID_ROOM.ToString()}</td></tr>");
+            emailContentBuilder.AppendLine($"                    <tr><td><strong>Descripción de la Reserva</strong></td><td>{reservation.Reservation_Description}</td></tr>");
+            emailContentBuilder.AppendLine($"                    <tr><td><strong>Ingreso<strong></td><td>{reservation.CheckIn.ToString("dddd, dd MMMM  yyyy", CultureInfo.CreateSpecificCulture("es-CR"))} (15:00 HRS)</td></tr>");
+            emailContentBuilder.AppendLine($"                    <tr><td><strong>Salida</strong></td><td>{reservation.CheckOut.ToString("dddd, dd MMMM  yyyy", CultureInfo.CreateSpecificCulture("es-CR"))} (12:00 HRS)</td></tr>");
+            emailContentBuilder.AppendLine($"                    <tr><td><strong>Noches</strong></td><td>{reservation.Days}</td></tr>");
+            emailContentBuilder.AppendLine("                </tbody>");
+            emailContentBuilder.AppendLine("            </table>");
+
+            emailContentBuilder.AppendLine("            <h3 style=\"color: #2C3E50; margin-top: 30px; border-bottom: 1px solid #eee; padding-bottom: 10px;\">Resumen de Pago</h3>");
+            emailContentBuilder.AppendLine("            <table class=\"details-table\" style=\"width: 80%; margin-left: auto; margin-right: auto;\">"); 
+            emailContentBuilder.AppendLine("                <tbody>");
+
+            emailContentBuilder.AppendLine($"                    <tr><td>Precio por Noche:</td><td style=\"text-align: right;\">{Math.Round(reservation.Price, 2).ToString("C", CultureInfo.CreateSpecificCulture("es-CR"))} (IVA incluido)</td></tr>");
+            emailContentBuilder.AppendLine($"                    <tr><td>Subtotal (sin IVA):</td><td style=\"text-align: right;\">{Math.Round(reservation.SubtotalWithoutTax, 2).ToString("C", CultureInfo.CreateSpecificCulture("es-CR"))}</td></tr>");
+            emailContentBuilder.AppendLine($"                    <tr><td>IVA:</td><td style=\"text-align: right;\">{Math.Round(reservation.TaxAmount, 2).ToString("C", CultureInfo.CreateSpecificCulture("es-CR"))}</td></tr>");
+            emailContentBuilder.AppendLine($"                    <tr class=\"total-row\"><td>Total a Pagar:</td><td style=\"text-align: right;\">{Math.Round(reservation.TotalAmount, 2).ToString("C", CultureInfo.CreateSpecificCulture("es-CR"))}</td></tr>");
+
+            emailContentBuilder.AppendLine("                </tbody>");
+            emailContentBuilder.AppendLine("            </table>");
+
+            emailContentBuilder.AppendLine("            <p style=\"margin-top: 30px;\">Estamos a su disposición para cualquier consulta o solicitud especial. No dude en contactarnos si necesita ayuda con su reserva.</p>");
+            emailContentBuilder.AppendLine("        </div>");
+
+            emailContentBuilder.AppendLine("        <div class=\"footer\">");
+            emailContentBuilder.AppendLine("            <p>Gracias por elegir Hotel CTP.</p>");
+            emailContentBuilder.AppendLine("            <p>¡Esperamos verle pronto!</p>");
+            emailContentBuilder.AppendLine("            <p>Este mensaje ha sido generado automáticamente. Por favor, no responda a este correo electrónico.</p>");
+            emailContentBuilder.AppendLine("            <p>&copy; " + DateTime.Now.Year + " Hotel CTP. Todos los derechos reservados.</p>");
+            emailContentBuilder.AppendLine("        </div>");
+            emailContentBuilder.AppendLine("    </div>");
             emailContentBuilder.AppendLine("</body>");
             emailContentBuilder.AppendLine("</html>");
 

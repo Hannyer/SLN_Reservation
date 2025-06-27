@@ -10,12 +10,12 @@
     <form id="roomSearchForm" class="mb-4">
         <div class="row g-3 align-items-end">
             <div class="col-md-4">
-                <label for="checkInDate" class="form-label">Check‑in</label>
+                <label for="checkInDate" class="form-label">Ingreso</label>
                 <input type="date" class="form-control" id="checkInDate"
                        name="checkInDate" required />
             </div>
             <div class="col-md-4">
-                <label for="checkOutDate" class="form-label">Check‑out</label>
+                <label for="checkOutDate" class="form-label">Salida</label>
                 <input type="date" class="form-control" id="checkOutDate"
                        name="checkOutDate" required />
             </div>
@@ -43,8 +43,45 @@
             <div class="modal-body">
                 <p>¿Estás seguro de que deseas reservar la habitación seleccionada para las fechas indicadas?</p>
                 <p><strong>Habitación #</strong> <span id="confirmRoomId"></span></p>
-                <p><strong>Check-in:</strong> <span id="confirmCheckIn"></span></p>
-                <p><strong>Check-out:</strong> <span id="confirmCheckOut"></span></p>
+                <p><strong>Nombre Habitación:</strong> <span id="confirmRoomName"></span></p> 
+                <p><strong>Descripción:</strong> <span id="confirmRoomDescription"></span></p> 
+                <p><strong>Ingreso:</strong> <span id="confirmCheckIn"></span></p>
+                <p><strong>Salida:</strong> <span id="confirmCheckOut"></span></p>
+
+                <div class="col-lg-12 col-md-12 col-sm-12 col-xs-12 pt-4 p-0">
+                    <div class="col-lg-12 col-md-12 col-sm-12 col-xs-12 ">
+                        <div class="mb-3">
+                            <label class="form-label">Total a pagar:</label>
+                            <div class="table-responsive">
+                                <table class="table table-sm table-bordered">
+                                    <tbody>
+                                        <tr>
+                                            <th>Noches</th>
+                                            <td class="text-end"><span id="ebNumberNight"></span></td>
+                                        </tr>
+                                        <tr>
+                                            <th>Precio por noche</th>
+                                            <td class="text-end">₡<span id="ebPricePerNight">0.00</span></td>
+                                        </tr>
+                                        <tr>
+                                            <th>SubTotal</th>
+                                            <td class="text-end">₡<span id="ebSubTotal">0.00</span></td>
+                                        </tr>
+                                        <tr>
+                                            <th>Impuesto</th>
+                                            <td class="text-end">₡<span id="ebTax">0.00</span></td>
+                                        </tr>
+                                        <tr class="table-active">
+                                            <th>Total</th>
+                                            <td class="text-end fw-bold">₡<span id="ebTotal">0.00</span></td>
+                                        </tr>
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
             </div>
             <div class="modal-footer">
                 <button type="button" class="btn green-button" id="btnConfirmBooking">Confirmar</button>
@@ -56,10 +93,8 @@
 
 @section Scripts {
     <script>
-        // Store booking details temporarily
         let currentBookingDetails = {};
 
-        // intercepta el submit y llama vía AJAX
         $("#roomSearchForm").on("submit", function (e) {
             e.preventDefault();
             const $form = $(this);
@@ -72,66 +107,158 @@
             });
         });
 
-        // manejador “Reservar” (delegado porque las tarjetas se cargan después)
         $("#roomResults").on("click", ".btn-book", function () {
             const idRoom = $(this).data("id");
+            const roomPrice = parseFloat($(this).data("price")); 
+            const roomName = $(this).data("name"); 
+            const roomDescription = $(this).data("description"); 
+
             const checkIn = $("#checkInDate").val();
             const checkOut = $("#checkOutDate").val();
 
-            // Store details for later use when modal's confirm button is clicked
-            currentBookingDetails = { idRoom, checkIn, checkOut };
+            currentBookingDetails = { idRoom, checkIn, checkOut, roomPrice, roomName, roomDescription };
 
-            // Populate modal fields
             $("#confirmRoomId").text(idRoom);
+            $("#confirmRoomName").text(roomName); 
+            $("#confirmRoomDescription").text(roomDescription); 
             $("#confirmCheckIn").text(checkIn);
             $("#confirmCheckOut").text(checkOut);
 
-            // Show the custom confirmation modal
-            $('#mdlConfirmReservation').modal('show');
-        });
+            calculateAndDisplayTotals();
 
-        // Handle the "Confirmar" button click inside the modal
+            $('#mdlConfirmReservation').modal('show');
+        })
+
+
+        function calculateAndDisplayTotals() {
+            const { checkIn, checkOut, roomPrice } = currentBookingDetails;
+
+            if (!checkIn || !checkOut || isNaN(roomPrice)) {
+                $("#ebNumberNight").text('N/A');
+                $("#ebPricePerNight").text('0.00');
+                $("#ebSubTotal").text('0.00');
+                $("#ebTax").text('0.00');
+                $("#ebTotal").text('0.00');
+                return;
+            }
+
+            const checkInDateObj = new Date(checkIn + 'T00:00:00');
+            const checkOutDateObj = new Date(checkOut + 'T00:00:00'); 
+
+            const oneDay = 24 * 60 * 60 * 1000;
+            const numberOfNights = Math.round(Math.abs((checkOutDateObj - checkInDateObj) / oneDay));
+
+            const ivaRate = 0.13; 
+
+            const subtotal = numberOfNights * roomPrice;
+            const subtotalWithoutTax = subtotal / (1 + ivaRate);
+            const taxAmount = subtotal - subtotalWithoutTax;
+            const totalAmount = subtotal;
+
+            const formatter = new Intl.NumberFormat('es-CR', {
+                minimumFractionDigits: 2,
+                maximumFractionDigits: 2
+            });
+
+            $("#ebNumberNight").text(numberOfNights);
+            $("#ebPricePerNight").text(formatter.format(roomPrice));
+            $("#ebSubTotal").text(formatter.format(subtotalWithoutTax));
+            $("#ebTax").text(formatter.format(taxAmount));
+            $("#ebTotal").text(formatter.format(totalAmount));
+        }
+
+        function clearReservationForm() {
+            $("#checkInDate").val('');
+            $("#checkOutDate").val('');
+            $("#numberOfGuests").val('1');
+            $("#roomResults").empty();
+            $("#confirmRoomId").text('');
+            $("#confirmRoomName").text('');
+            $("#confirmRoomDescription").text('');
+            $("#confirmCheckIn").text('');
+            $("#confirmCheckOut").text('');
+            $("#ebNumberNight").text('');
+            $("#ebPricePerNight").text('0.00');
+            $("#ebSubTotal").text('0.00');
+            $("#ebTax").text('0.00');
+            $("#ebTotal").text('0.00');
+        }
+
+
+        function clearReservationForm() {
+            $("#checkInDate").val('');
+            $("#checkOutDate").val('');
+            $("#numberOfGuests").val('1'); 
+            $("#roomResults").empty(); 
+        }
+
         $("#btnConfirmBooking").on("click", function () {
-            // Retrieve details from stored object
             const { idRoom, checkIn, checkOut } = currentBookingDetails;
 
-            // Close the confirmation modal
             $('#mdlConfirmReservation').modal('hide');
 
-            // Proceed with the booking request
             $.post("@Url.Action("BookRoom", "Client")", {
                 idRoom: idRoom,
                 checkIn: checkIn,
                 checkOut: checkOut
             }).done((responseMessage) => {
-                // Use SweetAlert2 for the final message
                 Swal.fire({
-                    icon: 'success', // For success messages
+                    icon: 'success', 
                     title: '¡Éxito!',
-                    text: responseMessage, // The message from the controller
+                    text: responseMessage, 
                     showConfirmButton: true,
                     confirmButtonText: 'OK',
                     customClass: {
-                        confirmButton: 'green-button' // Apply your green-button class if it makes sense for SweetAlert2
+                        confirmButton: 'green-button' 
                     }
                 }).then((result) => {
-                    // Optional: Re-run the search to update room availability if needed after user clicks OK
                     if (result.isConfirmed) {
-                        // $("#roomSearchForm").submit();
+                        clearReservationForm();
                     }
                 });
 
             }).fail((jqXHR, textStatus, errorThrown) => {
-                // Use SweetAlert2 for error messages
                 Swal.fire({
                     icon: 'error',
                     title: 'Error',
-                    text: 'Ha ocurrido un error inesperado. Por favor, inténtalo de nuevo.', // General error for AJAX fail
+                    text: 'Ha ocurrido un error inesperado. Por favor, inténtalo de nuevo.', 
                     showConfirmButton: true,
                     confirmButtonText: 'OK'
                 });
+                clearReservationForm();
                 console.error("Error en la solicitud AJAX:", textStatus, errorThrown, jqXHR.responseText);
             });
+        });
+
+        const today = new Date();
+        const todayFormatted = today.toISOString().split('T')[0];
+
+        $("#checkInDate").attr("min", todayFormatted);
+
+        function updateCheckOutDateConstraints() {
+            const checkInDate = new Date($("#checkInDate").val());
+            const checkOutDateInput = $("#checkOutDate");
+
+            if ($("#checkInDate").val()) {
+                const minCheckOutDate = new Date(checkInDate);
+                minCheckOutDate.setDate(checkInDate.getDate() + 1);
+                const minCheckOutDateFormatted = minCheckOutDate.toISOString().split('T')[0];
+                checkOutDateInput.attr("min", minCheckOutDateFormatted);
+
+                if (checkOutDateInput.val() && new Date(checkOutDateInput.val()) < minCheckOutDate) {
+                    checkOutDateInput.val('');
+                }
+            } else {
+                checkOutDateInput.attr("min", todayFormatted);
+            }
+        }
+
+        $("#checkInDate").on("change", function () {
+            updateCheckOutDateConstraints();
+        });
+
+        $(document).ready(function () {
+            updateCheckOutDateConstraints();
         });
     </script>
 }

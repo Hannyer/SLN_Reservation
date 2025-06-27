@@ -16,5 +16,6 @@ namespace EntityLayer
         public DateTime? EndDate { get; set; }
         public decimal Price { get; set; }
         public decimal DolarPrice { get; set; }
+        public string Name { get; set; }
     }
 }
