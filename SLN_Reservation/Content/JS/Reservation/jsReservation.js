@@ -209,7 +209,7 @@ function SeachExistsReservacionClient(IdCar_clientReservation) {
 function GenerateInvoceReservation(button) {
     var ReservationJson = button.getAttribute("data-reservation");
     var reservation = JSON.parse(ReservationJson);
-    
+    Console.log(reservation);
     Swal.fire({
         title: '¿Está seguro?',
         text: '¡Que desea facturar esta reservación!',

@@ -54,7 +54,8 @@ namespace Repository.Repository
                                     DESCRIPTION_HOTELROOM = UtilitySQL.ObtieneString(reader, "DESCRIPTION_HOTELROOM"),
                                     Deposit = UtilitySQL.ObtieneDecimal(reader, "Deposit"),
                                    Client_Mail=UtilitySQL.ObtieneString(reader, "Mail_Client"),
-                                   Full_Name=UtilitySQL.ObtieneString(reader, "Full_Name")
+                                   Full_Name=UtilitySQL.ObtieneString(reader, "Full_Name"),
+                                   IdCard_Client=UtilitySQL.ObtieneString(reader, "IdCard_Client")
 
 
 

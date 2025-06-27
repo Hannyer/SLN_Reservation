@@ -269,7 +269,7 @@ namespace SLN_Reservation.Controllers
                 double IVA = Convert.ToDouble(config.VALUE) / 100;
 
                 var about = _aboutService.GetList(new AboutE() { Opcion = 0, ID = 1 }).FirstOrDefault();
-                var client = _clientService.GetList(new ClientE() { IdCard = reservation.IdCard_Client }).FirstOrDefault();
+                var client = _userService.GetList(new UserE() { DocumentID = reservation.IdCard_Client }).FirstOrDefault();
                 ElectronicInvoiceE factura = new ElectronicInvoiceE();
                 factura.Key = UtilitarioE.GenerateElectronicInvoiceKey(506, DateTime.Now, about.ID_Hotel, reservation.Id, 3, about.SecurityCode);
                 factura.ActivityCode = about.ActivityCode;
@@ -303,14 +303,14 @@ namespace SLN_Reservation.Controllers
                 {
                     Identification = new IdentificationE()
                     {
-                        Type = "0" + client.IdentificationType_Id.ToString(),
-                        Number = client.IdCard
+                        Type = "0" + client.IdIdentificationType.ToString(),
+                        Number = client.DocumentID
                     },
-                    Email = client.Mail,
+                    Email = client.Email,
                     Phone = new PhoneE()
                     {
-                        CountryCode = SepararCodigoYNumeroTelefono(client.Phone_number1)[0],
-                        PhoneNumber = SepararCodigoYNumeroTelefono(client.Phone_number1)[1]
+                        CountryCode = SepararCodigoYNumeroTelefono(client.PhoneNumber)[0],
+                        PhoneNumber = SepararCodigoYNumeroTelefono(client.PhoneNumber)[1]
                     },
                     Location = new LocationE()
                     {
@@ -319,7 +319,7 @@ namespace SLN_Reservation.Controllers
                         District = about.Distric,
                         OtherSigns = about.OtherSigns
                     },
-                    Name = client.Full_Name
+                    Name = client.Name
                 };
                 factura.SaleCondition = "01"; //efectivo
                 factura.Halfpayment = "04"; //Medio de pago Transferencia

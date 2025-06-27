@@ -36,6 +36,7 @@ namespace Repository.Repository
                         cmd.Parameters.AddWithValue("@P_User", user.User);
                         cmd.Parameters.AddWithValue("@P_Email", user.Email);
                         cmd.Parameters.AddWithValue("@P_Role", user.Id_Role);
+                        cmd.Parameters.AddWithValue("@P_DocumentId", user.DocumentID);
 
                         using (SqlDataReader reader=cmd.ExecuteReader())
                         {

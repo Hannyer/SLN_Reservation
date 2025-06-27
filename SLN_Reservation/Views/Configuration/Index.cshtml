@@ -11,34 +11,35 @@
     }
 </style>
 <h1 style="padding-bottom: 2rem; text-align-last: center;">Configuración del sistema</h1>
-<table class="table tblConfiguration" id="tblConfiguration" >
-    <thead>
-        <tr>
-            <!-- Encabezados de la tabla -->
-            <th>
-                @Html.DisplayNameFor(model => model.DESCRIPTION)
-            </th>
-            <th>
-                @Html.DisplayNameFor(model => model.KEY02)
-            </th>
-            <th>
-                @Html.DisplayNameFor(model => model.KEY03)
-            </th>
-            <th>
-                @Html.DisplayNameFor(model => model.KEY04)
-            </th>
-            <th>
-                @Html.DisplayNameFor(model => model.KEY05)
-            </th>
-            <th>
-                @Html.DisplayNameFor(model => model.KEY06)
-            </th>
-            <th>
-                @Html.DisplayNameFor(model => model.VALUE)
-            </th>
-            <th>Acciones</th>
+<div class="table-responsive">
+    <table id="tblConfiguration" class="table table-hover table-custom">
+        <thead>
+            <tr>
+                <!-- Encabezados de la tabla -->
+                <th>
+                    @Html.DisplayNameFor(model => model.DESCRIPTION)
+                </th>
+                <th>
+                    @Html.DisplayNameFor(model => model.KEY02)
+                </th>
+                <th>
+                    @Html.DisplayNameFor(model => model.KEY03)
+                </th>
+                <th>
+                    @Html.DisplayNameFor(model => model.KEY04)
+                </th>
+                <th>
+                    @Html.DisplayNameFor(model => model.KEY05)
+                </th>
+                <th>
+                    @Html.DisplayNameFor(model => model.KEY06)
+                </th>
+                <th>
+                    @Html.DisplayNameFor(model => model.VALUE)
+                </th>
+                <th>Acciones</th>
 
-        </tr>
+            </tr>
         </thead>
 
         @foreach (var item in Model)
@@ -73,13 +74,13 @@
 
             </tr>
         }
-</table>
-
+    </table>
+</div>
 @*Modal to add Jobs*@
 <div class="modal fade" id="mdlModifyConfiguration">
     <div class="modal-dialog">
-        <div class="modal-content">
-            <div class="modal-header" style="background-color: #2E7D32; color:white; justify-content: center; ">
+        <div class="modal-content" style=" margin-top: 4rem; ">
+            <div class="modal-header" style="background-color: #2C3E50; color: white; justify-content: center; ">
                 <h5 class="modal-title">Modificar configuración</h5>
             </div>
             <div class="modal-body">
@@ -111,9 +112,9 @@
             </div>
             <br />
             <div class="modal-footer">
-             
-                    <button type="button" id="captureButton" onclick="UpdateSettings()" class="btn green-button align-content-center">Guardar</button>
-                    <button type="button" id="btnCloseModalAddJobs" class="btn red-button" onclick="CloseModal('mdlModifyConfiguration');">Cerrar</button>
+
+                <button type="button" id="captureButton" onclick="UpdateSettings()" class="btn green-button align-content-center">Guardar</button>
+                <button type="button" id="btnCloseModalAddJobs" class="btn red-button" onclick="CloseModal('mdlModifyConfiguration');">Cerrar</button>
             </div>
         </div>
     </div>
@@ -127,7 +128,7 @@
     var selectedRow = null; // Variable para la fila seleccionada
 
     $(document).ready(function () {
-      
+
 
 
         $('#tblConfiguration').DataTable({
@@ -156,7 +157,7 @@
             }
         });
 
-       
+
     });
 
 
@@ -203,16 +204,16 @@
 
         $('#txtKey03').val(configuration.KEY03);
 
-       
+
         $('#txtKey04').val(configuration.KEY04);
 
-       
+
         $('#txtKey05').val(configuration.KEY05);
 
-      
+
         $('#txtKey06').val(configuration.KEY06);
 
-       
+
         $('#txtValue').val(configuration.VALUE);
 
         OpenModal('mdlModifyConfiguration');
