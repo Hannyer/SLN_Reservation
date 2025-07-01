@@ -2955,6 +2955,7 @@
     <Content Include="Content\fontawesome-free-6.4.2-web\svgs\solid\yen-sign.svg" />
     <Content Include="Content\fontawesome-free-6.4.2-web\svgs\solid\yin-yang.svg" />
     <Content Include="Content\fontawesome-free-6.4.2-web\svgs\solid\z.svg" />
+    <Content Include="Content\Img\catarata.png" />
     <Content Include="Content\Img\Colegio Técnico.jpeg" />
     <Content Include="Content\Img\Dall E.png" />
     <Content Include="Content\Img\Dalle3.png" />
@@ -2968,10 +2969,13 @@
     <Content Include="Content\Img\imgHotel2.jpeg" />
     <Content Include="Content\Img\imgRecepcion.jpg" />
     <Content Include="Content\Img\jobTask.jpg" />
+    <Content Include="Content\Img\lago.png" />
     <Content Include="Content\Img\Malibu-3.jpg" />
+    <Content Include="Content\Img\mountan.jpg" />
     <Content Include="Content\Img\Paisaje.png" />
     <Content Include="Content\Img\R.png" />
     <Content Include="Content\Img\ReservacionCliente.png" />
+    <Content Include="Content\Img\tarde.png" />
     <Content Include="Content\Img\TurismoLogo.png" />
     <Content Include="Content\JS\Client\select2.min.js" />
     <Content Include="Content\JS\jsClient.js" />

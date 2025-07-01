@@ -2,6 +2,7 @@
 @using Newtonsoft.Json
 @using System.Globalization
 <style>
+    
 </style>
 <div class="table-responsive">
     <table id="tblReservation" class="table table-hover table-custom">
@@ -19,11 +20,13 @@
                 <th>Acciones</th>
             </tr>
         </thead>
-        <tbody>
-         
+        @if(Model!=null && Model.reservationList != null)
+        {
+            <tbody>
+
                 @foreach (var r in Model.reservationList)
                 {
-                    <tr>
+                    <tr class="@(r.create_by_external ? "external-true" : "external-false")">
                         <td>@r.Full_Name</td>
                         <td>@(string.IsNullOrWhiteSpace(r.Reservation_Description) ? "-" : r.Reservation_Description)</td>
                         <td>@(r.CheckIn.ToString("dd/MM/yyyy"))</td>
@@ -32,18 +35,7 @@
                         <td>@r.DESCRIPTION_HOTELROOM_NAME</td>
                         <td>@r.Status</td>
                         <td>₡ @(Math.Round((decimal)r.TotalAmount,2))</td>
-                        @if (r.create_by_external)
-                        {
-                            <td>
-                                Sí
-                            </td>
-                        }
-                        else
-                        {
-                            <td>
-                                No
-                            </td>
-                        }
+                        <td>@(r.create_by_external ? "Sí" : "No")</td>
                         <td>
                             @if (r.Status == "Reservado")
                             {
@@ -65,7 +57,9 @@
                         </td>
                     </tr>
                 }
-           
-        </tbody>
+
+            </tbody>
+        }
+
     </table>
 </div>

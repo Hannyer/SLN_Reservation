@@ -1,13 +1,13 @@
 ﻿@model IEnumerable<EntityLayer.ReservationReportE>
 @using System.Globalization;
-<div id="tablaContainer"></div>
-<table id="tblReservationReport">
+<div id="tablaContainer" class="table-responsive"></div>
+
+<table id="tblReservationReport"class="table table-hover table-custom">
     <thead>
         <tr>
            
             <th>Identificación</th>
             <th>Cliente</th>
-            <th>Tipo</th>
             <th>Días</th>
             <th>Detalle</th>
             <th>Fecha de Entrada</th>
@@ -21,7 +21,6 @@
            
             <td>@Html.DisplayFor(model => reporteReservacion.Identification)</td>
             <td>@Html.DisplayFor(model => reporteReservacion.Client)</td>
-            <td>@Html.DisplayFor(model => reporteReservacion.ReservationType)</td>
             <td>@Html.DisplayFor(model => reporteReservacion.Days).ToString()</td>
             <td>@Html.DisplayFor(model => reporteReservacion.Descripction)</td>
             <td>@Html.DisplayFor(model => reporteReservacion.checkIn).ToString()</td>
