@@ -43,8 +43,8 @@
             <div class="modal-body">
                 <p>¿Estás seguro de que deseas reservar la habitación seleccionada para las fechas indicadas?</p>
                 <p><strong>Habitación #</strong> <span id="confirmRoomId"></span></p>
-                <p><strong>Nombre Habitación:</strong> <span id="confirmRoomName"></span></p> 
-                <p><strong>Descripción:</strong> <span id="confirmRoomDescription"></span></p> 
+                <p><strong>Nombre Habitación:</strong> <span id="confirmRoomName"></span></p>
+                <p><strong>Descripción:</strong> <span id="confirmRoomDescription"></span></p>
                 <p><strong>Ingreso:</strong> <span id="confirmCheckIn"></span></p>
                 <p><strong>Salida:</strong> <span id="confirmCheckOut"></span></p>
 
@@ -91,174 +91,184 @@
     </div>
 </div>
 
-@section Scripts {
-    <script>
-        let currentBookingDetails = {};
 
-        $("#roomSearchForm").on("submit", function (e) {
-            e.preventDefault();
-            const $form = $(this);
 
-            $.post(
-                "@Url.Action("SearchReservation", "Client")",
-                $form.serialize()
-            ).done(function (html) {
-                $("#roomResults").html(html);
+<script>
+    $(document).ready(function () {
+        updateCheckOutDateConstraints();
+    });
+
+    let currentBookingDetails = {};
+
+    $("#roomSearchForm").on("submit", function (e) {
+        e.preventDefault();
+        const $form = $(this);
+
+
+        $.post(
+            "@Url.Action("SearchReservation", "Client")",
+            $form.serialize()
+        ).done(function (html) {
+            $("#roomResults").html(html);
+        }).fail((jqXHR, textStatus, errorThrown) => {
+            console.error("Error searching rooms:", textStatus, errorThrown, jqXHR.responseText);
+            Swal.fire({
+                icon: 'error',
+                title: 'Error en la búsqueda',
+                text: 'No se pudieron cargar las habitaciones. Por favor, inténtalo de nuevo.',
+                showConfirmButton: true,
+                confirmButtonText: 'OK'
             });
+        }).always(() => {
         });
+    });
 
-        $("#roomResults").on("click", ".btn-book", function () {
-            const idRoom = $(this).data("id");
-            const roomPrice = parseFloat($(this).data("price")); 
-            const roomName = $(this).data("name"); 
-            const roomDescription = $(this).data("description"); 
+    $("#roomResults").on("click", ".btn-book", function () {
+        const idRoom = $(this).data("id");
+        const roomPrice = parseFloat($(this).data("price"));
+        const roomName = $(this).data("name");
+        const roomDescription = $(this).data("description");
 
-            const checkIn = $("#checkInDate").val();
-            const checkOut = $("#checkOutDate").val();
+        const checkIn = $("#checkInDate").val();
+        const checkOut = $("#checkOutDate").val();
 
-            currentBookingDetails = { idRoom, checkIn, checkOut, roomPrice, roomName, roomDescription };
+        currentBookingDetails = { idRoom, checkIn, checkOut, roomPrice, roomName, roomDescription };
 
-            $("#confirmRoomId").text(idRoom);
-            $("#confirmRoomName").text(roomName); 
-            $("#confirmRoomDescription").text(roomDescription); 
-            $("#confirmCheckIn").text(checkIn);
-            $("#confirmCheckOut").text(checkOut);
+        $("#confirmRoomId").text(idRoom);
+        $("#confirmRoomName").text(roomName);
+        $("#confirmRoomDescription").text(roomDescription);
+        $("#confirmCheckIn").text(checkIn);
+        $("#confirmCheckOut").text(checkOut);
 
-            calculateAndDisplayTotals();
+        calculateAndDisplayTotals();
 
-            $('#mdlConfirmReservation').modal('show');
-        })
+        $('#mdlConfirmReservation').modal('show');
+    });
 
+    function calculateAndDisplayTotals() {
+        const { checkIn, checkOut, roomPrice } = currentBookingDetails;
 
-        function calculateAndDisplayTotals() {
-            const { checkIn, checkOut, roomPrice } = currentBookingDetails;
-
-            if (!checkIn || !checkOut || isNaN(roomPrice)) {
-                $("#ebNumberNight").text('N/A');
-                $("#ebPricePerNight").text('0.00');
-                $("#ebSubTotal").text('0.00');
-                $("#ebTax").text('0.00');
-                $("#ebTotal").text('0.00');
-                return;
-            }
-
-            const checkInDateObj = new Date(checkIn + 'T00:00:00');
-            const checkOutDateObj = new Date(checkOut + 'T00:00:00'); 
-
-            const oneDay = 24 * 60 * 60 * 1000;
-            const numberOfNights = Math.round(Math.abs((checkOutDateObj - checkInDateObj) / oneDay));
-
-            const ivaRate = 0.13; 
-
-            const subtotal = numberOfNights * roomPrice;
-            const subtotalWithoutTax = subtotal / (1 + ivaRate);
-            const taxAmount = subtotal - subtotalWithoutTax;
-            const totalAmount = subtotal;
-
-            const formatter = new Intl.NumberFormat('es-CR', {
-                minimumFractionDigits: 2,
-                maximumFractionDigits: 2
-            });
-
-            $("#ebNumberNight").text(numberOfNights);
-            $("#ebPricePerNight").text(formatter.format(roomPrice));
-            $("#ebSubTotal").text(formatter.format(subtotalWithoutTax));
-            $("#ebTax").text(formatter.format(taxAmount));
-            $("#ebTotal").text(formatter.format(totalAmount));
-        }
-
-        function clearReservationForm() {
-            $("#checkInDate").val('');
-            $("#checkOutDate").val('');
-            $("#numberOfGuests").val('1');
-            $("#roomResults").empty();
-            $("#confirmRoomId").text('');
-            $("#confirmRoomName").text('');
-            $("#confirmRoomDescription").text('');
-            $("#confirmCheckIn").text('');
-            $("#confirmCheckOut").text('');
-            $("#ebNumberNight").text('');
+        if (!checkIn || !checkOut || isNaN(roomPrice)) {
+            $("#ebNumberNight").text('N/A');
             $("#ebPricePerNight").text('0.00');
             $("#ebSubTotal").text('0.00');
             $("#ebTax").text('0.00');
             $("#ebTotal").text('0.00');
+            return;
         }
 
+        const checkInDateObj = new Date(checkIn + 'T00:00:00');
+        const checkOutDateObj = new Date(checkOut + 'T00:00:00');
 
-        function clearReservationForm() {
-            $("#checkInDate").val('');
-            $("#checkOutDate").val('');
-            $("#numberOfGuests").val('1'); 
-            $("#roomResults").empty(); 
-        }
+        const oneDay = 24 * 60 * 60 * 1000;
+        const numberOfNights = Math.round(Math.abs((checkOutDateObj - checkInDateObj) / oneDay));
 
-        $("#btnConfirmBooking").on("click", function () {
-            const { idRoom, checkIn, checkOut } = currentBookingDetails;
+        const ivaRate = 0.13;
 
-            $('#mdlConfirmReservation').modal('hide');
+        const subtotal = numberOfNights * roomPrice;
+        const subtotalWithoutTax = subtotal / (1 + ivaRate);
+        const taxAmount = subtotal - subtotalWithoutTax;
+        const totalAmount = subtotal; 
 
-            $.post("@Url.Action("BookRoom", "Client")", {
-                idRoom: idRoom,
-                checkIn: checkIn,
-                checkOut: checkOut
-            }).done((responseMessage) => {
-                Swal.fire({
-                    icon: 'success', 
-                    title: '¡Éxito!',
-                    text: responseMessage, 
-                    showConfirmButton: true,
-                    confirmButtonText: 'OK',
-                    customClass: {
-                        confirmButton: 'green-button' 
-                    }
-                }).then((result) => {
-                    if (result.isConfirmed) {
-                        clearReservationForm();
-                    }
-                });
-
-            }).fail((jqXHR, textStatus, errorThrown) => {
-                Swal.fire({
-                    icon: 'error',
-                    title: 'Error',
-                    text: 'Ha ocurrido un error inesperado. Por favor, inténtalo de nuevo.', 
-                    showConfirmButton: true,
-                    confirmButtonText: 'OK'
-                });
-                clearReservationForm();
-                console.error("Error en la solicitud AJAX:", textStatus, errorThrown, jqXHR.responseText);
-            });
+        const formatter = new Intl.NumberFormat('es-CR', {
+            minimumFractionDigits: 2,
+            maximumFractionDigits: 2
         });
 
-        const today = new Date();
-        const todayFormatted = today.toISOString().split('T')[0];
+        $("#ebNumberNight").text(numberOfNights);
+        $("#ebPricePerNight").text(formatter.format(roomPrice));
+        $("#ebSubTotal").text(formatter.format(subtotalWithoutTax));
+        $("#ebTax").text(formatter.format(taxAmount));
+        $("#ebTotal").text(formatter.format(totalAmount));
+    }
 
-        $("#checkInDate").attr("min", todayFormatted);
+    function clearReservationForm() {
+        $("#checkInDate").val('');
+        $("#checkOutDate").val('');
+        $("#numberOfGuests").val('1');
+        $("#roomResults").empty();
+        $("#confirmRoomId").text('');
+        $("#confirmRoomName").text('');
+        $("#confirmRoomDescription").text('');
+        $("#confirmCheckIn").text('');
+        $("#confirmCheckOut").text('');
+        $("#ebNumberNight").text('');
+        $("#ebPricePerNight").text('0.00');
+        $("#ebSubTotal").text('0.00');
+        $("#ebTax").text('0.00');
+        $("#ebTotal").text('0.00');
+    }
 
-        function updateCheckOutDateConstraints() {
-            const checkInDate = new Date($("#checkInDate").val());
-            const checkOutDateInput = $("#checkOutDate");
+    $("#btnConfirmBooking").on("click", function () {
+        const { idRoom, checkIn, checkOut } = currentBookingDetails;
 
-            if ($("#checkInDate").val()) {
-                const minCheckOutDate = new Date(checkInDate);
-                minCheckOutDate.setDate(checkInDate.getDate() + 1);
-                const minCheckOutDateFormatted = minCheckOutDate.toISOString().split('T')[0];
-                checkOutDateInput.attr("min", minCheckOutDateFormatted);
+        const $btnConfirmBooking = $(this);
 
-                if (checkOutDateInput.val() && new Date(checkOutDateInput.val()) < minCheckOutDate) {
-                    checkOutDateInput.val('');
+        $btnConfirmBooking.prop('disabled', true);
+        $('#mdlConfirmReservation').modal('hide'); 
+        mostrarSpinner();
+        $.post("@Url.Action("BookRoom", "Client")", {
+            idRoom: idRoom,
+            checkIn: checkIn,
+            checkOut: checkOut
+        }).done((responseMessage) => {
+            Swal.fire({
+                icon: 'success',
+                title: '¡Éxito!',
+                text: responseMessage,
+                showConfirmButton: true,
+                confirmButtonText: 'OK',
+                customClass: {
+                    confirmButton: 'green-button'
                 }
-            } else {
-                checkOutDateInput.attr("min", todayFormatted);
+            }).then((result) => {
+                if (result.isConfirmed) {
+                    clearReservationForm();
+                }
+            });
+
+        }).fail((jqXHR, textStatus, errorThrown) => {
+            Swal.fire({
+                icon: 'error',
+                title: 'Error',
+                text: 'Ha ocurrido un error inesperado al reservar. Por favor, inténtalo de nuevo.',
+                showConfirmButton: true,
+                confirmButtonText: 'OK'
+            });
+            clearReservationForm(); 
+            console.error("Error en la solicitud AJAX:", textStatus, errorThrown, jqXHR.responseText);
+        }).always(() => {
+            ocultarSpinner();
+            $btnConfirmBooking.prop('disabled', false); 
+        });
+    });
+
+    const today = new Date();
+    const todayFormatted = today.toISOString().split('T')[0];
+
+    $("#checkInDate").attr("min", todayFormatted);
+
+    function updateCheckOutDateConstraints() {
+        const checkInDateVal = $("#checkInDate").val();
+        const checkOutDateInput = $("#checkOutDate");
+
+        if (checkInDateVal) {
+            const checkInDateObj = new Date(checkInDateVal + 'T00:00:00');
+            const minCheckOutDate = new Date(checkInDateObj);
+            minCheckOutDate.setDate(checkInDateObj.getDate() + 1); 
+            const minCheckOutDateFormatted = minCheckOutDate.toISOString().split('T')[0];
+            checkOutDateInput.attr("min", minCheckOutDateFormatted);
+
+            if (checkOutDateInput.val() && new Date(checkOutDateInput.val() + 'T00:00:00') < minCheckOutDate) {
+                checkOutDateInput.val('');
             }
+        } else {
+            checkOutDateInput.attr("min", todayFormatted);
         }
+    }
 
-        $("#checkInDate").on("change", function () {
-            updateCheckOutDateConstraints();
-        });
+    $("#checkInDate").on("change", function () {
+        updateCheckOutDateConstraints();
+    });
 
-        $(document).ready(function () {
-            updateCheckOutDateConstraints();
-        });
-    </script>
-}
+</script>
