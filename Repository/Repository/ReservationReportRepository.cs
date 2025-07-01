@@ -23,6 +23,7 @@ namespace Repository.Repository
                         cmd.Parameters.AddWithValue("@P_OPCION", reservationReportE.Opcion);
                         cmd.Parameters.AddWithValue("@P_CHECKIN", reservationReportE.checkIn);
                         cmd.Parameters.AddWithValue("@P_CHECKOUT", reservationReportE.checkOut);
+                        cmd.Parameters.AddWithValue("@P_User", reservationReportE.UserId);
 
                         using (SqlDataReader reader = cmd.ExecuteReader())
                         {
@@ -33,15 +34,17 @@ namespace Repository.Repository
                                 {
                                     Id = Convert.ToInt32(reader["Id"].ToString()),
                                     Identification = reader["Identification"].ToString(),
-                                    Client = reader["Client"].ToString(),
-                                    ReservationType = reader["ReservationType"].ToString(),
                                     Days = reader["Days"].ToString(),
-                                    Descripction = reader["Description"].ToString(),
-                                    checkIn = Convert.ToDateTime(reader["checkIn"]).ToString("dd/MM/yyyy"),
-                                    checkOut = Convert.ToDateTime(reader["checkOut"]).ToString("dd/MM/yyyy"),
-                                    SubTotalWithOutTax = Math.Round(Convert.ToDouble((reader["SubTotalWithOutTax"])), 2),
+                                    checkIn = Convert.ToDateTime(reader["checkIn"]),
+                                    checkOut = Convert.ToDateTime(reader["checkOut"]),
+                                    SubTotalWithOutTax = Math.Round(Convert.ToDouble((reader["SubtotalWithoutTax"])), 2),
                                     TaxAmount = Math.Round(Convert.ToDouble(reader["TaxAmount"]), 2),
                                     TotalAmount = Math.Round(Convert.ToDouble(reader["TotalAmount"]), 2),
+                                    UserName = reader["UserName"].ToString(),
+                                    UserEmail = reader["UserEmail"].ToString(),
+                                    RoomDescription = reader["RoomDescription"].ToString(),
+                                    RoomName = reader["RoomName"].ToString(),
+                                    RoomCapacity = Convert.ToInt32(reader["RoomCapacity"])
                                 });
                             }
                             return List;

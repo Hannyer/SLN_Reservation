@@ -43,9 +43,25 @@
         @Html.Partial("ViewExportData", Model)
         <br />
     </div>
-
-
 </div>
+
+<div class="modal fade" id="confirmCancelModal" tabindex="-1" role="dialog" aria-labelledby="confirmCancelModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content" style="margin-top: 8rem;">
+            <div class="modal-header" style="background-color: #2C3E50; color: white; justify-content: center;">
+                <h5 class="modal-title">Confirmar Cancelación</h5>
+            </div>
+            <div class="modal-body">
+                ¿Está seguro que desea cancelar esta reservación?
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-dismiss="modal">Cerrar</button>
+                <button type="button" class="btn btn-danger" id="confirmCancelBtn">Confirmar</button>
+            </div>
+        </div>
+    </div>
+</div>
+
 
 
 <script>
@@ -53,13 +69,67 @@
         ExportDataReservationReport();
         ExportDataReservationReportStart();
 
+    });
 
-       
+    function ShowMessageModal(type, title, message, redirectUrl = null) {
+        Swal.fire({
+            icon: type,
+            title: title,
+            text: message,
+            confirmButtonColor: '#3085d6',
+            confirmButtonText: 'OK'
+        }).then((result) => {
+            if (redirectUrl && result.isConfirmed) {
+                window.location.href = redirectUrl;
+            }
+        });
+    }
 
+    let currentReservationIdToCancel = null;
+    let $currentCancelButton = null;
+
+    $(document).ready(function () {
+        $(document).on("click", ".cancel-reservation-btn", function () {
+            console.log("Click en botón Cancelar");
+            currentReservationIdToCancel = $(this).data("reservation-id");
+            $currentCancelButton = $(this);
+            $('#confirmCancelModal').modal('show');
+        });
+
+        $('#confirmCancelBtn').on('click', function () {
+            $('#confirmCancelModal').modal('hide');
+
+            if (currentReservationIdToCancel !== null) {
+                $.ajax({
+                    url: "@Url.Action("CancelReservation", "ReservationReport")",
+                    type: "POST",
+                    data: { reservationId: currentReservationIdToCancel },
+                    success: function (responseText) {
+                        if (responseText === "ok") {
+                            ShowMessageModal('success', '¡Cancelación Exitosa!', 'La reservación fue cancelada correctamente.');
+                            if ($currentCancelButton) {
+                                $currentCancelButton.closest("td").html("<span>Cancelada</span>");
+                            }
+                        } else {
+                            ShowMessageModal('error', 'Error al Cancelar', 'Hubo un problema al intentar cancelar la reservación.');
+                        }
+                    },
+                    error: function (xhr, status, error) {
+                        ShowMessageModal('error', 'Error de Conexión', 'Ocurrió un error al intentar cancelar la reservación. Intente de nuevo.');
+                        console.error("AJAX Error:", xhr.responseText);
+                    },
+                    complete: function () {
+                        currentReservationIdToCancel = null;
+                        $currentCancelButton = null;
+                    }
+                });
+            }
+        });
     });
 </script>
 
 
 <script src="~/Content/JS/Reservation/jsReservationReport.js"></script>
+
 
 
