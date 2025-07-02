@@ -23,7 +23,8 @@ namespace EntityLayer
         public string RoomDescription { get; set; }
         public string RoomName { get; set; }
         public int RoomCapacity { get; set; }
-        public string UserId { get; set; }
+        public int UserId { get; set; }
+        public string ClientName { get; set; }
 
     }
 }

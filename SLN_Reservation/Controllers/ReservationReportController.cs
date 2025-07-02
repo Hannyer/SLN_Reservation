@@ -61,9 +61,9 @@ namespace SLN_Reservation.Controllers
         {
             var user = Session["User"] as UserE;
             int Opcion = 0;
-            string userId = "";
+            int userId = 0;
 
-            var configEmail = _configurationService.GetList(new ConfigurationE()
+            var rolClient = _configurationService.GetList(new ConfigurationE()
             {
                 Opcion = 0,
                 KEY01 = "PARAMETRO",
@@ -74,9 +74,9 @@ namespace SLN_Reservation.Controllers
                 KEY06 = "ROLCLIENTE"
             });
 
-            if (user.ID.ToString() == configEmail.First().VALUE.ToString())
+            if (user.Id_Role.ToString() == rolClient.First().VALUE.ToString())
             {
-                userId = user.ID.ToString();
+                userId = user.ID;
             }
 
             string answer = "";

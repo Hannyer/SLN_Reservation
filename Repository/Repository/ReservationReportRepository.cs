@@ -44,7 +44,8 @@ namespace Repository.Repository
                                     UserEmail = reader["UserEmail"].ToString(),
                                     RoomDescription = reader["RoomDescription"].ToString(),
                                     RoomName = reader["RoomName"].ToString(),
-                                    RoomCapacity = Convert.ToInt32(reader["RoomCapacity"])
+                                    RoomCapacity = Convert.ToInt32(reader["RoomCapacity"]),
+                                    ClientName = reader["ClientName"].ToString()
                                 });
                             }
                             return List;
@@ -82,7 +83,7 @@ namespace Repository.Repository
                                 List.Add(new TotalReportE()
                                 {
                                     Descripction = reader["Description"].ToString(),
-                                    ReservationType = reader["ReservationType"].ToString(),
+                                    //ReservationType = reader["ReservationType"].ToString(),
                                     checkIn = "",
                                     checkOut = "",
                                     SubTotalWithOutTax = Math.Round(Convert.ToDouble((reader["SubTotalWithOutTax"])), 2),

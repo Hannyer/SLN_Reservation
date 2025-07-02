@@ -21,16 +21,16 @@
         <tr>
            
             <td>@Html.DisplayFor(model => reporteReservacion.Identification)</td>
-            <td>@Html.DisplayFor(model => reporteReservacion.Client)</td>
+            <td>@Html.DisplayFor(model => reporteReservacion.ClientName)</td>
             <td>@Html.DisplayFor(model => reporteReservacion.Days).ToString()</td>
-            <td>@Html.DisplayFor(model => reporteReservacion.Descripction)</td>
+            <td>@Html.DisplayFor(model => reporteReservacion.RoomDescription)</td>
             <td>@Html.DisplayFor(model => reporteReservacion.checkIn).ToString()</td>
             <td>@Html.DisplayFor(model => reporteReservacion.checkOut).ToString()</td>
         
         </tr>
     }
 </table>
-<div id="tablaContainer" class="row">
+@*<div id="tablaContainer" class="row">
     <div class="table-responsive">
         <table id="tblReservationReport" class="table table-hover table-custom">
             <thead>
@@ -55,7 +55,7 @@
                 {
                     <tr>
                         <td>@Html.DisplayFor(modelItem => reporteReservacion.Identification)</td>
-                        <td>@Html.DisplayFor(modelItem => reporteReservacion.user)</td>
+                        <td>@Html.DisplayFor(modelItem => reporteReservacion.UserName)</td>
                         <td>@Html.DisplayFor(modelItem => reporteReservacion.UserEmail)</td>
                         <td>@Html.DisplayFor(modelItem => reporteReservacion.Days)</td>
                         <td>@reporteReservacion.checkIn.ToString("dd/MM/yyyy")</td>
@@ -95,5 +95,5 @@
             </tbody>
         </table>
     </div>
-</div>
+</div>*@
 
