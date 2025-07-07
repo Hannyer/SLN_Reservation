@@ -398,10 +398,14 @@ namespace SLN_Reservation.Controllers
         }
         public string EndProccess(ReservationE reservation)
         {
+           
             string answer = "";
             try
             {
-
+                if (reservation.CheckOut > DateTime.Now)
+                {
+                    return answer="La reservación no puede ser finalizada, la fecha de salida es menor a la fecha actual.";
+                }
                 reservation.Status = "3";
                 reservation.Opcion = 2;
 

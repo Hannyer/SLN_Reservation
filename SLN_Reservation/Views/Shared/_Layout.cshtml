@@ -27,21 +27,21 @@
 
     <style>
 
-        .sidebar {
-            background: linear-gradient(rgba(44,62,80,0.25), rgba(44,62,80,0.25)), url('@Url.Content("~/Content/Img/Paisaje.png")') center center/cover no-repeat;
-            color: #F5F5DC;
-            background-position: 70% 40%;
-            width: 260px;
-            position: fixed;
-            top: 2rem;
-            left: 0;
-            height: calc(100% - 2rem);
-            transition: left 0.3s ease-in-out;
-            overflow-y: auto;
-            box-shadow: 2px 0 8px 0 rgba(44,62,80,0.18);
-            z-index: 1000;
-        }
-
+  
+         .sidebar {
+     background: linear-gradient(rgba(44,62,80,0.25), rgba(44,62,80,0.25)), url('@Url.Content("~/Content/Img/Paisaje3.jpeg")') center center/cover no-repeat;
+     color: #F5F5DC;
+     background-position: 10% 50%;
+     width: 260px;
+     position: fixed;
+     top: 2rem;
+     left: 0;
+     height: calc(100% - 2rem);
+     transition: left 0.3s ease-in-out;
+     overflow-y: auto;
+     box-shadow: 2px 0 8px 0 rgba(44,62,80,0.18);
+     z-index: 1000;
+ }
             .sidebar .nav {
                 list-style: none;
                 padding-left: 0;
@@ -85,7 +85,7 @@
         }
 
         .sidebar-logo-img {
-            max-width: 222px;
+            max-height: 40px;
             width: 90%;
             height: auto;
             opacity: 1;
@@ -101,19 +101,25 @@
             background-color: #2C3E50 !important;
         }
 
+      
         .fixed-top {
-            background: linear-gradient(rgba(44,62,80,0.40), rgba(44,62,80,0.40)), url('@Url.Content("~/Content/Img/Paisaje.png")') center center/cover no-repeat;
+            background: linear-gradient(rgba(44,62,80,0.40), rgba(44,62,80,0.40)), url('@Url.Content("~/Content/Img/Paisaje3.jpeg")') center center/cover no-repeat;
             padding: 10px 2.5rem;
             text-align: right;
             z-index: 10000;
             min-height: 70px;
-            background-position: 70% 18%;
+            background-position: 70% 0%;
             display: flex;
             align-items: center;
             justify-content: space-between;
             border-bottom: 2px solid #28426230;
             box-shadow: 0 2px 8px 0 rgba(44,62,80,0.12);
+            gap: 1rem;
         }
+            .fixed-top .header-logo {
+                position: static; 
+                width: auto;
+            }
 
             .fixed-top .btn {
                 color: #2C3E50;
@@ -285,15 +291,29 @@
 <body>
     <div class="container-fluid">
         <div class="row">
+            <div class="sidebar-logo-container">
+
+            </div>
+
             <div class="fixed-top">
-                <button id="toggleSidebarButton" class="btn btn-light" style="float: left;">
+                <!-- 1. Logo primero -->
+                <div class="sidebar-logo-container header-logo">
+                    <img src="@Url.Content("~/Content/Img/logoTurismo2.png")"
+                         alt="Logo Turismo"
+                         class="sidebar-logo-img" />
+                </div>
+
+                <!-- 2. Botón toggle -->
+                <button id="toggleSidebarButton" class="btn btn-light">
                     <i class="fas fa-bars"></i>
                 </button>
 
-                <a href="@Url.Action("Index", "Login")" class="btn btn-light">
-                    <i class="fas fa-sign-out-alt" style="margin-right: 5px;"></i> Cerrar Sesión
+                <!-- 3. Empuja el logout a la derecha -->
+                <a href="@Url.Action("Index", "Login")" class="btn btn-light ms-auto">
+                    <i class="fas fa-sign-out-alt me-1"></i> Cerrar Sesión
                 </a>
             </div>
+
             <div class="row" style="margin-top: 3.5rem;">
                 <nav class="col-md-3 col-lg-2 d-md-block sidebar">
 
@@ -378,11 +398,7 @@
                             }
                         </ul>
                     </div>
-                    <div class="sidebar-logo-container">
-                        <img src="@Url.Content("~/Content/Img/TurismoLogo.png")"
-                             alt="Logo Turismo"
-                             class="sidebar-logo-img" />
-                    </div>
+
 
                 </nav>
                 <div class="col">
@@ -394,13 +410,13 @@
                                      alt="Escudo Colegio Técnico"
                                      style="
     position: absolute;
-    top:3rem;
+    top:5rem;
     right: 1rem;
-    width: 13rem;
+    width: 8rem;
     height: auto;
 
 " />
-                                <div class="pt-md-5" >
+                                <div class="pt-md-5">
                                     @RenderBody()
                                 </div>
 
@@ -460,12 +476,12 @@
         });
 
         function mostrarSpinner() {
-            $("#overlay").show();
-            $("#spinner").show();
+            $("#overlay").fadeIn();
+            $("#spinner").fadeIn();
         }
         function ocultarSpinner() {
-            $("#overlay").hide();
-            $("#spinner").hide();
+            $("#overlay").fadeOut();
+            $("#spinner").fadeOut();
         }
 
         function OpenModal(modal) {

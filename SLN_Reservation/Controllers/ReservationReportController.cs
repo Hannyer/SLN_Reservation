@@ -6,6 +6,7 @@ using EntityLayer;
 using iTextSharp.text.pdf.codec.wmf;
 using Service.IService;
 using Service.Service;
+using SLN_Reservation.DTO;
 using System;
 using System.Collections.Generic;
 using System.Data;
@@ -26,6 +27,7 @@ namespace SLN_Reservation.Controllers
         static List<ReservationReportE> tmplist = new List<ReservationReportE>();
         static List<TotalReportE> tmplistTotalReport = new List<TotalReportE>();
         static List<ReservationE> tmplistAvalaibilityReport = new List<ReservationE>();
+        static ReservationReportDto reservationReport = new ReservationReportDto();
         IReservationReportService _ReservationReportService;
         IReservationService _reservation;
         IConfigurationService _configurationService;
@@ -38,13 +40,13 @@ namespace SLN_Reservation.Controllers
         }
         public ActionResult ReservationReport()
         {
-            List<ReservationReportE> list = new List<ReservationReportE>();
+
             if (Session["User"] == null || Session["List_Menu"] == null)
             {
 
                 return RedirectToAction("Index", "Login");
             }
-            return View(list);
+            return View(reservationReport);
         }
         public ActionResult TotalReport()
         {
@@ -62,6 +64,7 @@ namespace SLN_Reservation.Controllers
             var user = Session["User"] as UserE;
             int Opcion = 0;
             int userId = 0;
+            bool isClient = false;
 
             var rolClient = _configurationService.GetList(new ConfigurationE()
             {
@@ -77,6 +80,7 @@ namespace SLN_Reservation.Controllers
             if (user.Id_Role.ToString() == rolClient.First().VALUE.ToString())
             {
                 userId = user.ID;
+                isClient = true;
             }
 
             string answer = "";
@@ -100,7 +104,12 @@ namespace SLN_Reservation.Controllers
                 UserId = userId
             });
             tmplist = list;
-            return PartialView("ViewExportData", list);
+            var dto = new ReservationReportDto
+            {
+                listReport = list,
+                isClient = isClient
+            };
+            return PartialView("ViewExportData", dto);
         }
 
 

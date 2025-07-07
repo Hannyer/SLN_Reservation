@@ -1,99 +1,117 @@
-﻿@model IEnumerable<EntityLayer.ReservationReportE>
+﻿@model SLN_Reservation.DTO.ReservationReportDto
+
 @using System.Globalization;
 
-<div id="tablaContainer" class="table-responsive"></div>
-
-<table id="tblReservationReport"class="table table-hover table-custom">
-    <thead>
-        <tr>
-           
-            <th>Identificación</th>
-            <th>Cliente</th>
-            <th>Días</th>
-            <th>Detalle</th>
-            <th>Fecha de Entrada</th>
-            <th>Fecha de Salida</th>
-        
-        </tr>
-    </thead>
-    @foreach (var reporteReservacion in Model)
+@if (!Model.isClient)
+{
+    if (Model.listReport != null && Model.listReport.Count > 0)
     {
-        <tr>
-           
-            <td>@Html.DisplayFor(model => reporteReservacion.Identification)</td>
-            <td>@Html.DisplayFor(model => reporteReservacion.ClientName)</td>
-            <td>@Html.DisplayFor(model => reporteReservacion.Days).ToString()</td>
-            <td>@Html.DisplayFor(model => reporteReservacion.RoomDescription)</td>
-            <td>@Html.DisplayFor(model => reporteReservacion.checkIn).ToString()</td>
-            <td>@Html.DisplayFor(model => reporteReservacion.checkOut).ToString()</td>
-        
-        </tr>
-    }
-</table>
-@*<div id="tablaContainer" class="row">
-    <div class="table-responsive">
-        <table id="tblReservationReport" class="table table-hover table-custom">
-            <thead>
-                <tr>
-                    <th>Identificación Usuario</th>
-                    <th>Usuario</th>
-                    <th>Email Usuario</th>
-                    <th>Días</th>
-                    <th>Fecha Entrada</th>
-                    <th>Fecha Salida</th>
-                    <th>Subtotal sin Imp.</th>
-                    <th>Monto Impuesto</th>
-                    <th>Total</th>
-                    <th>Descripción Habitación</th>
-                    <th>Nombre Habitación</th>
-                    <th>Capacidad Habitación</th>
-                    <th>Cancelar Reservación</th>
-                </tr>
-            </thead>
-            <tbody>
-                @foreach (var reporteReservacion in Model)
+        <div id="tablaContainer" class="table-responsive">
+
+            <table id="tblReservationReport" class="table table-hover table-custom">
+                <thead>
+                    <tr>
+
+                        <th>Identificación</th>
+                        <th>Cliente</th>
+                        <th>Días</th>
+                        <th>Detalle</th>
+                        <th>Fecha de Entrada</th>
+                        <th>Fecha de Salida</th>
+
+                    </tr>
+                </thead>
+                @foreach (var reporteReservacion in Model.listReport)
                 {
                     <tr>
-                        <td>@Html.DisplayFor(modelItem => reporteReservacion.Identification)</td>
-                        <td>@Html.DisplayFor(modelItem => reporteReservacion.UserName)</td>
-                        <td>@Html.DisplayFor(modelItem => reporteReservacion.UserEmail)</td>
-                        <td>@Html.DisplayFor(modelItem => reporteReservacion.Days)</td>
-                        <td>@reporteReservacion.checkIn.ToString("dd/MM/yyyy")</td>
-                        <td>@reporteReservacion.checkOut.ToString("dd/MM/yyyy")</td>
-                        <td>@reporteReservacion.SubTotalWithOutTax.ToString("N2")</td>
-                        <td>@reporteReservacion.TaxAmount.ToString("N2")</td>
-                        <td>@reporteReservacion.TotalAmount.ToString("N2")</td>
-                        <td>@Html.DisplayFor(modelItem => reporteReservacion.RoomDescription)</td>
-                        <td>@Html.DisplayFor(modelItem => reporteReservacion.RoomName)</td>
-                        <td>@Html.DisplayFor(modelItem => reporteReservacion.RoomCapacity)</td>
-                        <td>
-                            @{
-                                bool esReservaDeCliente = !string.IsNullOrEmpty(reporteReservacion.UserId);
-                                if (esReservaDeCliente)
-                                {
-                                    TimeSpan tiempoDesdeCheckIn = DateTime.Now - reporteReservacion.checkIn;
-                                    if (tiempoDesdeCheckIn.TotalHours <= 2)
-                                    {
-                                        <button class="btn btn-danger btn-sm cancel-reservation-btn" data-reservation-id="@reporteReservacion.Id">
-                                            Cancelar
-                                        </button>
 
-                                    }
-                                    else
-                                    {
-                                        <span>Tiempo expirado</span>
-                                    }
-                                }
-                                else
-                                {
-                                    <span>N/A</span>
-                                }
-                            }
-                        </td>
+                        <td>@Html.DisplayFor(model => reporteReservacion.Identification)</td>
+                        <td>@Html.DisplayFor(model => reporteReservacion.ClientName)</td>
+                        <td>@Html.DisplayFor(model => reporteReservacion.Days).ToString()</td>
+                        <td>@Html.DisplayFor(model => reporteReservacion.RoomDescription)</td>
+                        <td>@Html.DisplayFor(model => reporteReservacion.checkIn).ToString()</td>
+                        <td>@Html.DisplayFor(model => reporteReservacion.checkOut).ToString()</td>
+
                     </tr>
                 }
-            </tbody>
-        </table>
-    </div>
-</div>*@
+            </table>
+        </div>
+    }
+
+
+}
+else
+{
+    if (Model.listReport!=null && Model.listReport.Count > 0)
+    {
+        <div id="tablaContainer" class="row">
+            <div class="table-responsive">
+                <table id="tblReservationReport" class="table table-hover table-custom">
+                    <thead>
+                        <tr>
+                            <th>Identificación Usuario</th>
+                            <th>Usuario</th>
+                            <th>Email Usuario</th>
+                            <th>Días</th>
+                            <th>Fecha Entrada</th>
+                            <th>Fecha Salida</th>
+                            <th>Subtotal sin Imp.</th>
+                            <th>Monto Impuesto</th>
+                            <th>Total</th>
+                            <th>Descripción Habitación</th>
+                            <th>Nombre Habitación</th>
+                            <th>Capacidad Habitación</th>
+                            <th>Cancelar Reservación</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @foreach (var reporteReservacion in Model.listReport)
+                        {
+                            <tr>
+                                <td>@Html.DisplayFor(modelItem => reporteReservacion.Identification)</td>
+                                <td>@Html.DisplayFor(modelItem => reporteReservacion.UserName)</td>
+                                <td>@Html.DisplayFor(modelItem => reporteReservacion.UserEmail)</td>
+                                <td>@Html.DisplayFor(modelItem => reporteReservacion.Days)</td>
+                                <td>@reporteReservacion.checkIn.ToString("dd/MM/yyyy")</td>
+                                <td>@reporteReservacion.checkOut.ToString("dd/MM/yyyy")</td>
+                                <td>@reporteReservacion.SubTotalWithOutTax.ToString("N2")</td>
+                                <td>@reporteReservacion.TaxAmount.ToString("N2")</td>
+                                <td>@reporteReservacion.TotalAmount.ToString("N2")</td>
+                                <td>@Html.DisplayFor(modelItem => reporteReservacion.RoomDescription)</td>
+                                <td>@Html.DisplayFor(modelItem => reporteReservacion.RoomName)</td>
+                                <td>@Html.DisplayFor(modelItem => reporteReservacion.RoomCapacity)</td>
+                                <td>
+                                    @{
+                                        bool esReservaDeCliente = !string.IsNullOrEmpty(reporteReservacion.ClientName);
+                                        if (esReservaDeCliente)
+                                        {
+                                            TimeSpan tiempoDesdeCheckIn = DateTime.Now - reporteReservacion.checkIn;
+                                            if (tiempoDesdeCheckIn.TotalHours <= 2)
+                                            {
+                                                <button class="btn btn-danger btn-sm cancel-reservation-btn" data-reservation-id="@reporteReservacion.Id">
+                                                    Cancelar
+                                                </button>
+
+                                            }
+                                            else
+                                            {
+                                                <span>Tiempo expirado</span>
+                                            }
+                                        }
+                                        else
+                                        {
+                                            <span>N/A</span>
+                                        }
+                                    }
+                                </td>
+                            </tr>
+                        }
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    }
+
+}
+
 

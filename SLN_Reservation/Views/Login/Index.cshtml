@@ -18,13 +18,38 @@
     <link href="~/Content/css/bootstrap.min.css" rel="stylesheet" />
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css" integrity="sha512-SnH5WK+bZxgPHs44uWIX+LLJAJ9/2PkPKZ5QiAj6Ta86w+fsb2TkcmfRyVX3pBnMFcV7oQPJkl9QevSCWr3W6A==" crossorigin="anonymous" referrerpolicy="no-referrer" />
     <link href="~/Content/css/Css/Login.css" rel="stylesheet" />
+    <style>
+        body {
+    background: url('@Url.Content("~/Content/Img/Paisaje4.jpeg")') no-repeat center center fixed;
+    background-size: cover;
+    height: 50vh;
+    font-family: 'Montserrat', sans-serif;
+}
+        .custom-card {
+            border-radius: 0.5rem !important;
+            box-shadow: 0 0.5rem 1rem rgba(0,0,0,0.8) !important;
+            background-color: rgba(255, 255, 255, 0) !important;
+            backdrop-filter: blur(8px);
+        }
 
+        .login-panel-bootstrap {
+            background-color: rgba(255, 255, 255, 0.5) !important;
+            backdrop-filter: blur(6px);
+        }
+
+        .register-panel-bootstrap {
+            background: rgba(44, 62, 80, 0.4) !important;
+            backdrop-filter: blur(6px);
+        }
+
+
+    </style>
 </head>
 <body>
-    <div class="main-wrapper d-flex justify-content-center align-items-center vh-100">
+    <div class="main-wrapper d-flex justify-content-center align-items-center vh-100 ">
         <div class="custom-card row g-0">
             <div class="col-md-6 d-flex flex-column justify-content-center align-items-center p-5 login-panel-bootstrap">
-                <h2 class="mb-4 text-dark fw-bold">Nombre App</h2>
+                <h2 class="mb-4 text-dark fw-bold">Nicoya reservation</h2>
 
                 <p class="text-muted position-relative separator-text w-100 text-center mb-4">Iniciar Sesión</p>
 
@@ -51,19 +76,9 @@
             </div>
 
             <div class="col-md-6 d-flex flex-column justify-content-center align-items-center p-5 text-white register-panel-bootstrap rounded-end">
-                <img src="@Url.Content("~/Content/Img/Escudo.png")"
-                     alt="Escudo Colegio Técnico"
-                     style="
-                     position: absolute;
-                     bottom: 2rem;
-                     right: 2rem;
-                     width: 15rem;
-                     height: auto;
-                     filter: drop-shadow(0 8px 16px rgba(44,62,80,0.25));
-                     opacity: 0.85;
-                     z-index: 1;
+        
                 <h2 class="display-4 fw-bold mb-3">¡Hola!</h2>
-                <p class="lead text-center mb-4">Crea tu cuenta para acceder a todas las funciones.</p>
+                <p class="lead text-center mb-4">Registrese y gestione sus propias reservaciones.</p>
                 <button type="button" class="btn btn-outline-light rounded-pill px-4 py-2 custom-register-btn" onclick="OpenModal('mdlCreateUser'); ClearCreateUserForm();">REGISTRAR</button>
             </div>
         </div>
@@ -120,7 +135,9 @@
                     <button type="button" class="btn btn-danger" data-bs-dismiss="modal">Cancelar</button>
                 </div>
             </div>
+
         </div>
+
     </div>
 
 

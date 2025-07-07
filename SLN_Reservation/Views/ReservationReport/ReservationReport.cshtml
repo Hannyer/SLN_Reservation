@@ -1,4 +1,5 @@
-﻿@model List<EntityLayer.ReservationReportE>
+﻿@model SLN_Reservation.DTO.ReservationReportDto
+
 @{
     ViewBag.Title = "ReservationReport";
     Layout = "~/Views/Shared/_Layout.cshtml";
@@ -97,8 +98,9 @@
         });
 
         $('#confirmCancelBtn').on('click', function () {
+            mostrarSpinner();
             $('#confirmCancelModal').modal('hide');
-
+           
             if (currentReservationIdToCancel !== null) {
                 $.ajax({
                     url: "@Url.Action("CancelReservation", "ReservationReport")",
@@ -117,14 +119,18 @@
                     error: function (xhr, status, error) {
                         ShowMessageModal('error', 'Error de Conexión', 'Ocurrió un error al intentar cancelar la reservación. Intente de nuevo.');
                         console.error("AJAX Error:", xhr.responseText);
+                        ocultarSpinner();
                     },
                     complete: function () {
+                        ocultarSpinner();
                         currentReservationIdToCancel = null;
                         $currentCancelButton = null;
                     }
                 });
             }
+           
         });
+         ocultarSpinner();
     });
 </script>
 

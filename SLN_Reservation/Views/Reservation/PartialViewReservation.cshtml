@@ -49,7 +49,7 @@
                             }
                             else if (r.Status == "Facturado")
                             {
-                                <button class="btn btn-warning btn-sm" onclick="EndProcess(r)" title="Finalizar Reservación"
+                                <button class="btn btn-warning btn-sm" onclick="EndProcess(this)" title="Finalizar Reservación"
                                         data-reservation='@JsonConvert.SerializeObject(r)'>
                                     <i class="fa-solid fa-user-check"></i>
                                 </button>

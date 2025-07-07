@@ -442,6 +442,7 @@
     <Compile Include="Controllers\SecurityController.cs" />
     <Compile Include="Controllers\UserController.cs" />
     <Compile Include="DTO\ReservationDto.cs" />
+    <Compile Include="DTO\ReservationReportDto.cs" />
     <Compile Include="Filters\AuthorizeUser.cs" />
     <Compile Include="Filters\Filter.cs" />
     <Compile Include="Global.asax.cs">
@@ -2970,9 +2971,18 @@
     <Content Include="Content\Img\imgRecepcion.jpg" />
     <Content Include="Content\Img\jobTask.jpg" />
     <Content Include="Content\Img\lago.png" />
-    <Content Include="Content\Img\Malibu-3.jpg" />
+    <Content Include="Content\Img\LogoColegio.png" />
+    <Content Include="Content\Img\logoTurismo2.png" />
     <Content Include="Content\Img\mountan.jpg" />
     <Content Include="Content\Img\Paisaje.png" />
+    <Content Include="Content\Img\paisaje1.jpeg" />
+    <Content Include="Content\Img\paisaje2.jpeg" />
+    <Content Include="Content\Img\paisaje3.jpeg" />
+    <Content Include="Content\Img\paisaje4.jpeg" />
+    <Content Include="Content\Img\paisaje5.jpeg" />
+    <Content Include="Content\Img\paisaje6.jpeg" />
+    <Content Include="Content\Img\paisaje7.jpeg" />
+    <Content Include="Content\Img\paisaje8.jpeg" />
     <Content Include="Content\Img\R.png" />
     <Content Include="Content\Img\ReservacionCliente.png" />
     <Content Include="Content\Img\tarde.png" />
